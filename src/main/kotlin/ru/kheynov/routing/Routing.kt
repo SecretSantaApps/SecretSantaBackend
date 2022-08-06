@@ -1,16 +1,22 @@
 package ru.kheynov.routing
 
-import io.ktor.server.routing.*
-import io.ktor.http.*
 import io.ktor.server.application.*
-import io.ktor.server.response.*
-import io.ktor.server.request.*
+import io.ktor.server.routing.*
+import ru.kheynov.configureAuthRoutes
+import ru.kheynov.domain.repositories.UserRepository
+import ru.kheynov.getSecretInfo
+import ru.kheynov.security.hashing.HashingService
+import ru.kheynov.security.token.TokenConfig
+import ru.kheynov.security.token.TokenService
 
-fun Application.configureRouting() {
-    println("PORT: ${System.getenv("SERVER_PORT")}")
+fun Application.configureRouting(
+    userRepository: UserRepository,
+    tokenService: TokenService,
+    hashingService: HashingService,
+    tokenConfig: TokenConfig,
+) {
     routing {
-        get("/") {
-            call.respondText("Hello World!")
-        }
+        configureAuthRoutes(hashingService, userRepository, tokenConfig, tokenService)
+        getSecretInfo()
     }
 }

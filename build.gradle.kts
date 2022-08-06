@@ -2,6 +2,7 @@ val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
 val kmongo_version: String by project
+val commons_codec_version: String by project
 
 plugins {
     application
@@ -39,4 +40,5 @@ dependencies {
     implementation("org.litote.kmongo:kmongo:$kmongo_version")
     implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
 
+    implementation("commons-codec:commons-codec:$commons_codec_version")
 }

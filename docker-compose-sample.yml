@@ -10,7 +10,12 @@ services:
       - mongo
     restart: always
     environment:
-      - SERVER_PORT=${SERVER_PORT}
+      - SERVER_PORT=$SERVER_PORT
+      - JWT_DOMAIN=$JWT_DOMAIN
+      - JWT_ISSUER=$JWT_ISSUER
+      - JWT_AUDIENCE=$JWT_AUDIENCE
+      - JWT_REALM=$JWT_REALM
+      - JWT_SECRET=$JWT_SECRET
 
   db:
     image: ${MONGO_VERSION}
