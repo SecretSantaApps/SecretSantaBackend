@@ -40,3 +40,4 @@ out/
 /src/test/
 /docker-compose.yml
 /.env
+/localvolumes/
