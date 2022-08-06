@@ -1,7 +1,6 @@
 .gradle
 build/classes/
 build/kotlin/
-build/resources/
 build/tmp/
 
 !gradle/wrapper/gradle-wrapper.jar
@@ -40,3 +39,4 @@ out/
 .vscode/
 /src/test/
 /docker-compose.yml
+/.env
