@@ -35,6 +35,7 @@ class MongoUserRepositoryImpl(
     override suspend fun updateUsernameByID(id: String, username: String): Boolean {
         val bsonId = ObjectId(id)
         if (users.findOne(User::id eq bsonId) == null) return false
+        if (getUserByUsername(username) != null) return false
         return users.updateOne(User::id eq bsonId, setValue(User::username, username)).wasAcknowledged()
     }
 
@@ -49,7 +50,7 @@ class MongoUserRepositoryImpl(
     override suspend fun updateUserByID(id: String, user: User): Boolean {
         val bsonId = ObjectId(id)
         if (users.findOne(User::id eq bsonId) == null) return false
-
+        if (getUserByUsername(user.username) != null) return false
         return users.updateMany(
             User::id eq bsonId,
             SetTo(User::username, user.username),

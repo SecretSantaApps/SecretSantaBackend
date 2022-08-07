@@ -224,7 +224,7 @@ fun Route.editUser(
                     return@patch
                 }
                 if (isSuccessful) call.respond(HttpStatusCode.OK, "User updated")
-                else call.respond(HttpStatusCode.NotAcceptable, "Cannot update user, try to sign in")
+                else call.respond(HttpStatusCode.NotAcceptable, "Cannot update user, name already taken")
             }
             call.respond(HttpStatusCode.BadRequest, "Bad UserID")
             return@patch
