@@ -9,6 +9,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.apache.commons.codec.digest.DigestUtils
 import ru.kheynov.data.requests.AuthRequest
+import ru.kheynov.data.requests.UpdateRequest
 import ru.kheynov.data.responses.AuthResponse
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.repositories.UserRepository
@@ -28,6 +29,16 @@ fun Route.configureAuthRoutes(
         signUp(hashingService, userRepository)
         signIn(userRepository, hashingService, tokenService, tokenConfig)
         authenticate()
+        deleteUser(userRepository)
+        editUser(userRepository, hashingService)
+    }
+}
+
+fun Route.configureUserOperations(
+    hashingService: HashingService,
+    userRepository: UserRepository,
+){
+    route("/user"){
         deleteUser(userRepository)
         editUser(userRepository, hashingService)
     }
@@ -129,6 +140,7 @@ fun Route.authenticate() {
     }
 }
 
+/*
 fun Route.getSecretInfo() {
     authenticate {
         get("/secret") {
@@ -137,7 +149,7 @@ fun Route.getSecretInfo() {
             call.respond(HttpStatusCode.OK, "Your userId is $userId")
         }
     }
-}
+}*/
 
 fun Route.deleteUser(
     userRepository: UserRepository,
@@ -163,26 +175,59 @@ fun Route.editUser(
 ) {
     authenticate {
         patch {
-            lateinit var request: AuthRequest
+            lateinit var request: UpdateRequest
             try {
                 request = call.receive()
             } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest)
+                call.respond(HttpStatusCode.BadRequest, "Cannot read data")
                 return@patch
             }
             val principal = call.principal<JWTPrincipal>()
             val userId = principal?.getClaim("userId", String::class)
+
+            val isSuccessful: Boolean
+
             if (userId != null) {
-                val saltedHash = hashingService.generateSaltedHash(request.password)
-                val user = User(
-                    username = request.username, password = saltedHash.hash, salt = saltedHash.salt
-                )
-                val isSuccessful = userRepository.editUserByID(userId, user)
+                if (request.username != null && request.password != null) { // full user update
+                    val areFieldsBlank = request.username!!.isBlank() || request.password!!.isBlank()
+                    val isPwTooShort = request.password!!.length < 8
+                    if (areFieldsBlank || isPwTooShort) {
+                        call.respond(HttpStatusCode.BadRequest, "Password or Login are incorrect")
+                        return@patch
+                    }
+                    val saltedHash = hashingService.generateSaltedHash(request.password!!)
+                    val user = User(
+                        username = request.username!!, password = saltedHash.hash, salt = saltedHash.salt
+                    )
+                    isSuccessful = userRepository.updateUserByID(userId, user)
+                } else if (request.username == null && request.password != null) { // update password
+                    val saltedHash = hashingService.generateSaltedHash(request.password!!)
+
+                    val isPwTooShort = request.password!!.length < 8
+                    if (isPwTooShort) {
+                        call.respond(HttpStatusCode.BadRequest, "Password or Login are incorrect")
+                        return@patch
+                    }
+                    isSuccessful = userRepository.updatePasswordByID(
+                        userId,
+                        password = saltedHash.hash,
+                        salt = saltedHash.salt,
+                    )
+                } else if (request.username != null) { //update username
+                    if (request.username!!.isBlank()) {
+                        call.respond(HttpStatusCode.BadRequest, "Incorrect login")
+                        return@patch
+                    }
+                    isSuccessful = userRepository.updateUsernameByID(userId, request.username!!)
+                } else { // error: empty fields
+                    call.respond(HttpStatusCode.BadRequest, "Empty Fields")
+                    return@patch
+                }
                 if (isSuccessful) call.respond(HttpStatusCode.OK, "User updated")
                 else call.respond(HttpStatusCode.NotAcceptable, "Cannot update user, try to sign in")
-                return@patch
             }
             call.respond(HttpStatusCode.BadRequest, "Bad UserID")
+            return@patch
         }
     }
 }

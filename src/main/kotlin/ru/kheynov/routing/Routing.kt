@@ -13,8 +13,8 @@ fun Application.configureRouting(
     hashingService: HashingService,
     tokenConfig: TokenConfig,
 ) {
-    routing{
+    routing {
         configureAuthRoutes(hashingService, userRepository, tokenConfig, tokenService)
-        getSecretInfo()
+        configureUserOperations(hashingService, userRepository)
     }
 }
