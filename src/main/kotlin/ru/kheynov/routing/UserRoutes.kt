@@ -1,4 +1,4 @@
-package ru.kheynov
+package ru.kheynov.routing
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -24,9 +24,12 @@ fun Route.configureAuthRoutes(
     tokenConfig: TokenConfig,
     tokenService: TokenService,
 ) {
-    signUp(hashingService, userRepository)
-    signIn(userRepository, hashingService, tokenService, tokenConfig)
-    authenticate()
+    route("/user") {
+        signUp(hashingService, userRepository)
+        signIn(userRepository, hashingService, tokenService, tokenConfig)
+        authenticate()
+        deleteUser(userRepository)
+    }
 }
 
 fun Route.signUp(
@@ -133,5 +136,22 @@ fun Route.getSecretInfo() {
             call.respond(HttpStatusCode.OK, "Your userId is $userId")
         }
     }
+}
 
+fun Route.deleteUser(
+    userRepository: UserRepository,
+) {
+    authenticate {
+        delete {
+            val principal = call.principal<JWTPrincipal>()
+            val userId = principal?.getClaim("userId", String::class)
+            if (userId != null) {
+                val isSuccessful = userRepository.deleteUserByID(userId)
+                if (isSuccessful) call.respond(HttpStatusCode.OK, "User deleted")
+                else call.respond(HttpStatusCode.NotAcceptable, "Cannot delete user")
+                return@delete
+            }
+            call.respond(HttpStatusCode.BadRequest, "Bad UserID")
+        }
+    }
 }
