@@ -43,3 +43,4 @@ out/
 /docker-compose.yml
 /.env
 /localvolumes/
+/restart.sh
