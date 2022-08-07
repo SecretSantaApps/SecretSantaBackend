@@ -29,6 +29,7 @@ fun Route.configureAuthRoutes(
         signIn(userRepository, hashingService, tokenService, tokenConfig)
         authenticate()
         deleteUser(userRepository)
+        editUser(userRepository, hashingService)
     }
 }
 
@@ -150,6 +151,36 @@ fun Route.deleteUser(
                 if (isSuccessful) call.respond(HttpStatusCode.OK, "User deleted")
                 else call.respond(HttpStatusCode.NotAcceptable, "Cannot delete user")
                 return@delete
+            }
+            call.respond(HttpStatusCode.BadRequest, "Bad UserID")
+        }
+    }
+}
+
+fun Route.editUser(
+    userRepository: UserRepository,
+    hashingService: HashingService,
+) {
+    authenticate {
+        patch {
+            lateinit var request: AuthRequest
+            try {
+                request = call.receive()
+            } catch (e: Exception) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@patch
+            }
+            val principal = call.principal<JWTPrincipal>()
+            val userId = principal?.getClaim("userId", String::class)
+            if (userId != null) {
+                val saltedHash = hashingService.generateSaltedHash(request.password)
+                val user = User(
+                    username = request.username, password = saltedHash.hash, salt = saltedHash.salt
+                )
+                val isSuccessful = userRepository.editUserByID(userId, user)
+                if (isSuccessful) call.respond(HttpStatusCode.OK, "User updated")
+                else call.respond(HttpStatusCode.NotAcceptable, "Cannot update user, try to sign in")
+                return@patch
             }
             call.respond(HttpStatusCode.BadRequest, "Bad UserID")
         }

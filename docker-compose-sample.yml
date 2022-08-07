@@ -4,11 +4,6 @@ services:
     build: .
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    depends_on:
-      - db
-    networks:
-      - mongo
-    restart: always
     environment:
       - SERVER_PORT=$SERVER_PORT
       - JWT_DOMAIN=$JWT_DOMAIN
@@ -16,6 +11,12 @@ services:
       - JWT_AUDIENCE=$JWT_AUDIENCE
       - JWT_REALM=$JWT_REALM
       - JWT_SECRET=$JWT_SECRET
+      - MONGO_CONNECTION_STRING=$MONGO_CONNECTION_STRING
+    depends_on:
+      - db
+    networks:
+      - mongo
+    restart: always
 
   db:
     image: ${MONGO_VERSION}

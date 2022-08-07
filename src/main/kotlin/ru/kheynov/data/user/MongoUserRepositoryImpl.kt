@@ -30,4 +30,10 @@ class MongoUserRepositoryImpl(
         return users.findOne(User::id eq bsonId)
     }
 
+    override suspend fun editUserByID(id: String, user: User): Boolean {
+        val bsonId = ObjectId(id)
+        if (users.findOne(User::id eq bsonId) == null) return false
+        users.deleteOne(User::id eq bsonId)
+        return users.insertOne(user).wasAcknowledged()
+    }
 }
