@@ -3,6 +3,7 @@ package ru.kheynov
 import io.ktor.server.application.*
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
+import ru.kheynov.data.rooms.MongoRoomsRepositoryImpl
 import ru.kheynov.data.user.MongoUserRepositoryImpl
 import ru.kheynov.plugins.configureHTTP
 import ru.kheynov.plugins.configureMonitoring
@@ -33,6 +34,8 @@ fun Application.module() {
 
     val userRepository = MongoUserRepositoryImpl(db)
 
+    val roomsRepository = MongoRoomsRepositoryImpl(db)
+
     configureSecurity(tokenConfig)
     configureHTTP()
     configureMonitoring()
@@ -42,5 +45,6 @@ fun Application.module() {
         hashingService = hashingService,
         tokenService = tokenService,
         tokenConfig = tokenConfig,
+        roomsRepository = roomsRepository
     )
 }

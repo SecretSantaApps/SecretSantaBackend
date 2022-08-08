@@ -6,7 +6,7 @@ import org.bson.types.ObjectId
 data class Room(
     @BsonId val id: ObjectId = ObjectId(),
     val name: String,
-    val password: String,
+    val password: String?,
     val creatorId: String,
     val usersId: List<String>,
 )
