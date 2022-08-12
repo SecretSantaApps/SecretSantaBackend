@@ -29,7 +29,6 @@ class MongoRoomsRepositoryImpl(
     }
 
     override suspend fun getRoomByName(name: String): Room? {
-        deleteRoomByName("dfs")
         return rooms.findOne(Room::name eq name)
     }
 
@@ -47,6 +46,7 @@ class MongoRoomsRepositoryImpl(
         if (rooms.findOne(Room::name eq roomName) == null) return emptyMap()
         val usersList = rooms.findOne(Room::name eq roomName)?.usersId?.toMutableList() ?: return emptyMap()
         val relationsMap = mutableMapOf<String, String>()
+        usersList.shuffle()
         for (i in usersList.indices) {
             if (i == 0) continue
             relationsMap[usersList[i - 1]] = usersList[i]

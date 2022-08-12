@@ -10,6 +10,7 @@ import io.ktor.server.routing.*
 import ru.kheynov.data.requests.GenerateRelationsRequest
 import ru.kheynov.data.requests.JoinRoomRequest
 import ru.kheynov.data.requests.LeaveRoomRequest
+import ru.kheynov.data.responses.RoomInfoResponse
 import ru.kheynov.di.ServiceLocator
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UserRepository
@@ -22,6 +23,7 @@ fun Route.configureGameRoutes(
         route("/room") {
             joinRoom(userRepository, roomsRepository)
             leaveRoom(userRepository, roomsRepository)
+            relations(roomsRepository, userRepository)
         }
     }
 }
@@ -34,17 +36,21 @@ fun Route.joinRoom(
         val principal = call.principal<JWTPrincipal>()
         val userId = principal?.getClaim("userId", String::class).toString()
         val (roomName, password) = call.receive<JoinRoomRequest>()
-        val room = roomsRepository.getRoomByName(roomName)
+        var room = roomsRepository.getRoomByName(roomName)
         if (userRepository.getUserByID(userId) == null) {
             call.respond(HttpStatusCode.Forbidden, "User not found")
             return@post
         }
         if (room == null) {
-            call.respond(HttpStatusCode.NoContent, "Room not found")
+            call.respond(HttpStatusCode.NotFound, "Room not found")
             return@post
         }
         if (room.password != password) {
             call.respond(HttpStatusCode.Forbidden, "Incorrect password")
+            return@post
+        }
+        if (roomsRepository.getRoomByName(roomName)?.usersId?.contains(userId) == true) {
+            call.respond(HttpStatusCode.Conflict, "User already in the room")
             return@post
         }
         val isSuccessful = roomsRepository.addUserToRoom(userId, roomName = roomName)
@@ -52,7 +58,15 @@ fun Route.joinRoom(
             call.respond(HttpStatusCode.NotAcceptable)
             return@post
         }
-        call.respond(HttpStatusCode.OK)
+        roomsRepository.clearRelations(roomName)
+        room = roomsRepository.getRoomByName(roomName)!!
+        val response = RoomInfoResponse(
+            name = room.name,
+            password = room.password,
+            creatorId = room.creatorId,
+            usersId = room.usersId
+        )
+        call.respond(HttpStatusCode.OK, response)
     }
 }
 
@@ -69,11 +83,18 @@ fun Route.leaveRoom(
             return@delete
         }
         if (room == null) {
-            call.respond(HttpStatusCode.NoContent, "Room not found")
+            call.respond(HttpStatusCode.NotFound, "Room not found")
             return@delete
         }
         if (!room.usersId.contains(userId)) {
             call.respond(HttpStatusCode.BadRequest, "User is not in the room")
+            return@delete
+        }
+        if (room.creatorId == userId) {
+            call.respond(
+                HttpStatusCode.BadRequest,
+                "You cannot leave this room, because you are creator, you can only delete this room permanently"
+            )
             return@delete
         }
         val isSuccessful = roomsRepository.deleteUserFromRoom(userId, roomName)
@@ -110,6 +131,10 @@ fun Route.relations(
                 call.respond(HttpStatusCode.Conflict, "Relations already exists")
                 return@post
             }
+            if (room.usersId.size < 2) {
+                call.respond(HttpStatusCode.NotAcceptable, "Not enough users to generate relations")
+                return@post
+            }
             val relations = roomsRepository.generateRelations(roomName)
             if (relations.isEmpty()) {
                 call.respond(HttpStatusCode.InternalServerError)
@@ -126,7 +151,7 @@ fun Route.relations(
                 return@get
             }
             if (room == null) {
-                call.respond(HttpStatusCode.NoContent, "Room not found")
+                call.respond(HttpStatusCode.NotFound, "Room not found")
                 return@get
             }
 
@@ -135,9 +160,10 @@ fun Route.relations(
                 return@get
             }
 
-            val relations = roomsRepository.generateRelations(roomName)
-            if (relations.isEmpty()) {
-                call.respond(HttpStatusCode.NoContent, "No relations yet")
+
+            val relations = roomsRepository.getRoomByName(roomName)?.relations
+            if (relations.isNullOrEmpty()) {
+                call.respond(HttpStatusCode.NotFound, "No relations yet")
                 return@get
             }
             call.respond(HttpStatusCode.OK, relations[userId].toString())
