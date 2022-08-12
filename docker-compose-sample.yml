@@ -26,6 +26,9 @@ services:
       - ./localvolumes/mongo:/data/db
     networks:
       - mongo
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=adminadmin
     restart: always
 
 

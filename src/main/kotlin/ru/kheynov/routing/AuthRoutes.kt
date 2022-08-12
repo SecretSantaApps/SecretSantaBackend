@@ -26,7 +26,7 @@ fun Route.configureAuthRoutes(
     tokenService: TokenService = ServiceLocator.tokenService,
 ) {
     route("/user") {
-        signUp(hashingService, userRepository)
+        signUp(hashingService, userRepository, tokenConfig, tokenService)
         signIn(userRepository, hashingService, tokenService, tokenConfig)
         authenticate(userRepository)
         deleteUser(userRepository)
@@ -37,6 +37,8 @@ fun Route.configureAuthRoutes(
 fun Route.signUp(
     hashingService: HashingService,
     userRepository: UserRepository,
+    tokenConfig: TokenConfig,
+    tokenService: TokenService,
 ) {
     post("/signup") {
         val request = call.receiveOrNull<AuthRequest>() ?: run {
@@ -67,8 +69,19 @@ fun Route.signUp(
             call.respond(HttpStatusCode.Conflict, "Couldn't insert user into DB")
             return@post
         }
+        val userSignIn = userRepository.getUserByUsername(username = user.username)
 
-        call.respond(HttpStatusCode.OK, "You are now signed up!")
+        val token = tokenService.generate(
+            config = tokenConfig, TokenClaim(
+                name = "userId",
+                value = userSignIn?.id.toString(),
+            )
+        )
+        call.respond(
+            status = HttpStatusCode.OK, message = AuthResponse(
+                token = token
+            )
+        )
     }
 }
 
