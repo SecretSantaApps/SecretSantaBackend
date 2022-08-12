@@ -5,9 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import ru.kheynov.di.ServiceLocator
 import ru.kheynov.security.token.TokenConfig
 
-fun Application.configureSecurity(config: TokenConfig) {
+fun Application.configureSecurity(
+    config: TokenConfig = ServiceLocator.tokenConfig,
+) {
 
     authentication {
         jwt {

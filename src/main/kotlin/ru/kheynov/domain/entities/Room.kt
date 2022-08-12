@@ -9,4 +9,5 @@ data class Room(
     val password: String?,
     val creatorId: String,
     val usersId: List<String>,
+    val relations: Map<String, String>? = null,
 )

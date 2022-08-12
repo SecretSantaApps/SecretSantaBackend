@@ -9,77 +9,104 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.kheynov.data.requests.CreateRoomRequest
 import ru.kheynov.data.requests.DeleteRoomRequest
+import ru.kheynov.di.ServiceLocator
 import ru.kheynov.domain.entities.Room
 import ru.kheynov.domain.repositories.RoomsRepository
+import ru.kheynov.domain.repositories.UserRepository
 
 fun Route.configureRoomsRoutes(
-    repository: RoomsRepository,
+    repository: RoomsRepository = ServiceLocator.roomsRepository,
+    userRepository: UserRepository = ServiceLocator.userRepository,
 ) {
-    route("/room") {
-        createRoom(repository)
-        deleteRoom(repository)
+    authenticate {
+        route("/room") {
+            createRoom(repository, userRepository)
+            deleteRoom(repository, userRepository)
+            getRoomByName(repository)
+        }
     }
 }
 
 fun Route.createRoom(
-    repository: RoomsRepository,
+    roomsRepository: RoomsRepository,
+    userRepository: UserRepository,
 ) {
-    authenticate {
-        post {
-            val principal = call.principal<JWTPrincipal>()
-            val userId = principal?.getClaim("userId", String::class)
 
-            if (userId == null) {
-                call.respond(HttpStatusCode.BadRequest, "Bad client ID")
-                return@post
-            }
+    post {
+        val principal = call.principal<JWTPrincipal>()
+        val userId = principal?.getClaim("userId", String::class).toString()
 
-            val request: CreateRoomRequest
-            try {
-                request = call.receive()
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@post
-            }
-            val room = Room(
-                name = request.name,
-                password = request.password,
-                creatorId = userId,
-                usersId = listOf(userId)
-            )
-            val isSuccessful = repository.createRoom(room)
-            if (!isSuccessful) {
-                call.respond(HttpStatusCode.InternalServerError, "Cannot write to DB")
-                return@post
-            }
-            call.respond(HttpStatusCode.OK)
+        if (userRepository.getUserByID(userId) == null) {
+            call.respond(HttpStatusCode.Forbidden, "User not found")
+            return@post
         }
+
+        if (userId.isBlank()) {
+            call.respond(HttpStatusCode.BadRequest, "Bad client ID")
+            return@post
+        }
+
+        val request: CreateRoomRequest
+        try {
+            request = call.receive()
+        } catch (e: Exception) {
+            call.respond(HttpStatusCode.BadRequest)
+            return@post
+        }
+        val room = Room(
+            name = request.name, password = request.password, creatorId = userId, usersId = listOf(userId)
+        )
+        val isSuccessful = roomsRepository.createRoom(room)
+        if (!isSuccessful) {
+            call.respond(HttpStatusCode.InternalServerError, "Cannot write to DB")
+            return@post
+        }
+        call.respond(HttpStatusCode.OK)
     }
 }
 
+
 fun Route.deleteRoom(
     repository: RoomsRepository,
+    userRepository: UserRepository,
 ) {
-    authenticate {
-        delete {
-            val principal = call.principal<JWTPrincipal>()
-            val userId = principal?.getClaim("userId", String::class)
-            val request: DeleteRoomRequest
+    delete {
+        val request: DeleteRoomRequest
 
-            try {
-                request = call.receive()
-            } catch (e: Exception) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@delete
-            }
+        val userId = call.principal<JWTPrincipal>()?.getClaim("userId", String::class).toString()
 
-            if (userId != null) {
-                val isSuccessful = repository.deleteRoomByName(request.name)
-                if (isSuccessful) call.respond(HttpStatusCode.OK, "Room deleted")
-                else call.respond(HttpStatusCode.NotAcceptable, "Cannot delete room")
-                return@delete
-            }
+
+        try {
+            request = call.receive()
+        } catch (e: Exception) {
             call.respond(HttpStatusCode.BadRequest)
+            return@delete
         }
+
+        if (userRepository.getUserByID(userId) == null ||
+            repository.getRoomByName(request.name)?.creatorId != userId
+        ) {
+            call.respond(HttpStatusCode.Forbidden)
+            return@delete
+        }
+
+        val isSuccessful = repository.deleteRoomByName(request.name)
+        if (isSuccessful) call.respond(HttpStatusCode.OK, "Room deleted")
+        else call.respond(HttpStatusCode.NotAcceptable, "Cannot delete room")
+        return@delete
+    }
+}
+
+fun Route.getRoomByName(
+    repository: RoomsRepository,
+) {
+    get {
+        val name = call.request.queryParameters["lang"].toString()
+        val room = repository.getRoomByName(name)
+        if (room == null) {
+            call.respond(HttpStatusCode.NoContent, "Room not found")
+            return@get
+        }
+        call.respond(HttpStatusCode.OK, room)
     }
 }

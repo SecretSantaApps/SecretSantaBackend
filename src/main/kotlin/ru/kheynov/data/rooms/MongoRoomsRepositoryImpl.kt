@@ -42,4 +42,19 @@ class MongoRoomsRepositoryImpl(
         }
         return isSuccessful
     }
+
+    override suspend fun generateRelations(roomName: String): Map<String, String> {
+        if (rooms.findOne(Room::name eq roomName) == null) return emptyMap()
+        val usersList = rooms.findOne(Room::name eq roomName)?.usersId?.toMutableList() ?: return emptyMap()
+        val relationsMap = mutableMapOf<String, String>()
+        for (i in usersList.indices) {
+            if (i == 0) continue
+            relationsMap[usersList[i - 1]] = usersList[i]
+        }
+        relationsMap[usersList.last()] = usersList.first()
+        if (!rooms.updateOne(Room::name eq roomName, setValue(Room::relations, relationsMap)).wasAcknowledged()) {
+            return emptyMap()
+        }
+        return relationsMap
+    }
 }

@@ -9,6 +9,7 @@ import io.ktor.server.routing.*
 import org.apache.commons.codec.digest.DigestUtils
 import ru.kheynov.data.requests.AuthRequest
 import ru.kheynov.data.responses.AuthResponse
+import ru.kheynov.di.ServiceLocator
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.repositories.UserRepository
 import ru.kheynov.security.hashing.HashingService
@@ -18,10 +19,10 @@ import ru.kheynov.security.token.TokenConfig
 import ru.kheynov.security.token.TokenService
 
 fun Route.configureAuthRoutes(
-    hashingService: HashingService,
-    userRepository: UserRepository,
-    tokenConfig: TokenConfig,
-    tokenService: TokenService,
+    hashingService: HashingService = ServiceLocator.hashingService,
+    userRepository: UserRepository = ServiceLocator.userRepository,
+    tokenConfig: TokenConfig = ServiceLocator.tokenConfig,
+    tokenService: TokenService = ServiceLocator.tokenService,
 ) {
     route("/user") {
         signUp(hashingService, userRepository)
