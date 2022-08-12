@@ -57,4 +57,9 @@ class MongoRoomsRepositoryImpl(
         }
         return relationsMap
     }
+
+    override suspend fun clearRelations(roomName: String): Boolean {
+        if (rooms.findOne(Room::name eq roomName) == null) return false
+        return rooms.updateOne(Room::name eq roomName, setValue(Room::relations, null)).wasAcknowledged()
+    }
 }
