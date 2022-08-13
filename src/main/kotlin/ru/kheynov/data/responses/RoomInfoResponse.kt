@@ -5,5 +5,5 @@ data class RoomInfoResponse(
     val name: String,
     val password: String?,
     val creatorId: String,
-    val usersId: List<String>,
+    val userIds: List<String>,
 )
