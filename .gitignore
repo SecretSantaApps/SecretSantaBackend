@@ -9,6 +9,8 @@ build/tmp/
 
 .DS_Store
 
+log.txt
+
 ### STS ###
 .apt_generated
 .classpath
