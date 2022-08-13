@@ -24,9 +24,9 @@ class MongoRoomsRepositoryImpl(
 
     override suspend fun addUserToRoom(vararg userIds: String, roomName: String): Boolean {
         if (rooms.findOne(Room::name eq roomName) == null) return false
-        val usersList = rooms.findOne(Room::name eq roomName)?.usersId?.toMutableList() ?: return false
+        val usersList = rooms.findOne(Room::name eq roomName)?.userIds?.toMutableList() ?: return false
         usersList.addAll(userIds)
-        return rooms.updateOne(Room::name eq roomName, setValue(Room::usersId, usersList)).wasAcknowledged()
+        return rooms.updateOne(Room::name eq roomName, setValue(Room::userIds, usersList)).wasAcknowledged()
     }
 
     override suspend fun getRoomByName(name: String): Room? {
@@ -35,17 +35,17 @@ class MongoRoomsRepositoryImpl(
 
     override suspend fun deleteUserFromRoom(userId: String, roomName: String): Boolean {
         if (rooms.findOne(Room::name eq roomName) == null) return false
-        val usersList = rooms.findOne(Room::name eq roomName)?.usersId?.toMutableList() ?: return false
+        val usersList = rooms.findOne(Room::name eq roomName)?.userIds?.toMutableList() ?: return false
         var isSuccessful = usersList.remove(userId)
         if (isSuccessful) {
-            isSuccessful = rooms.updateOne(Room::name eq roomName, setValue(Room::usersId, usersList)).wasAcknowledged()
+            isSuccessful = rooms.updateOne(Room::name eq roomName, setValue(Room::userIds, usersList)).wasAcknowledged()
         }
         return isSuccessful
     }
 
     override suspend fun generateRelations(roomName: String): Map<String, String> {
         if (rooms.findOne(Room::name eq roomName) == null) return emptyMap()
-        val usersList = rooms.findOne(Room::name eq roomName)?.usersId?.toMutableList() ?: return emptyMap()
+        val usersList = rooms.findOne(Room::name eq roomName)?.userIds?.toMutableList() ?: return emptyMap()
         val relationsMap = mutableMapOf<String, String>()
         usersList.shuffle()
         for (i in usersList.indices) {
@@ -65,6 +65,6 @@ class MongoRoomsRepositoryImpl(
     }
 
     override suspend fun getUserRooms(userId: String): List<Room> {
-        return rooms.find(Room::usersId.contains(userId)).toList()
+        return rooms.find(Room::userIds.contains(userId)).toList()
     }
 }

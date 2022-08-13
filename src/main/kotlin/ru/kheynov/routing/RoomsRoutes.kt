@@ -53,7 +53,7 @@ fun Route.createRoom(
                 return@post
             }
             val room = Room(
-                name = request.name, password = request.password, creatorId = userId, usersId = listOf(userId)
+                name = request.name, password = request.password, creatorId = userId, userIds = listOf(userId)
             )
             if (roomsRepository.getRoomByName(request.name) != null) {
                 call.respond(HttpStatusCode.Conflict, "Room already exists")
@@ -68,7 +68,7 @@ fun Route.createRoom(
                 name = room.name,
                 password = room.password,
                 creatorId = room.creatorId,
-                usersId = room.usersId
+                usersId = room.userIds
             )
             call.respond(HttpStatusCode.OK, response)
         }
@@ -130,7 +130,7 @@ fun Route.getRoomByName(
                 name = room.name,
                 password = room.password,
                 creatorId = room.creatorId,
-                usersId = room.usersId
+                usersId = room.userIds
             )
             call.respond(HttpStatusCode.OK, response)
         }

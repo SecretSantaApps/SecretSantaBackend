@@ -42,7 +42,7 @@ fun Route.getUserRooms(
         }
         val rooms = roomsRepository.getUserRooms(userId)
 
-        val res = rooms.map { RoomInfoResponse(it.name, it.password, it.creatorId, it.usersId) }
+        val res = rooms.map { RoomInfoResponse(it.name, it.password, it.creatorId, it.userIds) }
 
         call.respond(HttpStatusCode.OK, res)
     }
@@ -69,7 +69,7 @@ fun Route.joinRoom(
             call.respond(HttpStatusCode.Forbidden, "Incorrect password")
             return@post
         }
-        if (roomsRepository.getRoomByName(roomName)?.usersId?.contains(userId) == true) {
+        if (roomsRepository.getRoomByName(roomName)?.userIds?.contains(userId) == true) {
             call.respond(HttpStatusCode.Conflict, "User already in the room")
             return@post
         }
@@ -84,7 +84,7 @@ fun Route.joinRoom(
             name = room.name,
             password = room.password,
             creatorId = room.creatorId,
-            usersId = room.usersId
+            usersId = room.userIds
         )
         call.respond(HttpStatusCode.OK, response)
     }
@@ -106,7 +106,7 @@ fun Route.leaveRoom(
             call.respond(HttpStatusCode.NotFound, "Room not found")
             return@delete
         }
-        if (!room.usersId.contains(userId)) {
+        if (!room.userIds.contains(userId)) {
             call.respond(HttpStatusCode.BadRequest, "User is not in the room")
             return@delete
         }
@@ -151,7 +151,7 @@ fun Route.relations(
                 call.respond(HttpStatusCode.Conflict, "Relations already exists")
                 return@post
             }
-            if (room.usersId.size < 2) {
+            if (room.userIds.size < 2) {
                 call.respond(HttpStatusCode.NotAcceptable, "Not enough users to generate relations")
                 return@post
             }
@@ -175,7 +175,7 @@ fun Route.relations(
                 return@get
             }
 
-            if (!room.usersId.contains(userId)) {
+            if (!room.userIds.contains(userId)) {
                 call.respond(HttpStatusCode.Forbidden, "User not in the room")
                 return@get
             }
