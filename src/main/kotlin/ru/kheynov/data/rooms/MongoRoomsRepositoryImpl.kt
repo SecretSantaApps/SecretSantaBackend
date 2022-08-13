@@ -1,5 +1,6 @@
 package ru.kheynov.data.rooms
 
+import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.CoroutineDatabase
 import org.litote.kmongo.eq
 import org.litote.kmongo.setValue
@@ -61,5 +62,9 @@ class MongoRoomsRepositoryImpl(
     override suspend fun clearRelations(roomName: String): Boolean {
         if (rooms.findOne(Room::name eq roomName) == null) return false
         return rooms.updateOne(Room::name eq roomName, setValue(Room::relations, null)).wasAcknowledged()
+    }
+
+    override suspend fun getUserRooms(userId: String): List<Room> {
+        return rooms.find(Room::usersId.contains(userId)).toList()
     }
 }

@@ -23,8 +23,28 @@ fun Route.configureGameRoutes(
         route("/room") {
             joinRoom(userRepository, roomsRepository)
             leaveRoom(userRepository, roomsRepository)
-            relations(roomsRepository, userRepository)
+            relations(userRepository, roomsRepository)
+            getUserRooms(userRepository, roomsRepository)
         }
+    }
+}
+
+fun Route.getUserRooms(
+    userRepository: UserRepository,
+    roomsRepository: RoomsRepository,
+) {
+    get("/list") {
+        val principal = call.principal<JWTPrincipal>()
+        val userId = principal?.getClaim("userId", String::class).toString()
+        if (userRepository.getUserByID(userId) == null) {
+            call.respond(HttpStatusCode.Forbidden, "User not found")
+            return@get
+        }
+        val rooms = roomsRepository.getUserRooms(userId)
+
+        val res = rooms.map { RoomInfoResponse(it.name, it.password, it.creatorId, it.usersId) }
+
+        call.respond(HttpStatusCode.OK, res)
     }
 }
 
@@ -107,8 +127,8 @@ fun Route.leaveRoom(
 }
 
 fun Route.relations(
-    roomsRepository: RoomsRepository,
     userRepository: UserRepository,
+    roomsRepository: RoomsRepository,
 ) {
     route("/relations") {
         post {

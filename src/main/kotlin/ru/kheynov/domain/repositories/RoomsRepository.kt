@@ -16,4 +16,6 @@ interface RoomsRepository {
     suspend fun clearRelations(roomName: String): Boolean
 
     suspend fun generateRelations(roomName: String): Map<String, String>
+
+    suspend fun getUserRooms(userId: String): List<Room>
 }
