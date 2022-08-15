@@ -2,8 +2,8 @@ package ru.kheynov.di
 
 import org.litote.kmongo.coroutine.coroutine
 import org.litote.kmongo.reactivestreams.KMongo
-import ru.kheynov.data.rooms.MongoRoomsRepositoryImpl
-import ru.kheynov.data.user.MongoUserRepositoryImpl
+import ru.kheynov.data.repositories.rooms.MongoRoomsRepositoryImpl
+import ru.kheynov.data.repositories.users.MongoUserRepositoryImpl
 import ru.kheynov.security.hashing.SHA256HashingService
 import ru.kheynov.security.token.JwtTokenService
 import ru.kheynov.security.token.TokenConfig

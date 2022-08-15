@@ -1,4 +1,4 @@
-package ru.kheynov.data.user
+package ru.kheynov.data.repositories.users
 
 import org.bson.types.ObjectId
 import org.litote.kmongo.SetTo

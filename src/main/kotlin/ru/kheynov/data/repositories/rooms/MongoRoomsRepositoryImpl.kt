@@ -1,4 +1,4 @@
-package ru.kheynov.data.rooms
+package ru.kheynov.data.repositories.rooms
 
 import org.litote.kmongo.contains
 import org.litote.kmongo.coroutine.CoroutineDatabase
