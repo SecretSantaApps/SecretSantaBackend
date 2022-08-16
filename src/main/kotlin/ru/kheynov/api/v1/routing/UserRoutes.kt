@@ -1,4 +1,4 @@
-package ru.kheynov.routing
+package ru.kheynov.api.v1.routing
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -7,7 +7,8 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.kheynov.data.requests.UpdateRequest
+import ru.kheynov.api.v1.requests.UpdateRequest
+import ru.kheynov.api.v1.responses.UserInfoResponse
 import ru.kheynov.di.ServiceLocator
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.repositories.UserRepository
@@ -21,6 +22,7 @@ fun Route.configureUserOperations(
     route("/user") {
         deleteUser(userRepository)
         editUser(userRepository, hashingService)
+        getUser(userRepository)
     }
 }
 
@@ -113,4 +115,29 @@ fun Route.editUser(
             return@patch
         }
     }
+}
+
+fun Route.getUser(
+    userRepository: UserRepository,
+) {
+    get {
+        val userId = call.request.queryParameters["id"].toString()
+        if (userId.isBlank()) {
+            call.respond(HttpStatusCode.BadRequest, "Wrong user ID")
+            return@get
+        }
+        val user = userRepository.getUserByID(userId)
+        if (user == null) {
+            call.respond(HttpStatusCode.NotFound)
+            return@get
+        }
+        call.respond(
+            HttpStatusCode.OK,
+            UserInfoResponse(
+                username = user.username,
+                id = user.id.toString(),
+            )
+        )
+    }
+
 }
