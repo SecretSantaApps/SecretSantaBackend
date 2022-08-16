@@ -1,4 +1,4 @@
-package ru.kheynov.data.responses
+package ru.kheynov.api.v1.responses
 
 @kotlinx.serialization.Serializable
 data class RoomInfoResponse(

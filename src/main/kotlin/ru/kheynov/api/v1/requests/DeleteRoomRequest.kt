@@ -1,4 +1,4 @@
-package ru.kheynov.data.requests
+package ru.kheynov.api.v1.requests
 
 import kotlinx.serialization.Serializable
 

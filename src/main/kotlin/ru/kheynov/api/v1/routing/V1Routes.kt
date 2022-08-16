@@ -1,10 +1,9 @@
-package ru.kheynov.routing
+package ru.kheynov.api.v1.routing
 
-import io.ktor.server.application.*
 import io.ktor.server.routing.*
 
-fun Application.configureRouting(){
-    routing {
+fun Route.v1Routes(){
+    route("v1") {
         configureAuthRoutes()
         configureUserOperations()
         configureRoomsRoutes()

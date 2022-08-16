@@ -1,4 +1,4 @@
-package ru.kheynov.routing
+package ru.kheynov.api.v1.routing
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -7,9 +7,9 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.kheynov.data.requests.CreateRoomRequest
-import ru.kheynov.data.requests.DeleteRoomRequest
-import ru.kheynov.data.responses.RoomInfoResponse
+import ru.kheynov.api.v1.requests.CreateRoomRequest
+import ru.kheynov.api.v1.requests.DeleteRoomRequest
+import ru.kheynov.api.v1.responses.RoomInfoResponse
 import ru.kheynov.di.ServiceLocator
 import ru.kheynov.domain.entities.Room
 import ru.kheynov.domain.repositories.RoomsRepository

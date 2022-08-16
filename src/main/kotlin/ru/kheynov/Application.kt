@@ -5,7 +5,7 @@ import ru.kheynov.plugins.configureHTTP
 import ru.kheynov.plugins.configureMonitoring
 import ru.kheynov.plugins.configureSecurity
 import ru.kheynov.plugins.configureSerialization
-import ru.kheynov.routing.configureRouting
+import ru.kheynov.plugins.configureRouting
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
 

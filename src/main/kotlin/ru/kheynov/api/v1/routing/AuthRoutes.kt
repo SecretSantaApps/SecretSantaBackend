@@ -1,4 +1,4 @@
-package ru.kheynov.routing
+package ru.kheynov.api.v1.routing
 
 import io.ktor.http.*
 import io.ktor.server.application.*
@@ -8,8 +8,8 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import org.apache.commons.codec.digest.DigestUtils
-import ru.kheynov.data.requests.AuthRequest
-import ru.kheynov.data.responses.AuthResponse
+import ru.kheynov.api.v1.requests.AuthRequest
+import ru.kheynov.api.v1.responses.AuthResponse
 import ru.kheynov.di.ServiceLocator
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.repositories.UserRepository
