@@ -121,8 +121,8 @@ fun Route.getUser(
     userRepository: UserRepository,
 ) {
     get {
-        val userId = call.request.queryParameters["id"].toString()
-        if (userId.isBlank()) {
+        val userId = call.request.queryParameters["id"]
+        if (userId.isNullOrEmpty()) {
             call.respond(HttpStatusCode.BadRequest, "Wrong user ID")
             return@get
         }
