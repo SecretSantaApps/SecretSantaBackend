@@ -42,7 +42,7 @@ fun Route.getUserRooms(
         }
         val rooms = roomsRepository.getUserRooms(userId)
 
-        val res = rooms.map { RoomInfoResponse(it.name, it.password, it.creatorId, it.userIds) }
+        val res = rooms.map { RoomInfoResponse(it.name, it.password, it.creatorId, it.userIds, it.giftPrice) }
 
         call.respond(HttpStatusCode.OK, res)
     }
@@ -84,7 +84,8 @@ fun Route.joinRoom(
             name = room.name,
             password = room.password,
             creatorId = room.creatorId,
-            userIds = room.userIds
+            userIds = room.userIds,
+            giftPrice = room.giftPrice
         )
         call.respond(HttpStatusCode.OK, response)
     }

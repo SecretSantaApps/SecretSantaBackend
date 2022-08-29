@@ -43,7 +43,6 @@ out/
 ### VS Code ###
 .vscode/
 /src/test/
-/docker-compose.yml
 /.env
 /localvolumes/
 /restart.sh

@@ -26,11 +26,8 @@ services:
       - ./localvolumes/mongo:/data/db
     networks:
       - mongo
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=admin
-      - MONGO_INITDB_ROOT_PASSWORD=adminadmin
+    container_name: secret_santa_db
     restart: always
-
 
 networks:
   mongo:
