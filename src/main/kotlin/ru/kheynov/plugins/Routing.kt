@@ -7,7 +7,7 @@ import ru.kheynov.api.v1.routing.v1Routes
 
 fun Application.configureRouting() {
     routing {
-        get("/"){
+        get("/") {
             call.respond("Secret Santa Server")
         }
         route("/api") {

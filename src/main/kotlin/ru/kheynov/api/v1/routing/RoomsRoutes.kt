@@ -68,7 +68,8 @@ fun Route.createRoom(
                 name = room.name,
                 password = room.password,
                 creatorId = room.creatorId,
-                userIds = room.userIds
+                userIds = room.userIds,
+                null
             )
             call.respond(HttpStatusCode.OK, response)
         }
@@ -130,7 +131,8 @@ fun Route.getRoomByName(
                 name = room.name,
                 password = room.password,
                 creatorId = room.creatorId,
-                userIds = room.userIds
+                userIds = room.userIds,
+                null
             )
             call.respond(HttpStatusCode.OK, response)
         }
