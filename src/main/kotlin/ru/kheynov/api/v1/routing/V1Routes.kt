@@ -5,8 +5,5 @@ import io.ktor.server.routing.*
 fun Route.v1Routes() {
     route("v1") {
         configureAuthRoutes()
-        configureUserOperations()
-        configureRoomsRoutes()
-        configureGameRoutes()
     }
 }
