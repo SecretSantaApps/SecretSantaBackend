@@ -1,7 +1,7 @@
 create table rooms
 (
     id        serial primary key,
-    name      text not null,
+    name      text unique not null,
     password  text,
     date      date check ( date > current_date ),
     max_price integer check ( max_price > 0 )
