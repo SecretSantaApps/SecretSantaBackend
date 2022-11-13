@@ -9,13 +9,13 @@ create table rooms
 
 create table users
 (
-    user_id integer primary key,
+    user_id text primary key,
     name    text
 );
 
 create table room_members
 (
     room_id   integer references rooms (id),
-    user_id   integer references users (user_id),
-    recipient integer references users (user_id)
+    user_id   text references users (user_id),
+    recipient text references users (user_id)
 );
