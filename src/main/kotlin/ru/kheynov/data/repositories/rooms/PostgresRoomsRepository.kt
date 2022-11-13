@@ -20,6 +20,7 @@ class PostgresRoomsRepository(
             password = room.password
             date = room.date
             maxPrice = room.maxPrice
+            ownerId = room.ownerId
         }
         val affectedRows = database.sequenceOf(Rooms).add(newRoom)
         return affectedRows == 1
@@ -32,5 +33,4 @@ class PostgresRoomsRepository(
 
     override suspend fun getRoomById(id: Int): Room? =
         database.sequenceOf(Rooms).find { it.id eq id }?.mapToRoom()
-
 }

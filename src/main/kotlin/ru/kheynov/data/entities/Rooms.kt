@@ -14,12 +14,13 @@ interface Room : Entity<Room> {
     var name: String
     var password: String?
     var date: LocalDate?
+    var ownerId: String
     var maxPrice: Int?
 }
 
 fun Room.mapToRoom(): ru.kheynov.domain.entities.Room {
     return ru.kheynov.domain.entities.Room(
-        this.name, this.password, this.date, this.maxPrice
+        this.name, this.password, this.date, this.ownerId, this.maxPrice
     )
 }
 
@@ -28,5 +29,6 @@ object Rooms : Table<Room>("rooms") {
     var name = text("name").bindTo(Room::name)
     var password = text("password").bindTo(Room::password)
     var date = date("date").bindTo(Room::date)
+    var ownerId = text("owner_id").bindTo(Room::ownerId)
     var maxPrice = int("max_price").bindTo(Room::maxPrice)
 }
