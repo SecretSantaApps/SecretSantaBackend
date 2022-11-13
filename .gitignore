@@ -47,3 +47,4 @@ out/
 /localvolumes/
 /restart.sh
 /secretsanta-firebase-adminsdk.json
+/db-data/

@@ -1,8 +1,6 @@
 val ktor_version: String by project
 val kotlin_version: String by project
 val logback_version: String by project
-val kmongo_version: String by project
-val commons_codec_version: String by project
 
 plugins {
     application
@@ -34,14 +32,17 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktor_version")
     implementation("io.ktor:ktor-server-netty-jvm:$ktor_version")
     implementation("ch.qos.logback:logback-classic:$logback_version")
-    implementation("org.testng:testng:7.1.0")
+    implementation("org.testng:testng:7.6.1")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktor_version")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version")
 
+
+    //Firebase admin
     implementation("com.google.firebase:firebase-admin:9.1.1")
     implementation("org.slf4j:slf4j-simple:2.0.3")
-    implementation("org.litote.kmongo:kmongo:$kmongo_version")
-    implementation("org.litote.kmongo:kmongo-coroutine:$kmongo_version")
 
-    implementation("commons-codec:commons-codec:$commons_codec_version")
+    //Database
+    implementation("org.ktorm:ktorm-core:3.5.0")
+    implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
+    implementation("org.postgresql:postgresql:42.5.0")
 }

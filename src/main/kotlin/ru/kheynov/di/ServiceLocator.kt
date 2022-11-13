@@ -1,11 +1,12 @@
 package ru.kheynov.di
 
+import org.ktorm.database.Database
+
 object ServiceLocator {
-    /*private val db = KMongo.createClient(
-        connectionString = System.getenv("MONGO_CONNECTION_STRING")
-    ).coroutine.getDatabase("secret-santa")
-
-    val userRepository = MongoUserRepositoryImpl(db)
-
-    val roomsRepository = MongoRoomsRepositoryImpl(db)*/
+    val db = Database.connect(
+        url = System.getenv("DATABASE_CONNECTION_STRING"),
+        driver = "org.postgresql.Driver",
+        user = System.getenv("POSTGRES_NAME"),
+        password = System.getenv("POSTGRES_PASSWORD")
+    )
 }

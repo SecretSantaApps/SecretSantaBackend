@@ -4,32 +4,36 @@ services:
     build: .
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
+    volumes:
+      - ./secretsanta-firebase-adminsdk.json:/secretsanta-key.json
     environment:
       - SERVER_PORT=$SERVER_PORT
-      - JWT_DOMAIN=$JWT_DOMAIN
-      - JWT_ISSUER=$JWT_ISSUER
-      - JWT_AUDIENCE=$JWT_AUDIENCE
-      - JWT_REALM=$JWT_REALM
-      - JWT_SECRET=$JWT_SECRET
-      - MONGO_CONNECTION_STRING=$MONGO_CONNECTION_STRING
+      - DATABASE_CONNECTION_STRING=$DATABASE_CONNECTION_STRING
+      - POSTGRES_NAME=$POSTGRES_NAME
+      - POSTGRES_PASSWORD=$POSTGRES_PASSWORD
       - GOOGLE_APPLICATION_CREDENTIALS=$GOOGLE_APPLICATION_CREDENTIALS
     depends_on:
       - db
     networks:
-      - mongo
+      - db_network
     restart: always
 
   db:
-    image: ${MONGO_VERSION}
+    image: ${POSTGRES_IMAGE}
     ports:
-      - "27017:27017"
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: "santa"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: $POSTGRES_PASSWORD
     volumes:
-      - ./localvolumes/mongo:/data/db
+      - ./db-data:/var/lib/postgresql/data
+      - ./sql/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
-      - mongo
+      - db_network
     container_name: secret_santa_db
     restart: always
 
 networks:
-  mongo:
+  db_network:
     driver: bridge
