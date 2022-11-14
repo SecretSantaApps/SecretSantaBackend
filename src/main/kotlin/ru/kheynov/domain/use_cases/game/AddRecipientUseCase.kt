@@ -5,9 +5,9 @@ import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 
 class AddRecipientUseCase(
-    private val gameRepository: GameRepository,
-    private val roomsRepository: RoomsRepository,
     private val usersRepository: UsersRepository,
+    private val roomsRepository: RoomsRepository,
+    private val gameRepository: GameRepository,
 ) {
     sealed interface Result {
         object Successful : Result
