@@ -8,9 +8,11 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.rooms.CreateRoomRequest
 import ru.kheynov.api.v1.requests.rooms.DeleteRoomRequest
+import ru.kheynov.api.v1.requests.rooms.GetRoomDetailsRequest
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.rooms.CreateRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase
+import ru.kheynov.domain.use_cases.rooms.GetRoomDetailsUseCase
 import ru.kheynov.security.firebase.auth.FIREBASE_AUTH
 import ru.kheynov.security.firebase.auth.UserAuth
 
@@ -18,6 +20,40 @@ fun Route.configureRoomsRoutes(
     useCases: UseCases,
 ) {
     route("/room") {
+        authenticate(FIREBASE_AUTH) {
+            get {
+                val userId = call.principal<UserAuth>()?.userId ?: run {
+                    call.respond(HttpStatusCode.Unauthorized)
+                    return@get
+                }
+                val roomName = call.receiveNullable<GetRoomDetailsRequest>()?.name ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+
+                when (val res = useCases.getRoomDetailsUseCase(userId, roomName)) {
+                    GetRoomDetailsUseCase.Result.RoomNotExists -> {
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
+                        return@get
+                    }
+
+                    GetRoomDetailsUseCase.Result.UserNotExists -> {
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
+                        return@get
+                    }
+
+                    GetRoomDetailsUseCase.Result.Forbidden -> {
+                        call.respond(HttpStatusCode.Forbidden)
+                        return@get
+                    }
+
+                    is GetRoomDetailsUseCase.Result.Successful -> {
+                        call.respond(HttpStatusCode.OK, res.room)
+                        return@get
+                    }
+                }
+            }
+        }
         authenticate(FIREBASE_AUTH) {
             post {//Create room
                 val request = call.receiveNullable<CreateRoomRequest>() ?: run {
@@ -57,6 +93,8 @@ fun Route.configureRoomsRoutes(
                     }
                 }
             }
+        }
+        authenticate(FIREBASE_AUTH) {
             delete {
                 val request = call.receiveNullable<DeleteRoomRequest>() ?: run {
                     call.respond(HttpStatusCode.BadRequest)
