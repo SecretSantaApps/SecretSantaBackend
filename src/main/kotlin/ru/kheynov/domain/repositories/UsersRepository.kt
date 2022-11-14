@@ -6,5 +6,5 @@ interface UsersRepository {
     suspend fun registerUser(user: User): Boolean
     suspend fun deleteUserByID(userId: String): Boolean
     suspend fun getUserByID(userId: String): User?
-    suspend fun updateUserByID(userId: String, user: User): Boolean
+    suspend fun updateUserByID(userId: String, name: String): Boolean
 }

@@ -8,4 +8,5 @@ data class Room(
     val date: LocalDate?,
     val ownerId: String,
     val maxPrice: Int? = null,
+    val gameStarted: Boolean = false,
 )

@@ -1,10 +1,7 @@
 package ru.kheynov.data.entities
 
 import org.ktorm.entity.Entity
-import org.ktorm.schema.Table
-import org.ktorm.schema.date
-import org.ktorm.schema.int
-import org.ktorm.schema.text
+import org.ktorm.schema.*
 import java.time.LocalDate
 
 interface Room : Entity<Room> {
@@ -15,11 +12,12 @@ interface Room : Entity<Room> {
     var date: LocalDate?
     var ownerId: String
     var maxPrice: Int?
+    var gameStarted: Boolean
 }
 
 fun Room.mapToRoom(): ru.kheynov.domain.entities.Room {
     return ru.kheynov.domain.entities.Room(
-        this.name, this.password, this.date, this.ownerId, this.maxPrice
+        this.name, this.password, this.date, this.ownerId, this.maxPrice, this.gameStarted
     )
 }
 
@@ -29,4 +27,5 @@ object Rooms : Table<Room>("rooms") {
     var date = date("date").bindTo(Room::date)
     var ownerId = text("owner_id").bindTo(Room::ownerId)
     var maxPrice = int("max_price").bindTo(Room::maxPrice)
+    var gameStarted = boolean("game_started").bindTo { it.gameStarted }
 }

@@ -7,7 +7,7 @@ fun Route.configureGameRoutes(
 
 ) {
     authenticate {
-        route("/room") {
+        route("/game") {
 
         }
     }

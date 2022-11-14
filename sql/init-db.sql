@@ -6,11 +6,12 @@ create table users
 
 create table rooms
 (
-    name      text primary key                                  not null,
-    password  text,
-    owner_id  text references users (user_id) on delete cascade not null,
-    date      date,
-    max_price integer check ( max_price > 0 )
+    name         text primary key                                  not null,
+    password     text,
+    owner_id     text references users (user_id) on delete cascade not null,
+    date         date,
+    max_price    integer check ( max_price > 0 ),
+    game_started boolean default false
 );
 
 create table room_members

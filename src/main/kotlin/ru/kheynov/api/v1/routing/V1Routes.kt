@@ -5,7 +5,7 @@ import ru.kheynov.di.ServiceLocator
 
 fun Route.v1Routes() {
     route("v1") {
-        configureAuthRoutes(ServiceLocator.useCases)
+        configureUserRoutes(ServiceLocator.useCases)
         configureRoomsRoutes(ServiceLocator.useCases)
     }
 }

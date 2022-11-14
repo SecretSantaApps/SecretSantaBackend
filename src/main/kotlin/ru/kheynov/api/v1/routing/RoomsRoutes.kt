@@ -6,8 +6,8 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.kheynov.api.v1.requests.CreateRoomRequest
-import ru.kheynov.api.v1.requests.DeleteRoomRequest
+import ru.kheynov.api.v1.requests.rooms.CreateRoomRequest
+import ru.kheynov.api.v1.requests.rooms.DeleteRoomRequest
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.rooms.CreateRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase

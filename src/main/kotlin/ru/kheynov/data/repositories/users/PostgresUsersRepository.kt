@@ -31,10 +31,9 @@ class PostgresUsersRepository(
         return affectedRows == 1
     }
 
-    override suspend fun updateUserByID(userId: String, user: User): Boolean {
+    override suspend fun updateUserByID(userId: String, name: String): Boolean {
         val foundUser = database.sequenceOf(Users).find { it.userId eq userId } ?: return false
-        foundUser.name = user.username
-        foundUser.userId = user.userId
+        foundUser.name = name
         val affectedRows = foundUser.flushChanges()
         return affectedRows == 1
     }
