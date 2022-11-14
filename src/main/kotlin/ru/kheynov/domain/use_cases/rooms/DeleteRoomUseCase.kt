@@ -22,6 +22,6 @@ class DeleteRoomUseCase(
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotExists
         if (room.ownerId != userId) return Result.Forbidden
-        return if (roomsRepository.deleteRoomById(room.id!!)) Result.Successful else Result.Failed
+        return if (roomsRepository.deleteRoomByName(roomName)) Result.Successful else Result.Failed
     }
 }
