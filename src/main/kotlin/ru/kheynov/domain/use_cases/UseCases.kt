@@ -7,6 +7,7 @@ import ru.kheynov.domain.use_cases.game.AddRecipientUseCase
 import ru.kheynov.domain.use_cases.game.JoinRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.CreateRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase
+import ru.kheynov.domain.use_cases.users.AuthenticateUserUseCase
 import ru.kheynov.domain.use_cases.users.DeleteUserUseCase
 import ru.kheynov.domain.use_cases.users.RegisterUserUseCase
 
@@ -20,6 +21,7 @@ class UseCases(
 
     val registerUserUseCase = RegisterUserUseCase(usersRepository)
     val deleteUserUseCase = DeleteUserUseCase(usersRepository)
+    val authenticateUserUseCase = AuthenticateUserUseCase(usersRepository)
 
     val addRecipientUseCase = AddRecipientUseCase(gameRepository, roomsRepository, usersRepository)
     val joinRoomUseCase = JoinRoomUseCase(usersRepository, roomsRepository, gameRepository)
