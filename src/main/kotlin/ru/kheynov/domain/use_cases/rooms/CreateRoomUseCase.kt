@@ -12,23 +12,24 @@ class CreateRoomUseCase(
     sealed interface Result {
         object Successful : Result
         object UserNotExists : Result
+        object RoomAlreadyExists : Result
         object Failed : Result
     }
 
     suspend operator fun invoke(
         userId: String,
         roomName: String,
-        ownerId: String,
         password: String?,
         date: LocalDate?,
         maxPrice: Int?,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
+        if (roomsRepository.getRoomByName(roomName) != null) return Result.RoomAlreadyExists
         val room = Room(
             password = password,
             name = roomName,
             date = date,
-            ownerId = ownerId,
+            ownerId = userId,
             maxPrice = maxPrice
         )
         return if (roomsRepository.createRoom(room)) Result.Successful else Result.Failed

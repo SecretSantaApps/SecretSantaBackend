@@ -20,7 +20,7 @@ interface Room : Entity<Room> {
 
 fun Room.mapToRoom(): ru.kheynov.domain.entities.Room {
     return ru.kheynov.domain.entities.Room(
-        this.name, this.password, this.date, this.ownerId, this.maxPrice
+        this.id, this.name, this.password, this.date, this.ownerId, this.maxPrice
     )
 }
 

@@ -1,6 +1,7 @@
 package ru.kheynov.di
 
 import org.ktorm.database.Database
+import ru.kheynov.data.repositories.game.PostgresGameRepository
 import ru.kheynov.data.repositories.rooms.PostgresRoomsRepository
 import ru.kheynov.data.repositories.users.PostgresUsersRepository
 import ru.kheynov.domain.use_cases.UseCases
@@ -17,8 +18,9 @@ object ServiceLocator {
 
     private val usersRepository = PostgresUsersRepository(db)
     private val roomsRepository = PostgresRoomsRepository(db)
+    private val gameRepository = PostgresGameRepository(db)
 
-    private val giftDispenser: GiftDispenser = SimpleCycleGiftDispenser()
+    val giftDispenser: GiftDispenser = SimpleCycleGiftDispenser()
 
-    val useCases = UseCases(roomsRepository, usersRepository)
+    val useCases = UseCases(roomsRepository, usersRepository, gameRepository)
 }

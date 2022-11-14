@@ -6,4 +6,5 @@ interface RoomsRepository {
     suspend fun createRoom(room: Room): Boolean
     suspend fun deleteRoomById(id: Int): Boolean
     suspend fun getRoomById(id: Int): Room?
+    suspend fun getRoomByName(name: String): Room?
 }

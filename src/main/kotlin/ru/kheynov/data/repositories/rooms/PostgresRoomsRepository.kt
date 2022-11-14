@@ -33,4 +33,7 @@ class PostgresRoomsRepository(
 
     override suspend fun getRoomById(id: Int): Room? =
         database.sequenceOf(Rooms).find { it.id eq id }?.mapToRoom()
+
+    override suspend fun getRoomByName(name: String): Room? =
+        database.sequenceOf(Rooms).find { it.name eq name }?.mapToRoom()
 }
