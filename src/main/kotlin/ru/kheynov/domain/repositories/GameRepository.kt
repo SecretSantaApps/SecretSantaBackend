@@ -3,8 +3,8 @@ package ru.kheynov.domain.repositories
 import ru.kheynov.domain.entities.User
 
 interface GameRepository {
-    fun joinRoom(roomId: Int, userId: String): Boolean
-    fun addRecipient(roomId: Int, userId: String, recipientId: String): Boolean
-    fun getUsersInRoom(roomId: Int): List<User>
-    fun getUsersRecipient(roomId: Int, userId: String): String?
+    fun joinRoom(roomName: String, userId: String): Boolean
+    fun addRecipient(roomName: String, userId: String, recipientId: String): Boolean
+    fun getUsersInRoom(roomName: String): List<User>
+    fun getUsersRecipient(roomName: String, userId: String): String?
 }

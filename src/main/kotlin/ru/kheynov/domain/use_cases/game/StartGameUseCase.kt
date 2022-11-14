@@ -17,6 +17,7 @@ class StartGameUseCase(
         object Failed : Result
         object RoomNotFound : Result
         object Forbidden : Result
+        object UserNotFound : Result
     }
 
     suspend operator fun invoke(
@@ -24,12 +25,12 @@ class StartGameUseCase(
         userId: String,
     ): Result {
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
+        if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
         if (room.ownerId != userId) return Result.Forbidden
-        val roomId = room.id ?: return Result.Failed
-        val users = gameRepository.getUsersInRoom(roomId)
+        val users = gameRepository.getUsersInRoom(roomName)
         val resultRelations = giftDispenser.getRandomDistribution(users = users.map { it.userId })
         resultRelations.forEach {
-            if (!gameRepository.addRecipient(roomId, it.first, it.second)) return Result.Failed
+            if (!gameRepository.addRecipient(roomName, it.first, it.second)) return Result.Failed
         }
         return Result.Successful
     }

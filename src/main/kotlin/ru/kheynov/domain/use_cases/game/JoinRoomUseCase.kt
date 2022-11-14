@@ -25,7 +25,7 @@ class JoinRoomUseCase(
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
         return if (room.ownerId == userId || room.password == password) {
-            if (gameRepository.joinRoom(room.id ?: return Result.Failed, userId))
+            if (gameRepository.joinRoom(room.name, userId))
                 Result.Successful
             else
                 Result.Failed

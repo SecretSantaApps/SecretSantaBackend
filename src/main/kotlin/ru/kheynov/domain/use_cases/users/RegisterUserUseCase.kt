@@ -14,6 +14,7 @@ class RegisterUserUseCase(
 
     suspend operator fun invoke(user: User): Result {
         if (usersRepository.getUserByID(user.userId) != null) return Result.UserAlreadyExists
+
         return if (usersRepository.registerUser(user)) Result.Successful else Result.Failed
     }
 }

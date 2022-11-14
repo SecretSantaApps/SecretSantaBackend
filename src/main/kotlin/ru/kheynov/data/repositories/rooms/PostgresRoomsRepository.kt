@@ -26,13 +26,10 @@ class PostgresRoomsRepository(
         return affectedRows == 1
     }
 
-    override suspend fun deleteRoomById(id: Int): Boolean {
-        val affectedRows = database.sequenceOf(Rooms).find { it.id eq id }?.delete()
+    override suspend fun deleteRoomByName(name: String): Boolean {
+        val affectedRows = database.sequenceOf(Rooms).find { it.name eq name }?.delete()
         return affectedRows == 1
     }
-
-    override suspend fun getRoomById(id: Int): Room? =
-        database.sequenceOf(Rooms).find { it.id eq id }?.mapToRoom()
 
     override suspend fun getRoomByName(name: String): Room? =
         database.sequenceOf(Rooms).find { it.name eq name }?.mapToRoom()

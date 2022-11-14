@@ -3,8 +3,10 @@ package ru.kheynov.api.v1.routing
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import ru.kheynov.api.v1.requests.CreateUserRequest
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.users.AuthenticateUserUseCase
@@ -20,12 +22,13 @@ fun Route.configureAuthRoutes(
     route("/user") {
         authenticate(FIREBASE_AUTH) {
             post { //Register user
+                val userInfo = call.receiveNullable<CreateUserRequest>()
                 val userAuth = call.principal<UserAuth>() ?: run {
                     call.respond(HttpStatusCode.Unauthorized)
                     return@post
                 }
                 val user = User(
-                    userAuth.userId, userAuth.displayName
+                    userAuth.userId, userInfo?.name ?: userAuth.displayName
                 )
 
                 when (useCases.registerUserUseCase(user)) {
@@ -52,12 +55,18 @@ fun Route.configureAuthRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
-                if (useCases.authenticateUserUseCase(user.userId) == AuthenticateUserUseCase.Result.UserNotExists) {
-                    call.respond(HttpStatusCode.Conflict, "User not exists")
-                    return@get
+                when (val res = useCases.authenticateUserUseCase(user.userId)) {
+                    is AuthenticateUserUseCase.Result.Successful -> {
+                        call.respond(HttpStatusCode.OK, res.user)
+                        return@get
+                    }
+
+                    AuthenticateUserUseCase.Result.UserNotExists -> {
+                        call.respond(HttpStatusCode.Conflict, "User not exists")
+                        return@get
+                    }
                 }
-                val res = User(user.userId, user.displayName)
-                call.respond(HttpStatusCode.OK, res)
+
             }
         }
         authenticate(FIREBASE_AUTH) {

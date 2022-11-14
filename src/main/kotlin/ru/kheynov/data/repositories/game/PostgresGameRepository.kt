@@ -15,30 +15,28 @@ import ru.kheynov.domain.repositories.GameRepository
 class PostgresGameRepository(
     private val database: Database,
 ) : GameRepository {
-    override fun joinRoom(roomId: Int, userId: String): Boolean {
+    override fun joinRoom(roomName: String, userId: String): Boolean {
         val newMember = RoomMember {
-            this.roomId = database.sequenceOf(Rooms).find { it.id eq roomId } ?: return false
+            this.roomName = database.sequenceOf(Rooms).find { it.name eq roomName } ?: return false
             this.userId = database.sequenceOf(Users).find { it.userId eq userId } ?: return false
         }
         val affectedRows = database.sequenceOf(RoomMembers).add(newMember)
         return affectedRows == 1
     }
 
-    override fun addRecipient(roomId: Int, userId: String, recipientId: String): Boolean {
+    override fun addRecipient(roomName: String, userId: String, recipientId: String): Boolean {
         val affectedRows = database.update(RoomMembers) {
             set(it.recipient, recipientId)
             where {
-                (it.userId eq userId) and (it.roomId eq roomId)
+                (it.userId eq userId) and (it.roomName eq roomName)
             }
         }
         return affectedRows == 1
     }
 
-    override fun getUsersInRoom(roomId: Int): List<User> {
-        return database.from(RoomMembers)
-            .innerJoin(Users, on = RoomMembers.userId eq Users.userId)
-            .innerJoin(Rooms, on = RoomMembers.roomId eq Rooms.id)
-            .select(Users.userId, Users.name).map { row ->
+    override fun getUsersInRoom(roomName: String): List<User> {
+        return database.from(RoomMembers).innerJoin(Users, on = RoomMembers.userId eq Users.userId)
+            .innerJoin(Rooms, on = RoomMembers.roomName eq Rooms.name).select(Users.userId, Users.name).map { row ->
                 User(
                     row[Users.userId] ?: "",
                     row[Users.name] ?: "",
@@ -46,8 +44,8 @@ class PostgresGameRepository(
             }
     }
 
-    override fun getUsersRecipient(roomId: Int, userId: String): String? {
+    override fun getUsersRecipient(roomName: String, userId: String): String? {
         return database.sequenceOf(RoomMembers)
-            .find { (it.userId eq userId) and (it.roomId eq roomId) }?.recipient?.userId
+            .find { (it.userId eq userId) and (it.roomName eq roomName) }?.recipient?.userId
     }
 }

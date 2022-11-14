@@ -10,7 +10,6 @@ import java.time.LocalDate
 interface Room : Entity<Room> {
     companion object : Entity.Factory<Room>()
 
-    val id: Int
     var name: String
     var password: String?
     var date: LocalDate?
@@ -20,13 +19,12 @@ interface Room : Entity<Room> {
 
 fun Room.mapToRoom(): ru.kheynov.domain.entities.Room {
     return ru.kheynov.domain.entities.Room(
-        this.id, this.name, this.password, this.date, this.ownerId, this.maxPrice
+        this.name, this.password, this.date, this.ownerId, this.maxPrice
     )
 }
 
 object Rooms : Table<Room>("rooms") {
-    val id = int("id").primaryKey().bindTo(Room::id)
-    var name = text("name").bindTo(Room::name)
+    var name = text("name").primaryKey().bindTo(Room::name)
     var password = text("password").bindTo(Room::password)
     var date = date("date").bindTo(Room::date)
     var ownerId = text("owner_id").bindTo(Room::ownerId)

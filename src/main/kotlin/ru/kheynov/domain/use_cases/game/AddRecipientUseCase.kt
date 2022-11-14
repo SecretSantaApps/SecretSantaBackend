@@ -24,7 +24,7 @@ class AddRecipientUseCase(
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
         return if (gameRepository.addRecipient(
-                roomId = room.id ?: return Result.Failed,
+                roomName = room.name,
                 userId = userId,
                 recipientId = recipientId,
             )

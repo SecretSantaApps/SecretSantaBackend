@@ -4,6 +4,7 @@ import ru.kheynov.domain.entities.Room
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 import java.time.LocalDate
+import java.util.*
 
 class CreateRoomUseCase(
     private val usersRepository: UsersRepository,
@@ -26,7 +27,7 @@ class CreateRoomUseCase(
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
         if (roomsRepository.getRoomByName(roomName) != null) return Result.RoomAlreadyExists
         val room = Room(
-            password = password,
+            password = password ?: getRandomPassword(),
             name = roomName,
             date = date,
             ownerId = userId,
@@ -35,3 +36,5 @@ class CreateRoomUseCase(
         return if (roomsRepository.createRoom(room)) Result.Successful else Result.Failed
     }
 }
+
+private fun getRandomPassword(): String = UUID.randomUUID().toString().subSequence(0..6).toString()
