@@ -21,6 +21,7 @@ class PostgresRoomsRepository(
             date = room.date
             maxPrice = room.maxPrice
             ownerId = room.ownerId
+            gameStarted = false
         }
         val affectedRows = database.sequenceOf(Rooms).add(newRoom)
         return affectedRows == 1
