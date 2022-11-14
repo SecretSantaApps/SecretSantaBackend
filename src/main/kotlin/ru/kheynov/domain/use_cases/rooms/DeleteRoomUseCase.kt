@@ -17,11 +17,11 @@ class DeleteRoomUseCase(
 
     suspend operator fun invoke(
         userId: String,
-        roomId: Int,
+        roomName: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
-        val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotExists
+        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotExists
         if (room.ownerId != userId) return Result.Forbidden
-        return if (roomsRepository.deleteRoomById(roomId)) Result.Successful else Result.Failed
+        return if (roomsRepository.deleteRoomById(room.id!!)) Result.Successful else Result.Failed
     }
 }

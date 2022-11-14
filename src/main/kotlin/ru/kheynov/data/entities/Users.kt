@@ -16,6 +16,6 @@ fun User.mapToUser(): ru.kheynov.domain.entities.User {
 }
 
 object Users : Table<User>("users") {
-    var userId = text("user_id").bindTo { it.userId }
+    var userId = text("user_id").primaryKey().bindTo { it.userId }
     var name = text("name").bindTo { it.name }
 }
