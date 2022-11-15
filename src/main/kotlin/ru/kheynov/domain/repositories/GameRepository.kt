@@ -8,4 +8,5 @@ interface GameRepository {
     suspend fun addRecipient(roomName: String, userId: String, recipientId: String): Boolean
     suspend fun getUsersInRoom(roomName: String): List<User>
     suspend fun getUsersRecipient(roomName: String, userId: String): String?
+    suspend fun setGameState(roomName: String, state: Boolean): Boolean
 }

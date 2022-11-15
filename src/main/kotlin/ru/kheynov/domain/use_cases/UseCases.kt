@@ -3,10 +3,7 @@ package ru.kheynov.domain.use_cases
 import ru.kheynov.domain.repositories.GameRepository
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
-import ru.kheynov.domain.use_cases.game.AddRecipientUseCase
-import ru.kheynov.domain.use_cases.game.JoinRoomUseCase
-import ru.kheynov.domain.use_cases.game.KickUserUseCase
-import ru.kheynov.domain.use_cases.game.LeaveRoomUseCase
+import ru.kheynov.domain.use_cases.game.*
 import ru.kheynov.domain.use_cases.rooms.CreateRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.GetRoomDetailsUseCase
@@ -36,8 +33,9 @@ class UseCases(
     private val gameRepositories =
         Triple(usersRepository, roomsRepository, gameRepository)
 
-    val addRecipientUseCase = AddRecipientUseCase(gameRepositories)
     val joinRoomUseCase = JoinRoomUseCase(gameRepositories)
     val leaveRoomUseCase = LeaveRoomUseCase(gameRepositories)
     val kickUserUseCase = KickUserUseCase(gameRepositories)
+    val startGameUseCase = StartGameUseCase(gameRepositories)
+    val stopGameUseCase = StopGameUseCase(gameRepositories)
 }

@@ -1,12 +1,9 @@
 package ru.kheynov.domain.use_cases.game
 
-import ru.kheynov.di.ServiceLocator
 import ru.kheynov.utils.GameRepositories
-import ru.kheynov.utils.GiftDispenser
 
-class StartGameUseCase(
+class StopGameUseCase(
     gameRepositories: GameRepositories,
-    private val giftDispenser: GiftDispenser = ServiceLocator.giftDispenser,
 ) {
     private val usersRepository = gameRepositories.first
     private val roomsRepository = gameRepositories.second
@@ -18,7 +15,7 @@ class StartGameUseCase(
         object RoomNotFound : Result
         object Forbidden : Result
         object UserNotFound : Result
-        object GameAlreadyStarted : Result
+        object GameAlreadyStopped : Result
     }
 
     suspend operator fun invoke(
@@ -26,18 +23,10 @@ class StartGameUseCase(
         roomName: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
         if (room.ownerId != userId) return Result.Forbidden
-
-        val users = gameRepository.getUsersInRoom(roomName)
-        val resultRelations = giftDispenser.getRandomDistribution(users = users.map { it.userId })
-
-        if (room.gameStarted) return Result.GameAlreadyStarted
-        resultRelations.forEach {
-            if (!gameRepository.addRecipient(roomName, it.first, it.second)) return Result.Failed
-        }
-        gameRepository.setGameState(roomName, true)
-        return Result.Successful
+        if (!room.gameStarted) return Result.GameAlreadyStopped
+        return if (gameRepository.setGameState(roomName, false))
+            Result.Successful else Result.Failed
     }
 }

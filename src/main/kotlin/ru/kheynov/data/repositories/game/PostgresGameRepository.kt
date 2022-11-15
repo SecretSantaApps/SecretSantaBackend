@@ -53,4 +53,14 @@ class PostgresGameRepository(
         return database.sequenceOf(RoomMembers)
             .find { (it.userId eq userId) and (it.roomName eq roomName) }?.recipient?.userId
     }
+
+    override suspend fun setGameState(roomName: String, state: Boolean): Boolean {
+        val affectedRows = database.update(Rooms) {
+            set(it.gameStarted, state)
+            where {
+                it.name eq roomName
+            }
+        }
+        return affectedRows == 1
+    }
 }
