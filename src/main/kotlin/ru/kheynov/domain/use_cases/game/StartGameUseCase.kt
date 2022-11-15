@@ -26,14 +26,13 @@ class StartGameUseCase(
         roomName: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
         if (room.ownerId != userId) return Result.Forbidden
+        if (room.gameStarted) return Result.GameAlreadyStarted
 
         val users = gameRepository.getUsersInRoom(roomName)
         val resultRelations = giftDispenser.getRandomDistribution(users = users.map { it.userId })
 
-        if (room.gameStarted) return Result.GameAlreadyStarted
         resultRelations.forEach {
             if (!gameRepository.addRecipient(roomName, it.first, it.second)) return Result.Failed
         }
