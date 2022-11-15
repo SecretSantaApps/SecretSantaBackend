@@ -11,9 +11,6 @@ interface User : Entity<User> {
     var name: String
 }
 
-fun User.mapToUser(): ru.kheynov.domain.entities.User {
-    return ru.kheynov.domain.entities.User(this.userId, this.name)
-}
 
 object Users : Table<User>("users") {
     var userId = text("user_id").primaryKey().bindTo { it.userId }

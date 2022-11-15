@@ -1,13 +1,9 @@
 package ru.kheynov.domain.use_cases.game
 
-import ru.kheynov.domain.repositories.GameRepository
-import ru.kheynov.domain.repositories.RoomsRepository
-import ru.kheynov.domain.repositories.UsersRepository
+import ru.kheynov.utils.GameRepositories
 
 class AddRecipientUseCase(
-    private val usersRepository: UsersRepository,
-    private val roomsRepository: RoomsRepository,
-    private val gameRepository: GameRepository,
+    gameRepositories: GameRepositories,
 ) {
     sealed interface Result {
         object Successful : Result
@@ -15,6 +11,10 @@ class AddRecipientUseCase(
         object RoomNotFound : Result
         object UserNotFound : Result
     }
+
+    private val usersRepository = gameRepositories.first
+    private val roomsRepository = gameRepositories.second
+    private val gameRepository = gameRepositories.third
 
     suspend operator fun invoke(
         roomName: String,

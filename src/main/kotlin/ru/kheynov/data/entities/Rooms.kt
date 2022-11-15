@@ -15,11 +15,6 @@ interface Room : Entity<Room> {
     var gameStarted: Boolean
 }
 
-fun Room.mapToRoom(): ru.kheynov.domain.entities.Room {
-    return ru.kheynov.domain.entities.Room(
-        this.name, this.password, this.date, this.ownerId, this.maxPrice, this.gameStarted
-    )
-}
 
 object Rooms : Table<Room>("rooms") {
     var name = text("name").primaryKey().bindTo(Room::name)

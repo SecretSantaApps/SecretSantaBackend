@@ -15,7 +15,7 @@ import ru.kheynov.domain.repositories.GameRepository
 class PostgresGameRepository(
     private val database: Database,
 ) : GameRepository {
-    override fun joinRoom(roomName: String, userId: String): Boolean {
+    override suspend fun addToRoom(roomName: String, userId: String): Boolean {
         val newMember = RoomMember {
             this.roomName = database.sequenceOf(Rooms).find { it.name eq roomName } ?: return false
             this.userId = database.sequenceOf(Users).find { it.userId eq userId } ?: return false
@@ -24,7 +24,12 @@ class PostgresGameRepository(
         return affectedRows == 1
     }
 
-    override fun addRecipient(roomName: String, userId: String, recipientId: String): Boolean {
+    override suspend fun deleteFromRoom(roomName: String, userId: String): Boolean {
+        val affectedRows = database.delete(RoomMembers) { (it.userId eq userId) and (it.roomName eq roomName) }
+        return affectedRows == 1
+    }
+
+    override suspend fun addRecipient(roomName: String, userId: String, recipientId: String): Boolean {
         val affectedRows = database.update(RoomMembers) {
             set(it.recipient, recipientId)
             where {
@@ -34,7 +39,7 @@ class PostgresGameRepository(
         return affectedRows == 1
     }
 
-    override fun getUsersInRoom(roomName: String): List<User> {
+    override suspend fun getUsersInRoom(roomName: String): List<User> {
         return database.from(RoomMembers).innerJoin(Users, on = RoomMembers.userId eq Users.userId)
             .innerJoin(Rooms, on = RoomMembers.roomName eq Rooms.name).select(Users.userId, Users.name).map { row ->
                 User(
@@ -44,7 +49,7 @@ class PostgresGameRepository(
             }
     }
 
-    override fun getUsersRecipient(roomName: String, userId: String): String? {
+    override suspend fun getUsersRecipient(roomName: String, userId: String): String? {
         return database.sequenceOf(RoomMembers)
             .find { (it.userId eq userId) and (it.roomName eq roomName) }?.recipient?.userId
     }

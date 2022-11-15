@@ -10,11 +10,11 @@ import org.ktorm.entity.sequenceOf
 import ru.kheynov.data.entities.RoomMembers
 import ru.kheynov.data.entities.Rooms
 import ru.kheynov.data.entities.Users
-import ru.kheynov.data.entities.mapToRoom
 import ru.kheynov.domain.entities.Room
 import ru.kheynov.domain.entities.RoomUpdate
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.repositories.RoomsRepository
+import ru.kheynov.utils.mapToRoom
 
 class PostgresRoomsRepository(
     private val database: Database,

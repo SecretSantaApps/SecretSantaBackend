@@ -30,10 +30,10 @@ class UseCases(
     val authenticateUserUseCase = AuthenticateUserUseCase(usersRepository)
     val updateUserUseCase = UpdateUserUseCase(usersRepository)
 
-    val addRecipientUseCase = AddRecipientUseCase(
-        usersRepository,
-        roomsRepository,
-        gameRepository,
-    )
-    val joinRoomUseCase = JoinRoomUseCase(usersRepository, roomsRepository, gameRepository)
+
+    private val gameRepositories =
+        Triple(usersRepository, roomsRepository, gameRepository)
+
+    val addRecipientUseCase = AddRecipientUseCase(gameRepositories)
+    val joinRoomUseCase = JoinRoomUseCase(gameRepositories)
 }

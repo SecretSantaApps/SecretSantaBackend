@@ -4,7 +4,7 @@ interface GiftDispenser {
     fun getRandomDistribution(users: List<String>): List<Pair<String, String>>
 }
 
-class SimpleCycleGiftDispenser() : GiftDispenser {
+class SimpleCycleGiftDispenser : GiftDispenser {
     override fun getRandomDistribution(users: List<String>): List<Pair<String, String>> {
         val result: MutableList<Pair<String, String>> = mutableListOf()
 

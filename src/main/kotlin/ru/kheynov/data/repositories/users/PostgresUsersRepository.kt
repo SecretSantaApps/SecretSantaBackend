@@ -6,9 +6,9 @@ import org.ktorm.entity.add
 import org.ktorm.entity.find
 import org.ktorm.entity.sequenceOf
 import ru.kheynov.data.entities.Users
-import ru.kheynov.data.entities.mapToUser
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.repositories.UsersRepository
+import ru.kheynov.utils.mapToUser
 
 class PostgresUsersRepository(
     private val database: Database,
