@@ -1,0 +1,14 @@
+package ru.kheynov.api.v1.requests.rooms
+
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import ru.kheynov.utils.LocalDateSerializer
+import java.time.LocalDate
+
+@Serializable
+data class UpdateRoomRequest(
+    val name: String,
+    val password: String?,
+    @Serializable(with = LocalDateSerializer::class) val date: LocalDate?,
+    @SerialName("max_price") val maxPrice: Int?,
+)

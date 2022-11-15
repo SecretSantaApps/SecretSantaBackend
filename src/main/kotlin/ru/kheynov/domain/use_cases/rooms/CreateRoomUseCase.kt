@@ -11,7 +11,7 @@ class CreateRoomUseCase(
     private val roomsRepository: RoomsRepository,
 ) {
     sealed interface Result {
-        object Successful : Result
+        data class Successful(val room: Room) : Result
         object UserNotExists : Result
         object RoomAlreadyExists : Result
         object Failed : Result
@@ -34,7 +34,7 @@ class CreateRoomUseCase(
             maxPrice = maxPrice,
             gameStarted = false
         )
-        return if (roomsRepository.createRoom(room)) Result.Successful else Result.Failed
+        return if (roomsRepository.createRoom(room)) Result.Successful(room) else Result.Failed
     }
 }
 

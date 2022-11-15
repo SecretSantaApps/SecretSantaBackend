@@ -9,10 +9,13 @@ import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.rooms.CreateRoomRequest
 import ru.kheynov.api.v1.requests.rooms.DeleteRoomRequest
 import ru.kheynov.api.v1.requests.rooms.GetRoomDetailsRequest
+import ru.kheynov.api.v1.requests.rooms.UpdateRoomRequest
+import ru.kheynov.domain.entities.RoomUpdate
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.rooms.CreateRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.GetRoomDetailsUseCase
+import ru.kheynov.domain.use_cases.rooms.UpdateRoomUseCase
 import ru.kheynov.security.firebase.auth.FIREBASE_AUTH
 import ru.kheynov.security.firebase.auth.UserAuth
 
@@ -82,8 +85,8 @@ fun Route.configureRoomsRoutes(
                         return@post
                     }
 
-                    CreateRoomUseCase.Result.Successful -> {
-                        call.respond(HttpStatusCode.OK)
+                    is CreateRoomUseCase.Result.Successful -> {
+                        call.respond(HttpStatusCode.OK, res.room)
                         return@post
                     }
 
@@ -128,6 +131,51 @@ fun Route.configureRoomsRoutes(
                     DeleteRoomUseCase.Result.UserNotExists -> {
                         call.respond(HttpStatusCode.Conflict, "User Not Exists")
                         return@delete
+                    }
+                }
+            }
+        }
+
+        authenticate(FIREBASE_AUTH) {
+            patch {
+                val userId = call.principal<UserAuth>()?.userId ?: run {
+                    call.respond(HttpStatusCode.Unauthorized)
+                    return@patch
+                }
+                val roomUpdateRequest = call.receiveNullable<UpdateRoomRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@patch
+                }
+
+                val roomUpdate = RoomUpdate(
+                    password = roomUpdateRequest.password,
+                    date = roomUpdateRequest.date,
+                    maxPrice = roomUpdateRequest.maxPrice,
+                )
+                when (useCases.updateRoomUseCase(userId, roomUpdateRequest.name, roomUpdate)) {
+                    UpdateRoomUseCase.Result.Failed -> {
+                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        return@patch
+                    }
+
+                    UpdateRoomUseCase.Result.Forbidden -> {
+                        call.respond(HttpStatusCode.Forbidden)
+                        return@patch
+                    }
+
+                    UpdateRoomUseCase.Result.RoomNotExists -> {
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
+                        return@patch
+                    }
+
+                    UpdateRoomUseCase.Result.Successful -> {
+                        call.respond(HttpStatusCode.OK)
+                        return@patch
+                    }
+
+                    UpdateRoomUseCase.Result.UserNotExists -> {
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
+                        return@patch
                     }
                 }
             }
