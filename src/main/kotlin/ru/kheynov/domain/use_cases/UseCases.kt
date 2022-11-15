@@ -5,6 +5,7 @@ import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.domain.use_cases.game.AddRecipientUseCase
 import ru.kheynov.domain.use_cases.game.JoinRoomUseCase
+import ru.kheynov.domain.use_cases.game.KickUserUseCase
 import ru.kheynov.domain.use_cases.game.LeaveRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.CreateRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase
@@ -38,4 +39,5 @@ class UseCases(
     val addRecipientUseCase = AddRecipientUseCase(gameRepositories)
     val joinRoomUseCase = JoinRoomUseCase(gameRepositories)
     val leaveRoomUseCase = LeaveRoomUseCase(gameRepositories)
+    val kickUserUseCase = KickUserUseCase(gameRepositories)
 }
