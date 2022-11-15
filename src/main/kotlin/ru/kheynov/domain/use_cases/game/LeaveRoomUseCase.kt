@@ -11,6 +11,7 @@ class LeaveRoomUseCase(
         object UserNotInRoom : Result
         object RoomNotFound : Result
         object UserNotFound : Result
+        object GameAlreadyStarted : Result
     }
 
     private val usersRepository = gameRepositories.first
@@ -22,8 +23,9 @@ class LeaveRoomUseCase(
         roomName: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-        if (roomsRepository.getRoomByName(roomName) == null) return Result.RoomNotFound
+        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
         if (roomsRepository.getRoomUsers(roomName).find { it.userId == userId } == null) return Result.UserNotInRoom
+        if (room.gameStarted) return Result.GameAlreadyStarted
         return if (gameRepository.deleteFromRoom(
                 roomName = roomName,
                 userId = userId,
