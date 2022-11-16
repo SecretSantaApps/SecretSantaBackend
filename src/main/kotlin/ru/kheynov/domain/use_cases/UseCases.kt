@@ -25,12 +25,12 @@ class UseCases(
     val deleteUserUseCase = DeleteUserUseCase(usersRepository)
     val authenticateUserUseCase = AuthenticateUserUseCase(usersRepository, gameRepository)
     val updateUserUseCase = UpdateUserUseCase(usersRepository)
-    val getUserDetailsUseCase = GetUserDetailsUseCase(usersRepository, gameRepository)
 
 
     private val gameRepositories =
         Triple(usersRepository, roomsRepository, gameRepository)
 
+    val getUserDetailsUseCase = GetUserDetailsUseCase(gameRepositories)
     val joinRoomUseCase = JoinRoomUseCase(gameRepositories)
     val leaveRoomUseCase = LeaveRoomUseCase(gameRepositories)
     val kickUserUseCase = KickUserUseCase(gameRepositories)

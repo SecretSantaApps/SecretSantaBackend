@@ -7,13 +7,11 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.users.CreateUserRequest
+import ru.kheynov.api.v1.requests.users.GetUserDetailsRequest
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.use_cases.UseCases
-import ru.kheynov.domain.use_cases.users.AuthenticateUserUseCase
-import ru.kheynov.domain.use_cases.users.DeleteUserUseCase
-import ru.kheynov.domain.use_cases.users.RegisterUserUseCase
-import ru.kheynov.domain.use_cases.users.UpdateUserUseCase
+import ru.kheynov.domain.use_cases.users.*
 import ru.kheynov.security.firebase.auth.FIREBASE_AUTH
 import ru.kheynov.security.firebase.auth.UserAuth
 
@@ -69,6 +67,45 @@ fun Route.configureUserRoutes(
                     }
                 }
 
+            }
+        }
+
+        authenticate(FIREBASE_AUTH) {
+            get("/info") {
+                val user = call.principal<UserAuth>() ?: run {
+                    call.respond(HttpStatusCode.Unauthorized)
+                    return@get
+                }
+                val request = call.receiveNullable<GetUserDetailsRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+                val res = useCases.getUserDetailsUseCase(
+                    userId = user.userId,
+                    selfId = request.userId ?: user.userId,
+                    roomName = request.roomName
+                )
+                when (res) {
+                    GetUserDetailsUseCase.Result.Failed -> {
+                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        return@get
+                    }
+
+                    is GetUserDetailsUseCase.Result.Successful -> {
+                        call.respond(HttpStatusCode.OK, res.user)
+                        return@get
+                    }
+
+                    GetUserDetailsUseCase.Result.UserNotFound -> {
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
+                        return@get
+                    }
+
+                    GetUserDetailsUseCase.Result.RoomNotFound -> {
+                        call.respond(HttpStatusCode.BadRequest, "Room not Found")
+                        return@get
+                    }
+                }
             }
         }
         authenticate(FIREBASE_AUTH) {
