@@ -15,5 +15,5 @@ fun Room.mapToRoom(): ru.kheynov.domain.entities.Room {
 }
 
 fun User.mapToUser(): ru.kheynov.domain.entities.User {
-    return ru.kheynov.domain.entities.User(this.userId, this.name)
+    return ru.kheynov.domain.entities.User(this.userId, this.name, null)
 }

@@ -31,7 +31,6 @@ services:
       - ./sql/init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
     networks:
       - db_network
-    container_name: secret_santa_db
     restart: always
 
 networks:

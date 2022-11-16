@@ -15,7 +15,6 @@ class AuthenticateUserUseCase(
 
     suspend operator fun invoke(userId: String): Result {
         val user = usersRepository.getUserByID(userId = userId) ?: return Result.UserNotExists
-
         return Result.Successful(user)
     }
 }
