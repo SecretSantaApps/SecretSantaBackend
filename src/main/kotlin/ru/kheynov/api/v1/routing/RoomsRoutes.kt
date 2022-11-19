@@ -12,6 +12,7 @@ import ru.kheynov.api.v1.requests.rooms.GetRoomDetailsRequest
 import ru.kheynov.api.v1.requests.rooms.UpdateRoomRequest
 import ru.kheynov.domain.entities.RoomUpdate
 import ru.kheynov.domain.use_cases.UseCases
+import ru.kheynov.domain.use_cases.game.JoinRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.CreateRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.GetRoomDetailsUseCase
@@ -86,7 +87,11 @@ fun Route.configureRoomsRoutes(
                     }
 
                     is CreateRoomUseCase.Result.Successful -> {
-                        call.respond(HttpStatusCode.OK, res.room)
+                        val joinRequest = useCases.joinRoomUseCase(user.userId, request.name, request.password)
+                        if (joinRequest is JoinRoomUseCase.Result.Successful)
+                            call.respond(HttpStatusCode.OK, res.room)
+                        else
+                            call.respond(HttpStatusCode.Conflict, "Something went wrong")
                         return@post
                     }
 
