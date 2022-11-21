@@ -17,4 +17,7 @@ end;
 $$ language plpgsql;
 
 select *
+from get_relations('room_for_my_homies2');
+
+select *
 from get_relations('room_for_my_homies');

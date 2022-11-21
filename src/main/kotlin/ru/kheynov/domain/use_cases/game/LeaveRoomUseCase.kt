@@ -24,8 +24,9 @@ class LeaveRoomUseCase(
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
-        if (roomsRepository.getRoomUsers(roomName).find { it.userId == userId } == null) return Result.UserNotInRoom
+        if (gameRepository.getUsersInRoom(roomName).find { it.userId == userId } == null) return Result.UserNotInRoom
         if (room.gameStarted) return Result.GameAlreadyStarted
+
         var res = gameRepository.deleteFromRoom(
             roomName = roomName,
             userId = userId,
@@ -37,5 +38,4 @@ class LeaveRoomUseCase(
 
         return if (res) Result.Successful else Result.Failed
     }
-
 }

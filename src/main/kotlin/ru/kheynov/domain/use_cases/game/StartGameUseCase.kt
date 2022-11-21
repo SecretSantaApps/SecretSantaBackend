@@ -32,7 +32,9 @@ class StartGameUseCase(
         if (room.gameStarted) return Result.GameAlreadyStarted
 
         val users = gameRepository.getUsersInRoom(roomName)
+
         if (users.size < 3) return Result.NotEnoughPlayers
+        println(users.toString())
         val resultRelations = giftDispenser.getRandomDistribution(users = users.map { it.userId })
 
         resultRelations.forEach {

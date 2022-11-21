@@ -24,13 +24,13 @@ class GetGameInfoUseCase(
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
         if (roomsRepository.getRoomByName(roomName) == null) return Result.RoomNotExists
-        val users = roomsRepository.getRoomUsers(roomName)
+        val users = gameRepository.getUsersInRoom(roomName)
+        if (users.find { it.userId == userId } == null) return Result.Forbidden
         val info = InfoDetails(
             roomName,
             users = users.map { UserInfo(it.userId, it.username) },
             gameRepository.getUsersRecipient(roomName, userId)
         )
-        if (users.find { it.userId == userId } == null) return Result.Forbidden
         return Result.Successful(info)
     }
 }

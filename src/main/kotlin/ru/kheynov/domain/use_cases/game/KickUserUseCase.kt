@@ -25,7 +25,7 @@ class KickUserUseCase(
         roomName: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-        if (roomsRepository.getRoomUsers(roomName).find { it.userId == userId } == null) return Result.UserNotInRoom
+        if (gameRepository.getUsersInRoom(roomName).find { it.userId == userId } == null) return Result.UserNotInRoom
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
         if (room.ownerId != selfId) return Result.Forbidden
         if (room.gameStarted) return Result.GameAlreadyStarted
