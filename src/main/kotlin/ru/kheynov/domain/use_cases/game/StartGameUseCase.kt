@@ -19,6 +19,7 @@ class StartGameUseCase(
         object Forbidden : Result
         object UserNotFound : Result
         object GameAlreadyStarted : Result
+        object NotEnoughPlayers : Result
     }
 
     suspend operator fun invoke(
@@ -31,6 +32,7 @@ class StartGameUseCase(
         if (room.gameStarted) return Result.GameAlreadyStarted
 
         val users = gameRepository.getUsersInRoom(roomName)
+        if (users.size < 3) return Result.NotEnoughPlayers
         val resultRelations = giftDispenser.getRandomDistribution(users = users.map { it.userId })
 
         resultRelations.forEach {
