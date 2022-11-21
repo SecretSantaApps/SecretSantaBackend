@@ -36,4 +36,5 @@ class UseCases(
     val kickUserUseCase = KickUserUseCase(gameRepositories)
     val startGameUseCase = StartGameUseCase(gameRepositories)
     val stopGameUseCase = StopGameUseCase(gameRepositories)
+    val getGameInfoUseCase = GetGameInfoUseCase(gameRepositories)
 }

@@ -265,5 +265,43 @@ fun Route.configureGameRoutes(
                 }
             }
         }
+        authenticate(FIREBASE_AUTH) {
+            get("/info") {
+                val user = call.principal<UserAuth>() ?: run {
+                    call.respond(HttpStatusCode.Unauthorized)
+                    return@get
+                }
+                val request = call.receiveNullable<GetGameInfoDetailsRequest>() ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+                val res = useCases.getGameInfoUseCase(
+                    userId = user.userId,
+                    roomName = request.roomName
+                )
+
+                when (res) {
+                    GetGameInfoUseCase.Result.Forbidden -> {
+                        call.respond(HttpStatusCode.Forbidden)
+                        return@get
+                    }
+
+                    GetGameInfoUseCase.Result.RoomNotExists -> {
+                        call.respond(HttpStatusCode.BadRequest, "Room not Exists")
+                        return@get
+                    }
+
+                    is GetGameInfoUseCase.Result.Successful -> {
+                        call.respond(HttpStatusCode.OK, res.info)
+                        return@get
+                    }
+
+                    GetGameInfoUseCase.Result.UserNotExists -> {
+                        call.respond(HttpStatusCode.BadRequest, "User not Exists")
+                        return@get
+                    }
+                }
+            }
+        }
     }
 }
