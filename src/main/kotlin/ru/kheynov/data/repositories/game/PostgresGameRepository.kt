@@ -63,4 +63,8 @@ class PostgresGameRepository(
         }
         return affectedRows == 1
     }
+
+    override suspend fun checkUserInRoom(roomName: String, userId: String): Boolean {
+        return database.sequenceOf(RoomMembers).find { (it.roomName eq roomName) and (it.userId eq userId) } != null
+    }
 }
