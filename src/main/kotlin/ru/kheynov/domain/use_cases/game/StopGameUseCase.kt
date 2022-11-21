@@ -26,7 +26,8 @@ class StopGameUseCase(
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
         if (room.ownerId != userId) return Result.Forbidden
         if (!room.gameStarted) return Result.GameAlreadyStopped
-        return if (gameRepository.setGameState(roomName, false))
+        val res = gameRepository.setGameState(roomName, false) && gameRepository.deleteRecipients(roomName)
+        return if (res)
             Result.Successful else Result.Failed
     }
 }
