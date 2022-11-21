@@ -64,8 +64,7 @@ POST /api/v1/user
 
 body:
 {
-	"name": "Ivan" // опционально, иначе будет 
-	//использовано имя из токена Firebase
+	"name": "Ivan" 
 }
 
 Response: 200 OK / 409 Conflict
