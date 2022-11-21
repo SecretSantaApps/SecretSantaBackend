@@ -29,7 +29,7 @@ class PostgresGameRepository(
         return affectedRows == 1
     }
 
-    override suspend fun setRecipient(roomName: String, userId: String, recipientId: String?): Boolean {
+    override suspend fun setRecipient(roomName: String, userId: String, recipientId: String): Boolean {
         val affectedRows = database.update(RoomMembers) {
             set(it.recipient, recipientId)
             where {
@@ -44,7 +44,7 @@ class PostgresGameRepository(
             set(it.recipient, null)
             where { it.roomName eq roomName }
         }
-        return affectedRows == 1
+        return affectedRows > 0
     }
 
     override suspend fun getUsersInRoom(roomName: String): List<User> {

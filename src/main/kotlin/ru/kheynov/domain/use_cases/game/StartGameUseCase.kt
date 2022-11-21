@@ -36,7 +36,7 @@ class StartGameUseCase(
         val resultRelations = giftDispenser.getRandomDistribution(users = users.map { it.userId })
 
         resultRelations.forEach {
-            if (!gameRepository.addRecipient(roomName, it.first, it.second)) return Result.Failed
+            if (!gameRepository.setRecipient(roomName, it.first, it.second)) return Result.Failed
         }
         gameRepository.setGameState(roomName, true)
         return Result.Successful
