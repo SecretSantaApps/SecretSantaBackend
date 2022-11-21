@@ -59,6 +59,11 @@ fun Route.configureGameRoutes(
                         call.respond(HttpStatusCode.Conflict, "User not found")
                         return@post
                     }
+
+                    JoinRoomUseCase.Result.UserAlreadyInRoom -> {
+                        call.respond(HttpStatusCode.Conflict, "User already in room")
+                        return@post
+                    }
                 }
             }
         }
@@ -203,6 +208,11 @@ fun Route.configureGameRoutes(
 
                     StartGameUseCase.Result.UserNotFound -> {
                         call.respond(HttpStatusCode.BadRequest, "User not found")
+                        return@post
+                    }
+
+                    StartGameUseCase.Result.NotEnoughPlayers -> {
+                        call.respond(HttpStatusCode.Conflict, "Not enough users to start playing")
                         return@post
                     }
                 }

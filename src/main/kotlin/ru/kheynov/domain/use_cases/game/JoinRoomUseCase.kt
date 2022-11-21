@@ -12,6 +12,7 @@ class JoinRoomUseCase(
         object RoomNotFound : Result
         object UserNotFound : Result
         object GameAlreadyStarted : Result
+        object UserAlreadyInRoom : Result
     }
 
     private val usersRepository = gameRepositories.first
@@ -25,6 +26,7 @@ class JoinRoomUseCase(
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
+        if (gameRepository.checkUserInRoom(roomName, userId)) return Result.UserAlreadyInRoom
         if (room.gameStarted) return Result.GameAlreadyStarted
         return if (room.password == password) {
             if (gameRepository.addToRoom(room.name, userId)) Result.Successful
