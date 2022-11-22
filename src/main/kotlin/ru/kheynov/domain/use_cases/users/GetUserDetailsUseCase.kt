@@ -22,8 +22,7 @@ class GetUserDetailsUseCase(
         roomName: String?,
     ): Result {
         val user = usersRepository.getUserByID(userId) ?: return Result.UserNotFound
-        if (user.userId != selfId) return Result.Successful(user = user)
-        if (roomName == null) return Result.RoomNotFound
+        if (user.userId != selfId || roomName == null) return Result.Successful(user = user)
         if (roomsRepository.getRoomByName(roomName) == null) return Result.RoomNotFound
         val recipient = gameRepository.getUsersRecipient(roomName, selfId)
         val res = user.copy(recipient = recipient)

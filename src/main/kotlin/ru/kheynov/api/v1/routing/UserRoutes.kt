@@ -11,7 +11,10 @@ import ru.kheynov.api.v1.requests.users.GetUserDetailsRequest
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.use_cases.UseCases
-import ru.kheynov.domain.use_cases.users.*
+import ru.kheynov.domain.use_cases.users.DeleteUserUseCase
+import ru.kheynov.domain.use_cases.users.GetUserDetailsUseCase
+import ru.kheynov.domain.use_cases.users.RegisterUserUseCase
+import ru.kheynov.domain.use_cases.users.UpdateUserUseCase
 import ru.kheynov.security.firebase.auth.FIREBASE_AUTH
 import ru.kheynov.security.firebase.auth.UserAuth
 
@@ -55,13 +58,28 @@ fun Route.configureUserRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
-                when (val res = useCases.authenticateUserUseCase(user.userId)) {
-                    is AuthenticateUserUseCase.Result.Successful -> {
+                val res = useCases.getUserDetailsUseCase(
+                    userId = user.userId,
+                    selfId = user.userId,
+                    roomName = null
+                )
+                when (res) {
+                    GetUserDetailsUseCase.Result.Failed -> {
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
+                        return@get
+                    }
+
+                    GetUserDetailsUseCase.Result.RoomNotFound -> {
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
+                        return@get
+                    }
+
+                    is GetUserDetailsUseCase.Result.Successful -> {
                         call.respond(HttpStatusCode.OK, res.user)
                         return@get
                     }
 
-                    AuthenticateUserUseCase.Result.UserNotExists -> {
+                    GetUserDetailsUseCase.Result.UserNotFound -> {
                         call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@get
                     }

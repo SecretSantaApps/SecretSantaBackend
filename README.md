@@ -125,7 +125,8 @@ GET /api/v1/user
 Response: 
 {
 	"user_id": "UwsdfgergdfDUFf2",
-	"username": "Ivan"
+	"username": "Ivan",
+	"recipient": "Kasldhg35tkRwsoyte" -- если игра начата
 }
 
 Response: 200 OK / 400 «User not exists»
@@ -134,7 +135,7 @@ Response: 200 OK / 400 «User not exists»
 ### Получение информации о пользователе в определённой комнате по определённому user_id
 
 ```http request
-GET /api/v1/user
+GET /api/v1/user/info
 
 Request: 
 {
