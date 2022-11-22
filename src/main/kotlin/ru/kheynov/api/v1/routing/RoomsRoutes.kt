@@ -72,7 +72,7 @@ fun Route.configureRoomsRoutes(
                     userId = user.userId,
                     roomName = request.name,
                     password = request.password,
-                    date = null,
+                    date = request.date,
                     maxPrice = request.maxPrice,
                 )
                 when (res) {
