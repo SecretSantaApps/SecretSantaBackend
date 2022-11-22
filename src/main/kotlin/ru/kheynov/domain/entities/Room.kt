@@ -7,11 +7,11 @@ import java.time.LocalDate
 
 @Serializable
 data class Room(
-    val name: String,
+    @SerialName("room_name") val name: String,
     val password: String?,
     @Serializable(with = LocalDateSerializer::class) val date: LocalDate?,
-    @SerialName("owner_id")val ownerId: String,
-    @SerialName("max_price")val maxPrice: Int? = null,
+    @SerialName("owner_id") val ownerId: String,
+    @SerialName("max_price") val maxPrice: Int? = null,
     @SerialName("game_started") val gameStarted: Boolean = false,
 )
 
@@ -19,5 +19,5 @@ data class Room(
 data class RoomUpdate(
     val password: String? = null,
     @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
-    @SerialName("max_price")val maxPrice: Int? = null,
+    @SerialName("max_price") val maxPrice: Int? = null,
 )

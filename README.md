@@ -72,7 +72,7 @@ docker-compose down
 ```http request
 POST /api/v1/user
 
-Request body:
+body:
 {
 	"name": "Ivan" 
 }
@@ -93,7 +93,7 @@ Response: 200 OK / 409 «Something went wrong» / 400 «User not exists»
 ```http request
 PATCH /api/v1/user
 
-Request body:
+body:
 {
 	"name": "Ivan"
 }
@@ -157,15 +157,15 @@ POST /api/v1/room
 
 Request:
 {
-	"name":"room1",
+	"room_name":"room1",
 	"password":"123456", --optional
 	"max_price":1000 --optional
 }
 
 {
-	"name": "room1",
+	"room_name": "room1",
 	"password": "123456",
-	"owner_id": "8Svq2cgvapJN",
+	"owner_id": "UwsdfgergdfDUFf2",
 	"max_price": 1000
 }
 ```
