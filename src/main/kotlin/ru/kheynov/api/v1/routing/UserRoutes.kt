@@ -81,8 +81,8 @@ fun Route.configureUserRoutes(
                     return@get
                 }
                 val res = useCases.getUserDetailsUseCase(
-                    userId = user.userId,
-                    selfId = request.userId ?: user.userId,
+                    userId = request.userId ?: user.userId,
+                    selfId = user.userId,
                     roomName = request.roomName
                 )
                 when (res) {

@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class GetUserDetailsRequest(
-    @SerialName("room_name") val roomName: String,
+    @SerialName("room_name") val roomName: String?,
     @SerialName("user_id")val userId: String?,
 )

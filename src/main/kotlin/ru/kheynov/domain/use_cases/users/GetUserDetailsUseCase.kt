@@ -19,10 +19,11 @@ class GetUserDetailsUseCase(
     suspend operator fun invoke(
         userId: String,
         selfId: String, //ID of requester
-        roomName: String,
+        roomName: String?,
     ): Result {
         val user = usersRepository.getUserByID(userId) ?: return Result.UserNotFound
         if (user.userId != selfId) return Result.Successful(user = user)
+        if (roomName == null) return Result.RoomNotFound
         if (roomsRepository.getRoomByName(roomName) == null) return Result.RoomNotFound
         val recipient = gameRepository.getUsersRecipient(roomName, selfId)
         val res = user.copy(recipient = recipient)
