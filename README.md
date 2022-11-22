@@ -134,14 +134,14 @@ Request:
 	"room_name": "room1"
 }
 
-Response body:
+Response: 200 OK / 409 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
+
+body:
 
 {
 	"userId": "UwsdfgergdfDUFf2",
 	"username": "Ivan"
 }
-
-Response: 200 OK / 409 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
 ```
 
 ---
