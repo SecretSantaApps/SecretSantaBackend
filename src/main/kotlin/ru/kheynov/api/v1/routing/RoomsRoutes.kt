@@ -30,7 +30,7 @@ fun Route.configureRoomsRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
-                val roomName = call.receiveNullable<GetRoomDetailsRequest>()?.name ?: run {
+                val roomName = call.receiveNullable<GetRoomDetailsRequest>()?.roomName ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@get
                 }
@@ -112,7 +112,7 @@ fun Route.configureRoomsRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@delete
                 }
-                when (useCases.deleteRoomUseCase(user.userId, request.name)) {
+                when (useCases.deleteRoomUseCase(user.userId, request.roomName)) {
                     DeleteRoomUseCase.Result.Failed -> {
                         call.respond(HttpStatusCode.Conflict, "Something went wrong")
                         return@delete

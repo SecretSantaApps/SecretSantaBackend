@@ -5,7 +5,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class CreateRoomRequest(
-    val name: String,
+    @SerialName("room_name") val name: String,
     val password: String?,
     @SerialName("max_price") val maxPrice: Int?,
 )

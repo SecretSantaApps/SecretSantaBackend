@@ -28,7 +28,7 @@ fun Route.configureUserRoutes(
                     return@post
                 }
                 val user = User(
-                    userAuth.userId, userInfo?.name ?: userAuth.displayName
+                    userAuth.userId, userInfo?.username ?: userAuth.displayName
                 )
 
                 when (useCases.registerUserUseCase(user)) {
@@ -43,7 +43,7 @@ fun Route.configureUserRoutes(
                     }
 
                     RegisterUserUseCase.Result.UserAlreadyExists -> {
-                        call.respond(HttpStatusCode.Conflict, "User Already Registered")
+                        call.respond(HttpStatusCode.Conflict, "User already exists")
                         return@post
                     }
                 }
@@ -62,7 +62,7 @@ fun Route.configureUserRoutes(
                     }
 
                     AuthenticateUserUseCase.Result.UserNotExists -> {
-                        call.respond(HttpStatusCode.Conflict, "User not exists")
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@get
                     }
                 }
@@ -102,7 +102,7 @@ fun Route.configureUserRoutes(
                     }
 
                     GetUserDetailsUseCase.Result.RoomNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not Found")
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
                         return@get
                     }
                 }
@@ -148,7 +148,7 @@ fun Route.configureUserRoutes(
                     call.respond(HttpStatusCode.BadRequest)
                     return@patch
                 }
-                when (useCases.updateUserUseCase(userId, userUpdate.name)) {
+                when (useCases.updateUserUseCase(userId, userUpdate.username)) {
                     UpdateUserUseCase.Result.Failed -> {
                         call.respond(HttpStatusCode.Conflict, "Something went wrong")
                         return@patch
