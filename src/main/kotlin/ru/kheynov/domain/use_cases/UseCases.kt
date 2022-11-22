@@ -23,7 +23,7 @@ class UseCases(
 
     val registerUserUseCase = RegisterUserUseCase(usersRepository)
     val deleteUserUseCase = DeleteUserUseCase(usersRepository)
-    val authenticateUserUseCase = AuthenticateUserUseCase(usersRepository, gameRepository)
+    val authenticateUserUseCase = AuthenticateUserUseCase(usersRepository)
     val updateUserUseCase = UpdateUserUseCase(usersRepository)
 
 
