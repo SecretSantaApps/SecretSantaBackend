@@ -13,6 +13,7 @@ class KickUserUseCase(
         object RoomNotFound : Result
         object UserNotFound : Result
         object GameAlreadyStarted : Result
+        object NotAllowed : Result
     }
 
     private val usersRepository = gameRepositories.first
@@ -29,6 +30,7 @@ class KickUserUseCase(
         val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
         if (room.ownerId != selfId) return Result.Forbidden
         if (room.gameStarted) return Result.GameAlreadyStarted
+        if (selfId == userId) return Result.NotAllowed
         return if (gameRepository.deleteFromRoom(
                 roomName = roomName,
                 userId = userId,

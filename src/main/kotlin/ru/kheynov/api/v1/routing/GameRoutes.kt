@@ -160,7 +160,12 @@ fun Route.configureGameRoutes(
                     }
 
                     KickUserUseCase.Result.UserNotInRoom -> {
-                        call.respond(HttpStatusCode.Forbidden, "User not in the room")
+                        call.respond(HttpStatusCode.BadRequest, "User not in the room")
+                        return@post
+                    }
+
+                    KickUserUseCase.Result.NotAllowed -> {
+                        call.respond(HttpStatusCode.BadRequest, "You should use /leave instead of /kick")
                         return@post
                     }
                 }
@@ -207,7 +212,7 @@ fun Route.configureGameRoutes(
                     }
 
                     StartGameUseCase.Result.NotEnoughPlayers -> {
-                        call.respond(HttpStatusCode.Conflict, "Not enough users to start playing")
+                        call.respond(HttpStatusCode.BadRequest, "Not enough users to start playing")
                         return@post
                     }
 
