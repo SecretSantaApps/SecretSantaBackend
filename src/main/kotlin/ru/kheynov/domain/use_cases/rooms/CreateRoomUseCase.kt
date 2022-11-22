@@ -27,7 +27,7 @@ class CreateRoomUseCase(
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
         if (roomsRepository.getRoomByName(roomName) != null) return Result.RoomAlreadyExists
         val room = Room(
-            password = password ?: getRandomPassword(),
+            password = if (password.isNullOrBlank()) getRandomPassword() else password,
             name = roomName,
             date = date,
             ownerId = userId,

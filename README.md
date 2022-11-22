@@ -53,17 +53,19 @@ docker-compose down
 ```Authorization: Bearer $token$```
 где $token$ – токен, полученный из клиента Firebase.
 
+[Документация](https://firebase.google.com/docs/auth/admin/verify-id-tokens?hl=en&authuser=6&skip_cache=true#web)
+
 Общие коды ответа:
 
-```401 Unauthorized``` – token expired or invalid
+```401 Unauthorized``` – Token expired or invalid
 
-```200 OK``` - operation performed successfully
+```200 OK``` - Operation performed successfully
 
 ```409 Conflict``` - Entity already exists
 
 ```400 Bad Request``` - Request body invalid or entity not found
 
-[Документация](https://firebase.google.com/docs/auth/admin/verify-id-tokens?hl=en&authuser=6&skip_cache=true#web)
+```403 Forbidden``` - Current user not allowed to perform this operation
 
 ## 1) Пользователи
 
@@ -77,7 +79,7 @@ body:
 	"name": "Ivan" 
 }
 
-Response: 200 OK / 409 «Something went wrong» / 409 «User already exists»
+Response: 200 OK / 500 «Something went wrong» / 409 «User already exists»
 ```
 
 ### Удаление пользователя
@@ -85,7 +87,7 @@ Response: 200 OK / 409 «Something went wrong» / 409 «User already exists»
 ```http request
 DELETE /api/v1/user
 
-Response: 200 OK / 409 «Something went wrong» / 400 «User not exists»
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists»
 ```
 
 ### Обновление пользователя
@@ -98,7 +100,7 @@ body:
 	"name": "Ivan"
 }
 
-Response: 200 OK / 409 «Something went wrong» / 400 «User not exists»
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists»
 ```
 
 ### Аутентификация (верификация токена)
@@ -134,12 +136,12 @@ Request:
 	"room_name": "room1"
 }
 
-Response: 200 OK / 409 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
 
 body:
 
 {
-	"userId": "UwsdfgergdfDUFf2",
+	"user_id": "UwsdfgergdfDUFf2",
 	"username": "Ivan"
 }
 ```
@@ -155,19 +157,76 @@ body:
 ```http request
 POST /api/v1/room
 
-Request:
+body:
 {
 	"room_name":"room1",
 	"password":"123456", --optional
-	"max_price":1000 --optional
+	"max_price":1000, --optional 
+	"date": "2020-01-31" --optional
 }
 
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 409 «Room already exists»
+
+body:
 {
 	"room_name": "room1",
 	"password": "123456",
+	"date": "2021-01-31",
 	"owner_id": "UwsdfgergdfDUFf2",
 	"max_price": 1000
 }
 ```
 
-###   
+### Удаление комнаты
+
+```http request
+DELETE /api/v1/room
+
+body:
+{
+	"room_name":"room1"
+}
+
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
+```
+
+### Обновление данных комнаты
+
+```http request
+PATCH /api/v1/room
+
+body:
+{
+	"room_name":"room1",
+	"password": "2341234", --optional
+	"date": 2020-01-31 --optional
+}
+
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden
+```
+
+### Получения информации о комнате (для администраторов)
+
+```http request
+GET /api/v1/room
+
+body:
+{
+	"room_name":"room1"
+}
+
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden
+
+body:
+{
+	"room_name": "room1",
+	"password": "123456",
+	"date": "2021-01-31",
+	"owner_id": "UwsdfgergdfDUFf2",
+	"max_price": 1000
+}
+```
+
+---
+
+---

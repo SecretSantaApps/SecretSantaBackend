@@ -31,7 +31,7 @@ fun Route.configureGameRoutes(
                 )
                 when (res) {
                     JoinRoomUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -46,7 +46,7 @@ fun Route.configureGameRoutes(
                     }
 
                     JoinRoomUseCase.Result.RoomNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not found")
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
                         return@post
                     }
 
@@ -56,7 +56,7 @@ fun Route.configureGameRoutes(
                     }
 
                     JoinRoomUseCase.Result.UserNotFound -> {
-                        call.respond(HttpStatusCode.Conflict, "User not found")
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@post
                     }
 
@@ -82,7 +82,7 @@ fun Route.configureGameRoutes(
                 )
                 when (res) {
                     LeaveRoomUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -92,7 +92,7 @@ fun Route.configureGameRoutes(
                     }
 
                     LeaveRoomUseCase.Result.RoomNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not found")
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
                         return@post
                     }
 
@@ -102,7 +102,7 @@ fun Route.configureGameRoutes(
                     }
 
                     LeaveRoomUseCase.Result.UserNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "User not found")
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@post
                     }
 
@@ -130,7 +130,7 @@ fun Route.configureGameRoutes(
                 )
                 when (res) {
                     KickUserUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -145,7 +145,7 @@ fun Route.configureGameRoutes(
                     }
 
                     KickUserUseCase.Result.RoomNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not found")
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
                         return@post
                     }
 
@@ -155,12 +155,12 @@ fun Route.configureGameRoutes(
                     }
 
                     KickUserUseCase.Result.UserNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "User not found")
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@post
                     }
 
                     KickUserUseCase.Result.UserNotInRoom -> {
-                        call.respond(HttpStatusCode.Forbidden, "User not in room")
+                        call.respond(HttpStatusCode.Forbidden, "User not in the room")
                         return@post
                     }
                 }
@@ -182,7 +182,7 @@ fun Route.configureGameRoutes(
 
                 when (res) {
                     StartGameUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.BadRequest, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -197,22 +197,22 @@ fun Route.configureGameRoutes(
                     }
 
                     StartGameUseCase.Result.RoomNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not found")
-                        return@post
-                    }
-
-                    StartGameUseCase.Result.Successful -> {
-                        call.respond(HttpStatusCode.OK)
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
                         return@post
                     }
 
                     StartGameUseCase.Result.UserNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "User not found")
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@post
                     }
 
                     StartGameUseCase.Result.NotEnoughPlayers -> {
                         call.respond(HttpStatusCode.Conflict, "Not enough users to start playing")
+                        return@post
+                    }
+
+                    StartGameUseCase.Result.Successful -> {
+                        call.respond(HttpStatusCode.OK)
                         return@post
                     }
                 }
@@ -234,7 +234,7 @@ fun Route.configureGameRoutes(
                 )
                 when (res) {
                     StopGameUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.BadRequest, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -249,17 +249,17 @@ fun Route.configureGameRoutes(
                     }
 
                     StopGameUseCase.Result.RoomNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not found")
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
+                        return@post
+                    }
+
+                    StopGameUseCase.Result.UserNotFound -> {
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@post
                     }
 
                     StopGameUseCase.Result.Successful -> {
                         call.respond(HttpStatusCode.OK)
-                        return@post
-                    }
-
-                    StopGameUseCase.Result.UserNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "User not found")
                         return@post
                     }
                 }
@@ -287,17 +287,17 @@ fun Route.configureGameRoutes(
                     }
 
                     GetGameInfoUseCase.Result.RoomNotExists -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not Exists")
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
+                        return@get
+                    }
+
+                    GetGameInfoUseCase.Result.UserNotExists -> {
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@get
                     }
 
                     is GetGameInfoUseCase.Result.Successful -> {
                         call.respond(HttpStatusCode.OK, res.info)
-                        return@get
-                    }
-
-                    GetGameInfoUseCase.Result.UserNotExists -> {
-                        call.respond(HttpStatusCode.BadRequest, "User not Exists")
                         return@get
                     }
                 }

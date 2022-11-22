@@ -33,7 +33,7 @@ fun Route.configureUserRoutes(
 
                 when (useCases.registerUserUseCase(user)) {
                     RegisterUserUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -87,7 +87,7 @@ fun Route.configureUserRoutes(
                 )
                 when (res) {
                     GetUserDetailsUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@get
                     }
 
@@ -113,7 +113,7 @@ fun Route.configureUserRoutes(
                 val userId = call.principal<UserAuth>()?.userId.toString()
                 when (useCases.deleteUserUseCase(userId)) {
                     DeleteUserUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@delete
                     }
 
@@ -150,7 +150,7 @@ fun Route.configureUserRoutes(
                 }
                 when (useCases.updateUserUseCase(userId, userUpdate.username)) {
                     UpdateUserUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@patch
                     }
 

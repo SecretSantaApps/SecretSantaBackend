@@ -77,7 +77,7 @@ fun Route.configureRoomsRoutes(
                 )
                 when (res) {
                     CreateRoomUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -87,11 +87,11 @@ fun Route.configureRoomsRoutes(
                     }
 
                     is CreateRoomUseCase.Result.Successful -> {
-                        val joinRequest = useCases.joinRoomUseCase(user.userId, request.name, request.password)
+                        val joinRequest = useCases.joinRoomUseCase(user.userId, res.room.name, res.room.password)
                         if (joinRequest is JoinRoomUseCase.Result.Successful)
                             call.respond(HttpStatusCode.OK, res.room)
                         else
-                            call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                            call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -114,7 +114,7 @@ fun Route.configureRoomsRoutes(
                 }
                 when (useCases.deleteRoomUseCase(user.userId, request.roomName)) {
                     DeleteRoomUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@delete
                     }
 
@@ -124,7 +124,7 @@ fun Route.configureRoomsRoutes(
                     }
 
                     DeleteRoomUseCase.Result.RoomNotExists -> {
-                        call.respond(HttpStatusCode.Conflict, "Room not exists")
+                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
                         return@delete
                     }
 
@@ -134,7 +134,7 @@ fun Route.configureRoomsRoutes(
                     }
 
                     DeleteRoomUseCase.Result.UserNotExists -> {
-                        call.respond(HttpStatusCode.Conflict, "User Not Exists")
+                        call.respond(HttpStatusCode.BadRequest, "User Not Exists")
                         return@delete
                     }
                 }
@@ -159,7 +159,7 @@ fun Route.configureRoomsRoutes(
                 )
                 when (useCases.updateRoomUseCase(userId, roomUpdateRequest.name, roomUpdate)) {
                     UpdateRoomUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.Conflict, "Something went wrong")
+                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@patch
                     }
 
