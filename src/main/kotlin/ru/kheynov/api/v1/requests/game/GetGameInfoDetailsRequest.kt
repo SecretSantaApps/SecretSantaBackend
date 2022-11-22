@@ -4,6 +4,6 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-class GetGameInfoDetailsRequest(
+data class GetGameInfoDetailsRequest(
     @SerialName("room_name") val roomName: String,
 )
