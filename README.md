@@ -125,8 +125,7 @@ GET /api/v1/user
 Response: 
 {
 	"user_id": "UwsdfgergdfDUFf2",
-	"username": "Ivan",
-	"recipient": "Kasldhg35tkRwsoyte" -- если игра начата
+	"username": "Ivan"
 }
 
 Response: 200 OK / 400 «User not exists»
@@ -134,13 +133,16 @@ Response: 200 OK / 400 «User not exists»
 
 ### Получение информации о пользователе в определённой комнате по определённому user_id
 
+**При помощи этой команды также можно получить данные о своём получателе подарка, если игра в комнате начата, для этого
+необходимо не указывать поле ```user_id``` и указать комнату**
+
 ```http request
 GET /api/v1/user/info
 
 Request: 
 {
-	"user_id": "UwsdfgergdfDUFf2",
-	"room_name": "room1"
+	"user_id": "UwsdfgergdfDUFf2", -- optional
+	"room_name": "room1" -- optional
 }
 
 Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
@@ -149,7 +151,8 @@ body:
 
 {
 	"user_id": "UwsdfgergdfDUFf2",
-	"username": "Ivan"
+	"username": "Ivan",
+	"recipient": "Kasldhg35tkRwsoyte" -- если игра начата
 }
 ```
 
@@ -295,7 +298,8 @@ Response:
 
 ### Начало игры
 
-**При вызове это команды (администратором), заблокируется вход и выход участников из комнаты, а также автоматически будут
+**При вызове это команды (администратором), заблокируется вход и выход участников из комнаты, а также автоматически
+будут
 распределены получатели подарков.**
 
 ```http request
