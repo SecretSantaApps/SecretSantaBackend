@@ -11,6 +11,7 @@ import ru.kheynov.api.v1.requests.users.GetUserDetailsRequest
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
 import ru.kheynov.domain.entities.User
 import ru.kheynov.domain.use_cases.UseCases
+import ru.kheynov.domain.use_cases.getRandomUsername
 import ru.kheynov.domain.use_cases.users.DeleteUserUseCase
 import ru.kheynov.domain.use_cases.users.GetUserDetailsUseCase
 import ru.kheynov.domain.use_cases.users.RegisterUserUseCase
@@ -31,7 +32,7 @@ fun Route.configureUserRoutes(
                     return@post
                 }
                 val user = User(
-                    userAuth.userId, userInfo?.username ?: userAuth.displayName
+                    userAuth.userId, userInfo?.username ?: userAuth.displayName ?: "Guest-${getRandomUsername()}"
                 )
 
                 when (useCases.registerUserUseCase(user)) {
