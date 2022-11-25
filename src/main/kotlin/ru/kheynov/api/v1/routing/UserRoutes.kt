@@ -11,6 +11,7 @@ import ru.kheynov.api.v1.requests.users.GetUserDetailsRequest
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
 import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.domain.use_cases.UseCases
+import ru.kheynov.domain.use_cases.rooms.GetUserRoomsUseCase
 import ru.kheynov.domain.use_cases.users.DeleteUserUseCase
 import ru.kheynov.domain.use_cases.users.GetUserDetailsUseCase
 import ru.kheynov.domain.use_cases.users.RegisterUserUseCase
@@ -85,6 +86,26 @@ fun Route.configureUserRoutes(
                     }
                 }
 
+            }
+        }
+
+        authenticate(FIREBASE_AUTH) {
+            get("/rooms") {
+                val user = call.principal<UserAuth>() ?: run {
+                    call.respond(HttpStatusCode.Unauthorized)
+                    return@get
+                }
+                when (val res = useCases.getUserRoomsUseCase(userId = user.userId)) {
+                    is GetUserRoomsUseCase.Result.Successful -> {
+                        call.respond(HttpStatusCode.OK, res.rooms)
+                        return@get
+                    }
+
+                    GetUserRoomsUseCase.Result.UserNotExists -> {
+                        call.respond(HttpStatusCode.BadRequest, "User not exists")
+                        return@get
+                    }
+                }
             }
         }
 

@@ -1,6 +1,7 @@
 package ru.kheynov.domain.repositories
 
 import ru.kheynov.domain.entities.Room
+import ru.kheynov.domain.entities.RoomInfo
 import ru.kheynov.domain.entities.RoomUpdate
 
 interface RoomsRepository {
@@ -8,4 +9,5 @@ interface RoomsRepository {
     suspend fun deleteRoomByName(name: String): Boolean
     suspend fun getRoomByName(name: String): Room?
     suspend fun updateRoomByName(name: String, newRoomData: RoomUpdate): Boolean
+    suspend fun getUserRooms(userId: String): List<RoomInfo>
 }

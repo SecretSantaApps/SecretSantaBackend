@@ -21,3 +21,13 @@ data class RoomUpdate(
     @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
     @SerialName("max_price") val maxPrice: Int? = null,
 )
+
+@Serializable
+data class RoomInfo(
+    @SerialName("room_name") val name: String,
+    @Serializable(with = LocalDateSerializer::class) val date: LocalDate?,
+    @SerialName("owner_id") val ownerId: String,
+    @SerialName("max_price") val maxPrice: Int? = null,
+    @SerialName("game_started") val gameStarted: Boolean = false,
+    @SerialName("members_count") val membersCount: Int,
+)

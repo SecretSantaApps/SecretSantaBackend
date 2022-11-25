@@ -1,12 +1,12 @@
 package ru.kheynov.data.repositories.rooms
 
 import org.ktorm.database.Database
-import org.ktorm.dsl.eq
-import org.ktorm.entity.add
-import org.ktorm.entity.find
-import org.ktorm.entity.sequenceOf
+import org.ktorm.dsl.*
+import org.ktorm.entity.*
+import ru.kheynov.data.entities.RoomMembers
 import ru.kheynov.data.entities.Rooms
 import ru.kheynov.domain.entities.Room
+import ru.kheynov.domain.entities.RoomInfo
 import ru.kheynov.domain.entities.RoomUpdate
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.utils.mapToRoom
@@ -44,4 +44,28 @@ class PostgresRoomsRepository(
         val affectedRows = room.flushChanges()
         return affectedRows == 1
     }
+
+    override suspend fun getUserRooms(userId: String): List<RoomInfo> =
+        database.from(Rooms).innerJoin(RoomMembers, on = Rooms.name eq RoomMembers.roomName).select(
+            Rooms.name,
+            Rooms.date,
+            Rooms.ownerId,
+            Rooms.ownerId,
+            Rooms.gameStarted,
+        ).where {
+            RoomMembers.userId eq userId
+        }.map { room ->
+            val membersCount =
+                database.sequenceOf(RoomMembers)
+                    .filter { it.roomName eq (room[Rooms.name] ?: "") }
+                    .aggregateColumns { count(it.userId) }
+            RoomInfo(
+                room[Rooms.name] ?: "",
+                room[Rooms.date],
+                room[Rooms.ownerId] ?: "",
+                room[Rooms.maxPrice],
+                room[Rooms.gameStarted] ?: false,
+                membersCount ?: 0,
+            )
+        }
 }
