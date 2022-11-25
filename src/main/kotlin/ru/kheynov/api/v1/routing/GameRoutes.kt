@@ -7,10 +7,10 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.game.*
+import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.game.*
 import ru.kheynov.security.firebase.auth.FIREBASE_AUTH
-import ru.kheynov.security.firebase.auth.UserAuth
 
 fun Route.configureGameRoutes(
     useCases: UseCases,

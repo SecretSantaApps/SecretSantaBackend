@@ -18,7 +18,7 @@ import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase
 import ru.kheynov.domain.use_cases.rooms.GetRoomDetailsUseCase
 import ru.kheynov.domain.use_cases.rooms.UpdateRoomUseCase
 import ru.kheynov.security.firebase.auth.FIREBASE_AUTH
-import ru.kheynov.security.firebase.auth.UserAuth
+import ru.kheynov.domain.entities.UserAuth
 
 fun Route.configureRoomsRoutes(
     useCases: UseCases,

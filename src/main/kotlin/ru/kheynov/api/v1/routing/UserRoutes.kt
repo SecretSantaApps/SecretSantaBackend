@@ -9,15 +9,13 @@ import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.users.CreateUserRequest
 import ru.kheynov.api.v1.requests.users.GetUserDetailsRequest
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
-import ru.kheynov.domain.entities.User
+import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.domain.use_cases.UseCases
-import ru.kheynov.domain.use_cases.getRandomUsername
 import ru.kheynov.domain.use_cases.users.DeleteUserUseCase
 import ru.kheynov.domain.use_cases.users.GetUserDetailsUseCase
 import ru.kheynov.domain.use_cases.users.RegisterUserUseCase
 import ru.kheynov.domain.use_cases.users.UpdateUserUseCase
 import ru.kheynov.security.firebase.auth.FIREBASE_AUTH
-import ru.kheynov.security.firebase.auth.UserAuth
 
 
 fun Route.configureUserRoutes(
@@ -31,8 +29,8 @@ fun Route.configureUserRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@post
                 }
-                val user = User(
-                    userAuth.userId, userInfo?.username ?: userAuth.displayName ?: "Guest-${getRandomUsername()}"
+                val user = UserAuth(
+                    userAuth.userId, userInfo?.username ?: userAuth.displayName
                 )
 
                 when (useCases.registerUserUseCase(user)) {
@@ -59,6 +57,7 @@ fun Route.configureUserRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
+
                 val res = useCases.getUserDetailsUseCase(
                     userId = user.userId,
                     selfId = user.userId,

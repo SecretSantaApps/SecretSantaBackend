@@ -14,8 +14,8 @@ import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.slf4j.event.Level
 import ru.kheynov.api.v1.routing.v1Routes
+import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.security.firebase.auth.FirebaseAdmin
-import ru.kheynov.security.firebase.auth.UserAuth
 import ru.kheynov.security.firebase.auth.firebase
 
 fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
@@ -65,7 +65,7 @@ fun Application.configureFirebaseAuth() {
     install(Authentication) {
         firebase {
             validate {
-                UserAuth(it.uid, it.name)
+                UserAuth(it.uid, it.name ?: it.email ?: "")
             }
         }
     }

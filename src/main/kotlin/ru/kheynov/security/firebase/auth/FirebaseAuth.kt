@@ -9,6 +9,7 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import ru.kheynov.domain.entities.UserAuth
 
 class FirebaseAuthProvider(config: FirebaseConfig) : AuthenticationProvider(config) {
     val authHeader: (ApplicationCall) -> HttpAuthHeader? = config.authHeader
