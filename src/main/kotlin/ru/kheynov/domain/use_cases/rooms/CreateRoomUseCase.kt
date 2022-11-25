@@ -3,8 +3,8 @@ package ru.kheynov.domain.use_cases.rooms
 import ru.kheynov.domain.entities.Room
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
+import ru.kheynov.domain.use_cases.getRandomPassword
 import java.time.LocalDate
-import java.util.*
 
 class CreateRoomUseCase(
     private val usersRepository: UsersRepository,
@@ -37,5 +37,3 @@ class CreateRoomUseCase(
         return if (roomsRepository.createRoom(room)) Result.Successful(room) else Result.Failed
     }
 }
-
-private fun getRandomPassword(): String = UUID.randomUUID().toString().subSequence(0..6).toString()
