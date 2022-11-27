@@ -1,11 +1,12 @@
 package ru.kheynov.domain.entities
 
 import io.ktor.server.auth.*
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class User(
-    val userId: String,
+    @SerialName("user_id") val userId: String,
     val username: String,
     val recipient: String? = null,
 )
