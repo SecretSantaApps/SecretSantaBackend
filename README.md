@@ -122,14 +122,37 @@ Response: 200 OK / 401 Unauthorized
 ```http request
 GET /api/v1/user
 
-Response: 
+Response: 200 OK / 400 «User not exists»
+body: 
 {
 	"user_id": "UwsdfgergdfDUFf2",
 	"username": "Ivan"
 }
+```
+
+### Получение информации о комнатах, в которых состоит пользователь
+
+```http request
+GET /api/v1/user/rooms
 
 Response: 200 OK / 400 «User not exists»
+body: 
+[
+	{
+		"room_name": "room1",
+		"date": "2021-01-31",
+		"owner_id": "8Svq6y9zMhYQt6u48",
+		"members_count": 2
+	},
+	{
+		"room_name": "room2",
+		"date": "2021-01-31",
+		"owner_id": "pHEIpLQPv8YOqzn06",
+		"members_count": 3
+	}
+]
 ```
+
 
 ### Получение информации о пользователе в определённой комнате по определённому user_id
 
