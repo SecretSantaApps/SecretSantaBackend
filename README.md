@@ -82,7 +82,7 @@ POST /api/v1/user
 
 body:
 {
-	"name": "Ivan" -- optional (если не указано, будет использовано имя из Firebase)
+	"username": "Ivan" -- optional (если не указано, будет использовано имя из Firebase)
 }
 
 Response: 200 OK / 500 «Something went wrong» / 409 «User already exists»
@@ -103,7 +103,7 @@ PATCH /api/v1/user
 
 body:
 {
-	"name": "Ivan"
+	"username": "Ivan"
 }
 
 Response: 200 OK / 500 «Something went wrong» / 400 «User not exists»
