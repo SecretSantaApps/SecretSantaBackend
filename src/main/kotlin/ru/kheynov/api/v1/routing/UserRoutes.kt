@@ -90,6 +90,28 @@ fun Route.configureUserRoutes(
         }
 
         authenticate(FIREBASE_AUTH) {
+            head {
+                val user = call.principal<UserAuth>() ?: run {
+                    call.respond(HttpStatusCode.Unauthorized)
+                    return@head
+                }
+
+                val res = useCases.getUserDetailsUseCase(
+                    userId = user.userId,
+                    selfId = user.userId,
+                    roomName = null
+                )
+                call.respond(
+                    when (res) {
+                        is GetUserDetailsUseCase.Result.Successful -> HttpStatusCode.OK
+                        GetUserDetailsUseCase.Result.UserNotFound -> HttpStatusCode.BadRequest
+                        else -> HttpStatusCode.InternalServerError
+                    }
+                )
+            }
+        }
+
+        authenticate(FIREBASE_AUTH) {
             get("/rooms") {
                 val user = call.principal<UserAuth>() ?: run {
                     call.respond(HttpStatusCode.Unauthorized)
