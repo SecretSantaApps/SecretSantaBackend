@@ -9,7 +9,6 @@ import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.users.CreateUserRequest
 import ru.kheynov.api.v1.requests.users.GetUserDetailsRequest
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
-import ru.kheynov.api.v1.responses.UserName
 import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.rooms.GetUserRoomsUseCase
@@ -88,16 +87,6 @@ fun Route.configureUserRoutes(
                     }
                 }
 
-            }
-        }
-
-        authenticate(FIREBASE_AUTH) {
-            get("/name") {
-                val user = call.principal<UserAuth>() ?: run {
-                    call.respond(HttpStatusCode.Unauthorized)
-                    return@get
-                }
-                call.respond(HttpStatusCode.OK, UserName(user.displayName ?: ""))
             }
         }
 

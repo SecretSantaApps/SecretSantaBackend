@@ -130,19 +130,6 @@ body:
 }
 ```
 
-### Получение имени пользователя (или email) из токена firebase (если есть)
-
-```http request
-GET /api/v1/user/name
-
-Response: 200 OK 
-body: 
-{
-  "username": "Ivan Petrov"
-}
-
-```
-
 ### Получение информации о комнатах, в которых состоит пользователь
 
 ```http request
