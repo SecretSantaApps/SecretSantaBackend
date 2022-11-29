@@ -9,6 +9,7 @@ import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.users.CreateUserRequest
 import ru.kheynov.api.v1.requests.users.GetUserDetailsRequest
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
+import ru.kheynov.api.v1.responses.UserName
 import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.rooms.GetUserRoomsUseCase
@@ -31,7 +32,8 @@ fun Route.configureUserRoutes(
                     return@post
                 }
                 val user = UserAuth(
-                    userAuth.userId, userInfo?.username ?: userAuth.displayName
+                    userAuth.userId,
+                    if (userInfo?.username.isNullOrBlank()) userAuth.displayName else userInfo?.username
                 )
 
                 when (useCases.registerUserUseCase(user)) {
@@ -90,24 +92,12 @@ fun Route.configureUserRoutes(
         }
 
         authenticate(FIREBASE_AUTH) {
-            head {
+            get("/name") {
                 val user = call.principal<UserAuth>() ?: run {
                     call.respond(HttpStatusCode.Unauthorized)
-                    return@head
+                    return@get
                 }
-
-                val res = useCases.getUserDetailsUseCase(
-                    userId = user.userId,
-                    selfId = user.userId,
-                    roomName = null
-                )
-                call.respond(
-                    when (res) {
-                        is GetUserDetailsUseCase.Result.Successful -> HttpStatusCode.OK
-                        GetUserDetailsUseCase.Result.UserNotFound -> HttpStatusCode.BadRequest
-                        else -> HttpStatusCode.InternalServerError
-                    }
-                )
+                call.respond(HttpStatusCode.OK, UserName(user.displayName ?: ""))
             }
         }
 
