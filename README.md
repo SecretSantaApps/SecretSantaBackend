@@ -369,6 +369,9 @@ Response:
 body:
 {
 	"room_name": "room1",
+	"owner_id": "8Svq6y9zMhYQt6u",
+	"date": "2023-01-31",
+	"max_price": 1000,
 	"users": [
 		{
 			"userId": "8Svq6y9zMhYQt6u",

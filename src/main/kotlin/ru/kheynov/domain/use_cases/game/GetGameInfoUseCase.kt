@@ -23,13 +23,16 @@ class GetGameInfoUseCase(
         roomName: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
-        if (roomsRepository.getRoomByName(roomName) == null) return Result.RoomNotExists
+        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotExists
         val users = gameRepository.getUsersInRoom(roomName)
         if (users.find { it.userId == userId } == null) return Result.Forbidden
         val info = InfoDetails(
             roomName,
+            ownerId = room.ownerId,
+            date = room.date,
+            maxPrice = room.maxPrice,
             users = users.map { UserInfo(it.userId, it.username) },
-            gameRepository.getUsersRecipient(roomName, userId)
+            recipient = gameRepository.getUsersRecipient(roomName, userId)
         )
         return Result.Successful(info)
     }

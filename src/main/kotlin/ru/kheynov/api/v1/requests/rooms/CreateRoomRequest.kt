@@ -10,6 +10,5 @@ data class CreateRoomRequest(
     @SerialName("room_name") val name: String,
     val password: String?,
     val date: @Serializable(with = LocalDateSerializer::class) LocalDate?,
-    @SerialName("max_price")
-    val maxPrice: Int?,
+    @SerialName("max_price") val maxPrice: Int?,
 )
