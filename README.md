@@ -231,7 +231,8 @@ body:
 {
 	"room_name":"room1",
 	"password": "2341234", --optional
-	"date": "2020-01-31" --optional
+	"date": "2020-01-31", --optional
+	"max_price": "2000" --optional
 }
 
 Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden
