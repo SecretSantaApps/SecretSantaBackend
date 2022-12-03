@@ -13,6 +13,7 @@ data class Room(
     @SerialName("owner_id") val ownerId: String,
     @SerialName("max_price") val maxPrice: Int? = null,
     @SerialName("game_started") val gameStarted: Boolean = false,
+    @SerialName("members_count") val membersCount: Int,
 )
 
 @Serializable

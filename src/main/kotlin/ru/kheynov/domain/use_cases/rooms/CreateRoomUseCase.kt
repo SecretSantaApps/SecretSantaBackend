@@ -32,7 +32,8 @@ class CreateRoomUseCase(
             date = date,
             ownerId = userId,
             maxPrice = maxPrice,
-            gameStarted = false
+            gameStarted = false,
+            membersCount = 1
         )
         return if (roomsRepository.createRoom(room)) Result.Successful(room) else Result.Failed
     }
