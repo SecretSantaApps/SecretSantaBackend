@@ -13,7 +13,7 @@ data class User(
 
 @Serializable
 data class UserInfo(
-    val userId: String,
+    @SerialName("user_id") val userId: String,
     val username: String,
 )
 
