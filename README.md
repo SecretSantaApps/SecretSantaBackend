@@ -339,15 +339,10 @@ Response:
 ### Получение информации о комнате (Для всех пользователей)
 
 ```http request
-GET /api/v1/game/info
-
-body:
-{
-	"room_name":"room1"
-}
+GET /api/v1/game/info?roomName="room1"
 
 Response: 
-200 OK / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden
+200 OK / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden / 400 Wrong room name
 
 body:
 {
