@@ -29,6 +29,7 @@ class GetGameInfoUseCase(
         val info = InfoDetails(
             roomName,
             ownerId = room.ownerId,
+            password = if (userId == room.ownerId) room.password else null,
             date = room.date,
             maxPrice = room.maxPrice,
             users = users.map { UserInfo(it.userId, it.username) },
