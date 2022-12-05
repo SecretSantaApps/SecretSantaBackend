@@ -153,19 +153,10 @@ body:
 ]
 ```
 
-### Получение информации о пользователе в определённой комнате по определённому user_id
-
-**При помощи этой команды также можно получить данные о своём получателе подарка, если игра в комнате начата, для этого
-необходимо не указывать поле ```user_id``` и указать комнату**
+### Получение информации о другом пользователе
 
 ```http request
-GET /api/v1/user/info
-
-Request: 
-{
-	"user_id": "UwsdfgergdfDUFf2", -- optional
-	"room_name": "room1" -- optional
-}
+GET /api/v1/user?id="UwsdfgergdfDUFf2"
 
 Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
 
@@ -212,14 +203,9 @@ body:
 ### Удаление комнаты
 
 ```http request
-DELETE /api/v1/room
+DELETE /api/v1/room?name="room 1"
 
-body:
-{
-	"room_name":"room1"
-}
-
-Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 400 «Wrong room name»
 ```
 
 ### Обновление данных комнаты
@@ -241,14 +227,10 @@ Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 
 ### Получения информации о комнате (для администраторов)
 
 ```http request
-GET /api/v1/room
+GET /api/v1/room?name=room1
 
-body:
-{
-	"room_name":"room1"
-}
 
-Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden / 400 «Wrong room name»
 
 body:
 {

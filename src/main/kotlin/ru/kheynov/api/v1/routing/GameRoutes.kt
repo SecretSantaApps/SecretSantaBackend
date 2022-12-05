@@ -276,13 +276,13 @@ fun Route.configureGameRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
-                val request = call.receiveNullable<GetGameInfoDetailsRequest>() ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
+                val request = call.request.queryParameters["roomName"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong room name")
                     return@get
                 }
                 val res = useCases.getGameInfoUseCase(
                     userId = user.userId,
-                    roomName = request.roomName
+                    roomName = request
                 )
 
                 when (res) {

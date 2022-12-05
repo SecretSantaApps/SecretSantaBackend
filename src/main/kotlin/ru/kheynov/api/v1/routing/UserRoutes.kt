@@ -7,7 +7,6 @@ import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.users.CreateUserRequest
-import ru.kheynov.api.v1.requests.users.GetUserDetailsRequest
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
 import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.domain.use_cases.UseCases
@@ -53,49 +52,15 @@ fun Route.configureUserRoutes(
                 }
             }
         }
-        authenticate(FIREBASE_AUTH) { //get user info
-            get {
-                val user = call.principal<UserAuth>() ?: run {
-                    call.respond(HttpStatusCode.Unauthorized)
-                    return@get
-                }
-
-                val res = useCases.getUserDetailsUseCase(
-                    userId = user.userId,
-                    selfId = user.userId,
-                    roomName = null
-                )
-                when (res) {
-                    GetUserDetailsUseCase.Result.Failed -> {
-                        call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
-                        return@get
-                    }
-
-                    GetUserDetailsUseCase.Result.RoomNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
-                        return@get
-                    }
-
-                    is GetUserDetailsUseCase.Result.Successful -> {
-                        call.respond(HttpStatusCode.OK, res.user)
-                        return@get
-                    }
-
-                    GetUserDetailsUseCase.Result.UserNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "User not exists")
-                        return@get
-                    }
-                }
-
-            }
-        }
 
         authenticate(FIREBASE_AUTH) {
             get("/rooms") {
+
                 val user = call.principal<UserAuth>() ?: run {
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
+
                 when (val res = useCases.getUserRoomsUseCase(userId = user.userId)) {
                     is GetUserRoomsUseCase.Result.Successful -> {
                         call.respond(HttpStatusCode.OK, res.rooms)
@@ -111,19 +76,14 @@ fun Route.configureUserRoutes(
         }
 
         authenticate(FIREBASE_AUTH) {
-            get("/info") {
+            get {
                 val user = call.principal<UserAuth>() ?: run {
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
-                val request = call.receiveNullable<GetUserDetailsRequest>() ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
+                val request = call.request.queryParameters["id"]
                 val res = useCases.getUserDetailsUseCase(
-                    userId = request.userId ?: user.userId,
-                    selfId = user.userId,
-                    roomName = request.roomName
+                    userId = request ?: user.userId,
                 )
                 when (res) {
                     GetUserDetailsUseCase.Result.Failed -> {
