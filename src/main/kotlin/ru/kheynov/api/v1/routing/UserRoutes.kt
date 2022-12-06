@@ -100,11 +100,6 @@ fun Route.configureUserRoutes(
                         call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@get
                     }
-
-                    GetUserDetailsUseCase.Result.RoomNotFound -> {
-                        call.respond(HttpStatusCode.BadRequest, "Room not exists")
-                        return@get
-                    }
                 }
             }
         }

@@ -144,6 +144,10 @@ fun Route.configureRoomsRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@patch
                 }
+                val roomId = call.request.queryParameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong room id")
+                    return@patch
+                }
                 val roomUpdateRequest = call.receiveNullable<UpdateRoomRequest>() ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@patch
@@ -156,7 +160,7 @@ fun Route.configureRoomsRoutes(
                 )
                 when (useCases.updateRoomUseCase(
                     userId = userId,
-                    roomId = roomUpdateRequest.id,
+                    roomId = roomId,
                     roomUpdate = roomUpdate
                 )) {
                     UpdateRoomUseCase.Result.Failed -> {

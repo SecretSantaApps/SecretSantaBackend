@@ -10,7 +10,6 @@ class GetUserDetailsUseCase(
         data class Successful(val user: UserDTO.User) : Result
         object Failed : Result
         object UserNotFound : Result
-        object RoomNotFound : Result
     }
 
     private val usersRepository = gameRepositories.first

@@ -73,6 +73,8 @@ docker-compose logs
 
 ```403 Forbidden``` - Current user not allowed to perform this operation
 
+```400 Wrong room id``` - Wrong room id in query parameters
+
 ## 1) Пользователи
 
 ### Регистрация пользователя
@@ -140,12 +142,14 @@ body:
 [
 	{
 		"room_name": "room1",
+		"id": "080070e"
 		"date": "2021-01-31",
 		"owner_id": "8Svq6y9zMhYQt6u48",
 		"members_count": 2
 	},
 	{
 		"room_name": "room2",
+		"id": "sd3fsq5"
 		"date": "2021-01-31",
 		"owner_id": "pHEIpLQPv8YOqzn06",
 		"members_count": 3
@@ -156,16 +160,15 @@ body:
 ### Получение информации о другом пользователе
 
 ```http request
-GET /api/v1/user?id="UwsdfgergdfDUFf2"
+GET /api/v1/user?id=UwsdfgergdfDUFf2
 
-Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists»
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» 
 
 body:
 
 {
 	"user_id": "UwsdfgergdfDUFf2",
 	"username": "Ivan",
-	"recipient": "Kasldhg35tkRwsoyte" -- если игра начата
 }
 ```
 
@@ -194,6 +197,7 @@ body:
 {
 	"room_name": "room1",
 	"password": "123456",
+	"id": "080070e",
 	"date": "2021-01-31",
 	"owner_id": "UwsdfgergdfDUFf2",
 	"max_price": 1000
@@ -203,42 +207,44 @@ body:
 ### Удаление комнаты
 
 ```http request
-DELETE /api/v1/room?name="room 1"
+DELETE /api/v1/room?id=080070e
 
-Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 400 «Wrong room name»
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 400 «Wrong room id»
 ```
 
 ### Обновление данных комнаты
 
 ```http request
-PATCH /api/v1/room
+PATCH /api/v1/room?id=080070e
 
 body:
 {
-	"room_name":"room1",
+	"room_name":"room1", --optional
 	"password": "2341234", --optional
 	"date": "2020-01-31", --optional
 	"max_price": "2000" --optional
 }
 
-Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden / 400 «Wrong room id»
 ```
 
 ### Получения информации о комнате (для администраторов)
 
 ```http request
-GET /api/v1/room?name=room1
+GET /api/v1/room?id=080070e
 
 
-Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden / 400 «Wrong room name»
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden / 400 «Wrong room id»
 
 body:
 {
 	"room_name": "room1",
 	"password": "123456",
+	"id": "080070e",
 	"date": "2021-01-31",
 	"owner_id": "UwsdfgergdfDUFf2",
-	"max_price": 1000
+	"max_price": 1000,
+	"members_count": 1
 }
 ```
 
@@ -251,34 +257,25 @@ body:
 ### Подключение к игре (комнате)
 
 ```http request
-POST /api/v1/game/join
-
-body:
-{
-	"room_name":"room1",
-	"password":"123456"
-}
+POST /api/v1/game/join?id=080070e&pass=123456
 
 Response: 
 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden  
 409 «Game already started» - к уже начавшейся игре невозможно присоединиться
 409 «User already in room»
+400 «Wrong room id»
 
 ```
 
 ### Покидание комнаты
 
 ```http request
-POST /api/v1/game/leave
-
-body:
-{
-	"room_name":"room1"
-}
+POST /api/v1/game/leave?id=080070e
 
 Response: 
 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 «User not in the room»  
 409 «Game already started» - из начавшейся игры нельзя выйти
+400 «Wrong room id»
 ```
 
 **При покидании комнаты администратором, удаляется и комната**
@@ -291,7 +288,7 @@ POST /api/v1/game/kick
 body:
 {
 	"user_id":"UwsdfgergdfDUFf2",
-	"room_name":"room1"
+	"room_id":"080070e"
 }
 
 Response: 
@@ -308,12 +305,7 @@ Response:
 распределены получатели подарков.**
 
 ```http request
-POST /api/v1/game/start
-
-body:
-{
-	"room_name":"room1"
-}
+POST /api/v1/game/start?id=080070e
 
 Response: 
 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden  
@@ -324,31 +316,28 @@ Response:
 ### Остановка игры
 
 ```http request
-POST /api/v1/game/stop
-
-body:
-{
-	"room_name":"room1"
-}
+POST /api/v1/game/stop?id=080070e
 
 Response: 
 200 OK / 500 «Something went wrong» / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden  
 409 «Game already stopped» 
 ```
 
-### Получение информации о комнате (Для всех пользователей)
+### Получение информации о игре (Для всех пользователей)
 
 ```http request
-GET /api/v1/game/info?roomName="room1"
+GET /api/v1/game/info?id=080070e
 
 Response: 
 200 OK / 400 «User not exists» / 400 «Room not exists» / 403 Forbidden / 400 Wrong room name
 
 body:
 {
+  "room_id": "080070e",
 	"room_name": "room1",
 	"owner_id": "8Svq6y9zMhYQt6u",
 	"date": "2023-01-31",
+	"password": "d5f7496",
 	"max_price": 1000,
 	"users": [
 		{
