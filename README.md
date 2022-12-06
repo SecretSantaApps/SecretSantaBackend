@@ -188,7 +188,7 @@ body:
 	"date": "2020-01-31" --optional
 }
 
-Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» / 409 «Room already exists»
+Response: 200 OK / 500 «Something went wrong» / 400 «User not exists» 
 
 body:
 {

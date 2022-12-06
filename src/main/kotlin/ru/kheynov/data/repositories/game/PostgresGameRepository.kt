@@ -9,73 +9,72 @@ import ru.kheynov.data.entities.RoomMember
 import ru.kheynov.data.entities.RoomMembers
 import ru.kheynov.data.entities.Rooms
 import ru.kheynov.data.entities.Users
-import ru.kheynov.domain.entities.User
+import ru.kheynov.domain.entities.UserDTO
 import ru.kheynov.domain.repositories.GameRepository
 
 class PostgresGameRepository(
     private val database: Database,
 ) : GameRepository {
-    override suspend fun addToRoom(roomName: String, userId: String): Boolean {
+    override suspend fun addToRoom(roomId: String, userId: String): Boolean {
         val newMember = RoomMember {
-            this.roomName = database.sequenceOf(Rooms).find { it.name eq roomName } ?: return false
+            this.roomId = database.sequenceOf(Rooms).find { it.id eq roomId } ?: return false
             this.userId = database.sequenceOf(Users).find { it.userId eq userId } ?: return false
         }
         val affectedRows = database.sequenceOf(RoomMembers).add(newMember)
         return affectedRows == 1
     }
 
-    override suspend fun deleteFromRoom(roomName: String, userId: String): Boolean {
-        val affectedRows = database.delete(RoomMembers) { (it.userId eq userId) and (it.roomName eq roomName) }
+    override suspend fun deleteFromRoom(roomId: String, userId: String): Boolean {
+        val affectedRows = database.delete(RoomMembers) { (it.userId eq userId) and (it.roomId eq roomId) }
         return affectedRows == 1
     }
 
-    override suspend fun setRecipient(roomName: String, userId: String, recipientId: String): Boolean {
+    override suspend fun setRecipient(roomId: String, userId: String, recipientId: String): Boolean {
         val affectedRows = database.update(RoomMembers) {
             set(it.recipient, recipientId)
             where {
-                (it.userId eq userId) and (it.roomName eq roomName)
+                (it.userId eq userId) and (it.roomId eq roomId)
             }
         }
         return affectedRows == 1
     }
 
-    override suspend fun deleteRecipients(roomName: String): Boolean {
+    override suspend fun deleteRecipients(roomId: String): Boolean {
         val affectedRows = database.update(RoomMembers) {
             set(it.recipient, null)
-            where { it.roomName eq roomName }
+            where { it.roomId eq roomId }
         }
         return affectedRows > 0
     }
 
-    override suspend fun getUsersInRoom(roomName: String): List<User> {
-        println("Getting Users from room")
+    override suspend fun getUsersInRoom(roomId: String): List<UserDTO.User> {
         return database.from(RoomMembers).innerJoin(Users, on = RoomMembers.userId eq Users.userId)
             .select(Users.userId, Users.name).where {
-                RoomMembers.roomName eq roomName
+                RoomMembers.roomId eq roomId
             }.map { row ->
-                User(
+                UserDTO.User(
                     row[Users.userId] ?: "",
                     row[Users.name] ?: "",
                 )
             }
     }
 
-    override suspend fun getUsersRecipient(roomName: String, userId: String): String? {
+    override suspend fun getUsersRecipient(roomId: String, userId: String): String? {
         return database.sequenceOf(RoomMembers)
-            .find { (it.userId eq userId) and (it.roomName eq roomName) }?.recipient?.userId
+            .find { (it.userId eq userId) and (it.roomId eq roomId) }?.recipient?.userId
     }
 
-    override suspend fun setGameState(roomName: String, state: Boolean): Boolean {
+    override suspend fun setGameState(roomId: String, state: Boolean): Boolean {
         val affectedRows = database.update(Rooms) {
             set(it.gameStarted, state)
             where {
-                it.name eq roomName
+                it.id eq roomId
             }
         }
         return affectedRows == 1
     }
 
-    override suspend fun checkUserInRoom(roomName: String, userId: String): Boolean {
-        return database.sequenceOf(RoomMembers).find { (it.roomName eq roomName) and (it.userId eq userId) } != null
+    override suspend fun checkUserInRoom(roomId: String, userId: String): Boolean {
+        return database.sequenceOf(RoomMembers).find { (it.roomId eq roomId) and (it.userId eq userId) } != null
     }
 }

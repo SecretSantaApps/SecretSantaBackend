@@ -21,15 +21,15 @@ class JoinRoomUseCase(
 
     suspend operator fun invoke(
         userId: String,
-        roomName: String,
+        roomId: String,
         password: String?,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
-        if (gameRepository.checkUserInRoom(roomName, userId)) return Result.UserAlreadyInRoom
+        val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotFound
+        if (gameRepository.checkUserInRoom(roomId, userId)) return Result.UserAlreadyInRoom
         if (room.gameStarted) return Result.GameAlreadyStarted
         return if (room.password == password) {
-            if (gameRepository.addToRoom(room.name, userId)) Result.Successful
+            if (gameRepository.addToRoom(room.id, userId)) Result.Successful
             else Result.Failed
         } else Result.Forbidden
     }

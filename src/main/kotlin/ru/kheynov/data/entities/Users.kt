@@ -11,8 +11,7 @@ interface User : Entity<User> {
     var name: String
 }
 
-
 object Users : Table<User>("users") {
-    var userId = text("user_id").primaryKey().bindTo { it.userId }
-    var name = text("name").bindTo { it.name }
+    var userId = text("user_id").primaryKey().bindTo(User::userId)
+    var name = text("name").bindTo(User::name)
 }

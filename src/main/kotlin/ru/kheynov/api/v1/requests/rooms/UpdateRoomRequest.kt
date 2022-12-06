@@ -7,7 +7,8 @@ import java.time.LocalDate
 
 @Serializable
 data class UpdateRoomRequest(
-    @SerialName("room_name") val name: String,
+    val id: String,
+    @SerialName("room_name") val name: String?,
     val password: String?,
     @Serializable(with = LocalDateSerializer::class) val date: LocalDate?,
     @SerialName("max_price") val maxPrice: Int?,

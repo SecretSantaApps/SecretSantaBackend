@@ -24,23 +24,23 @@ class StartGameUseCase(
 
     suspend operator fun invoke(
         userId: String,
-        roomName: String,
+        roomId: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
+        val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotFound
         if (room.ownerId != userId) return Result.Forbidden
         if (room.gameStarted) return Result.GameAlreadyStarted
 
-        val users = gameRepository.getUsersInRoom(roomName)
+        val users = gameRepository.getUsersInRoom(roomId)
 
         if (users.size < 3) return Result.NotEnoughPlayers
         println(users.toString())
         val resultRelations = giftDispenser.getRandomDistribution(users = users.map { it.userId })
 
         resultRelations.forEach {
-            if (!gameRepository.setRecipient(roomName, it.first, it.second)) return Result.Failed
+            if (!gameRepository.setRecipient(roomId, it.first, it.second)) return Result.Failed
         }
-        gameRepository.setGameState(roomName, true)
+        gameRepository.setGameState(roomId, true)
         return Result.Successful
     }
 }

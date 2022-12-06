@@ -8,7 +8,7 @@ import io.ktor.server.response.*
 import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.rooms.CreateRoomRequest
 import ru.kheynov.api.v1.requests.rooms.UpdateRoomRequest
-import ru.kheynov.domain.entities.RoomUpdate
+import ru.kheynov.domain.entities.RoomDTO.RoomUpdate
 import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.game.JoinRoomUseCase
@@ -28,12 +28,12 @@ fun Route.configureRoomsRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
-                val roomName = call.request.queryParameters["name"] ?: run {
-                    call.respond(HttpStatusCode.BadRequest, "Wrong room name")
+                val roomId = call.request.queryParameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong room id")
                     return@get
                 }
 
-                when (val res = useCases.getRoomDetailsUseCase(userId, roomName)) {
+                when (val res = useCases.getRoomDetailsUseCase(userId, roomId)) {
                     GetRoomDetailsUseCase.Result.RoomNotExists -> {
                         call.respond(HttpStatusCode.BadRequest, "Room not exists")
                         return@get
@@ -79,17 +79,14 @@ fun Route.configureRoomsRoutes(
                         return@post
                     }
 
-                    CreateRoomUseCase.Result.RoomAlreadyExists -> {
-                        call.respond(HttpStatusCode.Conflict, "Room already exists")
-                        return@post
-                    }
-
                     is CreateRoomUseCase.Result.Successful -> {
-                        val joinRequest = useCases.joinRoomUseCase(user.userId, res.room.name, res.room.password)
-                        if (joinRequest is JoinRoomUseCase.Result.Successful)
-                            call.respond(HttpStatusCode.OK, res.room)
-                        else
-                            call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
+                        val joinRequest = useCases.joinRoomUseCase(
+                            userId = user.userId,
+                            roomId = res.room.id,
+                            password = res.room.password,
+                        )
+                        if (joinRequest is JoinRoomUseCase.Result.Successful) call.respond(HttpStatusCode.OK, res.room)
+                        else call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@post
                     }
 
@@ -102,15 +99,17 @@ fun Route.configureRoomsRoutes(
         }
         authenticate(FIREBASE_AUTH) {
             delete {
-                val request = call.request.queryParameters["name"] ?: run {
-                    call.respond(HttpStatusCode.BadRequest, "Wrong room name")
+                val roomId = call.request.queryParameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong room id")
                     return@delete
                 }
                 val user = call.principal<UserAuth>() ?: run {
                     call.respond(HttpStatusCode.Unauthorized)
                     return@delete
                 }
-                when (useCases.deleteRoomUseCase(user.userId, request)) {
+                when (useCases.deleteRoomUseCase(
+                    userId = user.userId, roomId = roomId
+                )) {
                     DeleteRoomUseCase.Result.Failed -> {
                         call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@delete
@@ -155,7 +154,11 @@ fun Route.configureRoomsRoutes(
                     date = roomUpdateRequest.date,
                     maxPrice = roomUpdateRequest.maxPrice,
                 )
-                when (useCases.updateRoomUseCase(userId, roomUpdateRequest.name, roomUpdate)) {
+                when (useCases.updateRoomUseCase(
+                    userId = userId,
+                    roomId = roomUpdateRequest.id,
+                    roomUpdate = roomUpdate
+                )) {
                     UpdateRoomUseCase.Result.Failed -> {
                         call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@patch

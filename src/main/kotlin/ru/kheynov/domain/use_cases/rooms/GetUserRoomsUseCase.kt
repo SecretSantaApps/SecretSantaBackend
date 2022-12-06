@@ -1,6 +1,6 @@
 package ru.kheynov.domain.use_cases.rooms
 
-import ru.kheynov.domain.entities.RoomInfo
+import ru.kheynov.domain.entities.RoomDTO
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 
@@ -9,7 +9,7 @@ class GetUserRoomsUseCase(
     private val roomsRepository: RoomsRepository,
 ) {
     sealed interface Result {
-        data class Successful(val rooms: List<RoomInfo>) : Result
+        data class Successful(val rooms: List<RoomDTO.RoomInfo>) : Result
         object UserNotExists : Result
     }
 

@@ -20,14 +20,13 @@ class StopGameUseCase(
 
     suspend operator fun invoke(
         userId: String,
-        roomName: String,
+        roomId: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
+        val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotFound
         if (room.ownerId != userId) return Result.Forbidden
         if (!room.gameStarted) return Result.GameAlreadyStopped
-        val res = gameRepository.setGameState(roomName, false) && gameRepository.deleteRecipients(roomName)
-        return if (res)
-            Result.Successful else Result.Failed
+        val res = gameRepository.setGameState(roomId, false) && gameRepository.deleteRecipients(roomId)
+        return if (res) Result.Successful else Result.Failed
     }
 }

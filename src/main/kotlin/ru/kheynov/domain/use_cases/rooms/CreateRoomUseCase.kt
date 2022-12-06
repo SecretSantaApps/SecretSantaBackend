@@ -1,9 +1,10 @@
 package ru.kheynov.domain.use_cases.rooms
 
-import ru.kheynov.domain.entities.Room
+import ru.kheynov.domain.entities.RoomDTO
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.domain.use_cases.getRandomPassword
+import ru.kheynov.domain.use_cases.getRandomRoomID
 import java.time.LocalDate
 
 class CreateRoomUseCase(
@@ -11,9 +12,8 @@ class CreateRoomUseCase(
     private val roomsRepository: RoomsRepository,
 ) {
     sealed interface Result {
-        data class Successful(val room: Room) : Result
+        data class Successful(val room: RoomDTO.Room) : Result
         object UserNotExists : Result
-        object RoomAlreadyExists : Result
         object Failed : Result
     }
 
@@ -25,10 +25,10 @@ class CreateRoomUseCase(
         maxPrice: Int?,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
-        if (roomsRepository.getRoomByName(roomName) != null) return Result.RoomAlreadyExists
-        val room = Room(
-            password = if (password.isNullOrBlank()) getRandomPassword() else password,
+        val room = RoomDTO.Room(
             name = roomName,
+            password = if (password.isNullOrBlank()) getRandomPassword() else password,
+            id = getRandomRoomID(),
             date = date,
             ownerId = userId,
             maxPrice = maxPrice,

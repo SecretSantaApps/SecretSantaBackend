@@ -1,6 +1,6 @@
 package ru.kheynov.domain.use_cases.rooms
 
-import ru.kheynov.domain.entities.RoomUpdate
+import ru.kheynov.domain.entities.RoomDTO
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 
@@ -18,14 +18,14 @@ class UpdateRoomUseCase(
 
     suspend operator fun invoke(
         userId: String,
-        roomName: String,
-        roomUpdate: RoomUpdate,
+        roomId: String,
+        roomUpdate: RoomDTO.RoomUpdate,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
-        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotExists
+        val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotExists
         if (room.ownerId != userId) return Result.Forbidden
-        return if (roomsRepository.updateRoomByName(
-                roomName,
+        return if (roomsRepository.updateRoomById(
+                roomId,
                 roomUpdate
             )
         ) Result.Successful else Result.Failed

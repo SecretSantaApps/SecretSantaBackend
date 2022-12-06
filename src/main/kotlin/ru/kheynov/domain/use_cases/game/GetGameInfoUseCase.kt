@@ -1,7 +1,7 @@
 package ru.kheynov.domain.use_cases.game
 
 import ru.kheynov.api.v1.responses.InfoDetails
-import ru.kheynov.domain.entities.UserInfo
+import ru.kheynov.domain.entities.UserDTO
 import ru.kheynov.utils.GameRepositories
 
 class GetGameInfoUseCase(
@@ -20,20 +20,22 @@ class GetGameInfoUseCase(
 
     suspend operator fun invoke(
         userId: String,
-        roomName: String,
+        roomId: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
-        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotExists
-        val users = gameRepository.getUsersInRoom(roomName)
+        val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotExists
+        val users = gameRepository.getUsersInRoom(roomId)
+        println("Users: $users")
         if (users.find { it.userId == userId } == null) return Result.Forbidden
         val info = InfoDetails(
-            roomName,
+            roomId = room.id,
+            roomName = room.name,
             ownerId = room.ownerId,
             password = if (userId == room.ownerId) room.password else null,
             date = room.date,
             maxPrice = room.maxPrice,
-            users = users.map { UserInfo(it.userId, it.username) },
-            recipient = gameRepository.getUsersRecipient(roomName, userId)
+            users = users.map { UserDTO.User(it.userId, it.username) },
+            recipient = gameRepository.getUsersRecipient(roomId, userId)
         )
         return Result.Successful(info)
     }

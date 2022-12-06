@@ -7,8 +7,9 @@ import java.time.LocalDate
 interface Room : Entity<Room> {
     companion object : Entity.Factory<Room>()
 
+    var id: String
     var name: String
-    var password: String?
+    var password: String
     var date: LocalDate?
     var ownerId: String
     var maxPrice: Int?
@@ -17,7 +18,8 @@ interface Room : Entity<Room> {
 
 
 object Rooms : Table<Room>("rooms") {
-    var name = text("name").primaryKey().bindTo(Room::name)
+    var id = text("id").primaryKey().bindTo(Room::id)
+    var name = text("name").bindTo(Room::name)
     var password = text("password").bindTo(Room::password)
     var date = date("date").bindTo(Room::date)
     var ownerId = text("owner_id").bindTo(Room::ownerId)

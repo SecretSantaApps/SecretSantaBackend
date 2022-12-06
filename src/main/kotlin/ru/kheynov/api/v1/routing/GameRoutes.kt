@@ -6,7 +6,7 @@ import io.ktor.server.auth.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
-import ru.kheynov.api.v1.requests.game.*
+import ru.kheynov.api.v1.requests.game.KickUserRequest
 import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.game.*
@@ -22,12 +22,17 @@ fun Route.configureGameRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@post
                 }
-                val request = call.receiveNullable<JoinRoomRequest>() ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
+                val id = call.request.queryParameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong room id")
                     return@post
                 }
+                val password = call.request.queryParameters["pass"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong password format")
+                    return@post
+                }
+
                 val res = useCases.joinRoomUseCase(
-                    userId = user.userId, roomName = request.roomName, password = request.password
+                    userId = user.userId, roomId = id, password = password
                 )
                 when (res) {
                     JoinRoomUseCase.Result.Failed -> {
@@ -73,12 +78,12 @@ fun Route.configureGameRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@post
                 }
-                val request = call.receiveNullable<LeaveRoomRequest>() ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
+                val id = call.request.queryParameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong room id")
                     return@post
                 }
                 val res = useCases.leaveRoomUseCase(
-                    userId = user.userId, roomName = request.roomName
+                    userId = user.userId, roomId = id
                 )
                 when (res) {
                     LeaveRoomUseCase.Result.Failed -> {
@@ -126,7 +131,7 @@ fun Route.configureGameRoutes(
                 val res = useCases.kickUserUseCase(
                     selfId = user.userId,
                     userId = request.userId,
-                    roomName = request.roomName,
+                    roomId = request.roomId,
                 )
                 when (res) {
                     KickUserUseCase.Result.Failed -> {
@@ -177,12 +182,12 @@ fun Route.configureGameRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@post
                 }
-                val request = call.receiveNullable<StartGameRequest>() ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
+                val id = call.request.queryParameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong room id")
                     return@post
                 }
                 val res = useCases.startGameUseCase(
-                    userId = user.userId, roomName = request.roomName
+                    userId = user.userId, roomId = id
                 )
 
                 when (res) {
@@ -229,13 +234,12 @@ fun Route.configureGameRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@post
                 }
-                val request = call.receiveNullable<StopGameRequest>() ?: run {
-                    call.respond(HttpStatusCode.BadRequest)
+                val id = call.request.queryParameters["id"] ?: run {
+                    call.respond(HttpStatusCode.BadRequest, "Wrong room id")
                     return@post
                 }
                 val res = useCases.stopGameUseCase(
-                    userId = user.userId,
-                    roomName = request.roomName
+                    userId = user.userId, roomId = id
                 )
                 when (res) {
                     StopGameUseCase.Result.Failed -> {
@@ -276,13 +280,12 @@ fun Route.configureGameRoutes(
                     call.respond(HttpStatusCode.Unauthorized)
                     return@get
                 }
-                val request = call.request.queryParameters["roomName"] ?: run {
+                val id = call.request.queryParameters["id"] ?: run {
                     call.respond(HttpStatusCode.BadRequest, "Wrong room name")
                     return@get
                 }
                 val res = useCases.getGameInfoUseCase(
-                    userId = user.userId,
-                    roomName = request
+                    userId = user.userId, roomId = id
                 )
 
                 when (res) {

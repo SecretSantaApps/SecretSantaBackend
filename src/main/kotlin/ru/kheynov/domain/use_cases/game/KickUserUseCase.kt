@@ -23,16 +23,16 @@ class KickUserUseCase(
     suspend operator fun invoke(
         selfId: String, //ID of user that requested deletion
         userId: String,
-        roomName: String,
+        roomId: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-        if (gameRepository.getUsersInRoom(roomName).find { it.userId == userId } == null) return Result.UserNotInRoom
-        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
+        if (gameRepository.getUsersInRoom(roomId).find { it.userId == userId } == null) return Result.UserNotInRoom
+        val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotFound
         if (room.ownerId != selfId) return Result.Forbidden
         if (room.gameStarted) return Result.GameAlreadyStarted
         if (selfId == userId) return Result.NotAllowed
         return if (gameRepository.deleteFromRoom(
-                roomName = roomName,
+                roomId = roomId,
                 userId = userId,
             )
         ) Result.Successful else Result.Failed

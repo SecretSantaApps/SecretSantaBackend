@@ -1,13 +1,11 @@
 package ru.kheynov.domain.repositories
 
-import ru.kheynov.domain.entities.Room
-import ru.kheynov.domain.entities.RoomInfo
-import ru.kheynov.domain.entities.RoomUpdate
+import ru.kheynov.domain.entities.RoomDTO.*
 
 interface RoomsRepository {
     suspend fun createRoom(room: Room): Boolean
-    suspend fun deleteRoomByName(name: String): Boolean
-    suspend fun getRoomByName(name: String): Room?
-    suspend fun updateRoomByName(name: String, newRoomData: RoomUpdate): Boolean
+    suspend fun deleteRoomById(id: String): Boolean
+    suspend fun getRoomById(id: String): Room?
+    suspend fun updateRoomById(id: String, newRoomData: RoomUpdate): Boolean
     suspend fun getUserRooms(userId: String): List<RoomInfo>
 }

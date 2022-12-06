@@ -20,20 +20,20 @@ class LeaveRoomUseCase(
 
     suspend operator fun invoke(
         userId: String,
-        roomName: String,
+        roomId: String,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
-        val room = roomsRepository.getRoomByName(roomName) ?: return Result.RoomNotFound
-        if (gameRepository.getUsersInRoom(roomName).find { it.userId == userId } == null) return Result.UserNotInRoom
+        val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotFound
+        if (gameRepository.getUsersInRoom(roomId).find { it.userId == userId } == null) return Result.UserNotInRoom
         if (room.gameStarted) return Result.GameAlreadyStarted
 
         var res = gameRepository.deleteFromRoom(
-            roomName = roomName,
+            roomId = roomId,
             userId = userId,
         )
 
         if (room.ownerId == userId) {
-            res = res && roomsRepository.deleteRoomByName(roomName)
+            res = res && roomsRepository.deleteRoomById(roomId)
         }
 
         return if (res) Result.Successful else Result.Failed

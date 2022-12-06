@@ -5,9 +5,7 @@ import org.ktorm.dsl.*
 import org.ktorm.entity.*
 import ru.kheynov.data.entities.RoomMembers
 import ru.kheynov.data.entities.Rooms
-import ru.kheynov.domain.entities.Room
-import ru.kheynov.domain.entities.RoomInfo
-import ru.kheynov.domain.entities.RoomUpdate
+import ru.kheynov.domain.entities.RoomDTO.*
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.utils.mapToRoom
 
@@ -16,7 +14,8 @@ class PostgresRoomsRepository(
 ) : RoomsRepository {
 
     override suspend fun createRoom(room: Room): Boolean {
-        val newRoom = ru.kheynov.data.entities.Room {
+        var newRoom = ru.kheynov.data.entities.Room {
+            id = room.id
             name = room.name
             password = room.password
             date = room.date
@@ -24,20 +23,28 @@ class PostgresRoomsRepository(
             ownerId = room.ownerId
             gameStarted = false
         }
-        val affectedRows = database.sequenceOf(Rooms).add(newRoom)
+        var affectedRows = database.sequenceOf(Rooms).add(newRoom)
+        if (affectedRows != 1) { // if failed, try to change UUID
+            newRoom = newRoom.copy()
+            newRoom.id = room.id + 1
+            affectedRows = database.sequenceOf(Rooms).add(newRoom)
+        }
         return affectedRows == 1
     }
 
-    override suspend fun deleteRoomByName(name: String): Boolean {
-        val affectedRows = database.sequenceOf(Rooms).find { it.name eq name }?.delete()
+    override suspend fun deleteRoomById(id: String): Boolean {
+        val affectedRows = database.sequenceOf(Rooms).find { it.id eq id }?.delete()
         return affectedRows == 1
     }
 
-    override suspend fun getRoomByName(name: String): Room? =
-        database.sequenceOf(Rooms).find { it.name eq name }?.mapToRoom()
+    override suspend fun getRoomById(id: String): Room? {
+        val membersCount = database.sequenceOf(RoomMembers).filter { it.roomId eq id }
+            .aggregateColumns { count(it.userId) }
+        return database.sequenceOf(Rooms).find { it.id eq id }?.mapToRoom()?.copy(membersCount = membersCount ?: 1)
+    }
 
-    override suspend fun updateRoomByName(name: String, newRoomData: RoomUpdate): Boolean {
-        val room = database.sequenceOf(Rooms).find { it.name eq name } ?: return false
+    override suspend fun updateRoomById(id: String, newRoomData: RoomUpdate): Boolean {
+        val room = database.sequenceOf(Rooms).find { it.id eq id } ?: return false
         room.password = newRoomData.password ?: room.password
         room.date = newRoomData.date ?: room.date
         room.maxPrice = newRoomData.maxPrice ?: room.maxPrice
@@ -46,26 +53,27 @@ class PostgresRoomsRepository(
     }
 
     override suspend fun getUserRooms(userId: String): List<RoomInfo> =
-        database.from(Rooms).innerJoin(RoomMembers, on = Rooms.name eq RoomMembers.roomName).select(
-            Rooms.name,
-            Rooms.date,
-            Rooms.ownerId,
-            Rooms.ownerId,
-            Rooms.gameStarted,
-        ).where {
-            RoomMembers.userId eq userId
-        }.map { room ->
-            val membersCount =
-                database.sequenceOf(RoomMembers)
-                    .filter { it.roomName eq (room[Rooms.name] ?: "") }
+        database.from(Rooms)
+            .innerJoin(RoomMembers, on = Rooms.id eq RoomMembers.roomId).select(
+                Rooms.name,
+                Rooms.id,
+                Rooms.date,
+                Rooms.ownerId,
+                Rooms.ownerId,
+                Rooms.gameStarted,
+            ).where {
+                RoomMembers.userId eq userId
+            }.map { room ->
+                val membersCount = database.sequenceOf(RoomMembers).filter { it.roomId eq (room[Rooms.id] ?: "") }
                     .aggregateColumns { count(it.userId) }
-            RoomInfo(
-                room[Rooms.name] ?: "",
-                room[Rooms.date],
-                room[Rooms.ownerId] ?: "",
-                room[Rooms.maxPrice],
-                room[Rooms.gameStarted] ?: false,
-                membersCount ?: 0,
-            )
-        }
+                RoomInfo(
+                    name = room[Rooms.name] ?: "",
+                    id = room[Rooms.id] ?: "",
+                    date = room[Rooms.date],
+                    ownerId = room[Rooms.ownerId] ?: "",
+                    maxPrice = room[Rooms.maxPrice],
+                    gameStarted = room[Rooms.gameStarted] ?: false,
+                    membersCount = membersCount ?: 0,
+                )
+            }
 }
