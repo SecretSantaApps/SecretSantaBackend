@@ -1,4 +1,4 @@
-create or replace function get_relations(roomName text)
+create or replace function get_relations(roomId text)
     returns table
             (
                 giver     text,
@@ -12,7 +12,7 @@ begin
                  from room_members
                           inner join users giver on giver.user_id = room_members.user_id
                           inner join users recipient on recipient.user_id = room_members.recipient
-                 where room_members.room_name = roomName;
+                 where room_members.room_id = roomId;
 end;
 $$ language plpgsql;
 

@@ -11,9 +11,9 @@ class SimpleCycleGiftDispenser : GiftDispenser {
         tmp.shuffle()
         tmp.forEachIndexed { index, userId ->
             if (index == users.size - 1) {
-                result.add(userId to users[0])
+                result.add(userId to tmp[0])
             } else {
-                result.add(userId to users[index + 1])
+                result.add(userId to tmp[index + 1])
             }
         }
         return result.toList()
