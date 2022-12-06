@@ -142,14 +142,14 @@ body:
 [
 	{
 		"room_name": "room1",
-		"id": "080070e"
+		"room_id": "080070e"
 		"date": "2021-01-31",
 		"owner_id": "8Svq6y9zMhYQt6u48",
 		"members_count": 2
 	},
 	{
 		"room_name": "room2",
-		"id": "sd3fsq5"
+		"room_id": "sd3fsq5"
 		"date": "2021-01-31",
 		"owner_id": "pHEIpLQPv8YOqzn06",
 		"members_count": 3
@@ -197,7 +197,7 @@ body:
 {
 	"room_name": "room1",
 	"password": "123456",
-	"id": "080070e",
+	"room_id": "080070e",
 	"date": "2021-01-31",
 	"owner_id": "UwsdfgergdfDUFf2",
 	"max_price": 1000
@@ -240,7 +240,7 @@ body:
 {
 	"room_name": "room1",
 	"password": "123456",
-	"id": "080070e",
+	"room_id": "080070e",
 	"date": "2021-01-31",
 	"owner_id": "UwsdfgergdfDUFf2",
 	"max_price": 1000,

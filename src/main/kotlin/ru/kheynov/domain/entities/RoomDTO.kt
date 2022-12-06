@@ -12,7 +12,7 @@ sealed interface RoomDTO {
     data class Room(
         @SerialName("room_name") val name: String,
         val password: String,
-        val id: String,
+        @SerialName("room_id") val id: String,
         @Serializable(with = LocalDateSerializer::class) val date: LocalDate?,
         @SerialName("owner_id") val ownerId: String,
         @SerialName("max_price") val maxPrice: Int? = null,
@@ -30,7 +30,7 @@ sealed interface RoomDTO {
     @Serializable
     data class RoomInfo(
         @SerialName("room_name") val name: String,
-        val id: String,
+        @SerialName("room_id") val id: String,
         @Serializable(with = LocalDateSerializer::class) val date: LocalDate?,
         @SerialName("owner_id") val ownerId: String,
         @SerialName("max_price") val maxPrice: Int? = null,
