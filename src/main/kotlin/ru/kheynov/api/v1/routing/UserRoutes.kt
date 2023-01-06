@@ -124,15 +124,7 @@ fun Route.configureUserRoutes(
                 }
             }
         }
-        authenticate(FIREBASE_AUTH) {
-            get("/authenticate") {
-                if (call.principal<UserAuth>() == null) {
-                    call.respond(HttpStatusCode.Unauthorized)
-                    return@get
-                }
-                call.respond(HttpStatusCode.OK)
-            }
-        }
+  
         authenticate(FIREBASE_AUTH) {
             patch {
                 val userId = call.principal<UserAuth>()?.userId ?: run {

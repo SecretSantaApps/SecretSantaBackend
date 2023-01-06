@@ -9,6 +9,7 @@ import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
 import io.ktor.server.plugins.openapi.*
+import io.ktor.server.plugins.swagger.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -20,7 +21,7 @@ import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.security.firebase.auth.FirebaseAdmin
 import ru.kheynov.security.firebase.auth.firebase
 
-fun main(args: Array<String>){
+fun main(args: Array<String>) {
     EngineMain.main(args)
 }
 
@@ -33,6 +34,11 @@ fun Application.module() {
     configureMonitoring()
     configureSerialization()
     configureRouting()
+
+    routing {
+        openAPI(path = "/openapi", swaggerFile = "openapi/documentation.yaml")
+        swaggerUI(path = "/swagger", swaggerFile = "openapi/documentation.yaml")
+    }
 }
 
 fun Application.configureRouting() {
@@ -55,9 +61,7 @@ fun Application.configureHTTP() {
         allowHeader(HttpHeaders.Authorization)
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
-    routing {
-        openAPI(path = "openapi", swaggerFile = "openapi/documentation.yaml")
-    }
+
 }
 
 fun Application.configureMonitoring() {
@@ -86,11 +90,5 @@ fun Application.configureSerialization() {
                 explicitNulls = false
             }
         )
-    }
-
-    routing {
-        get("/json/kotlinx-serialization") {
-            call.respond(mapOf("hello" to "world"))
-        }
     }
 }

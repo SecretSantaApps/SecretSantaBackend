@@ -37,7 +37,9 @@ dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 
     implementation("io.ktor:ktor-server-openapi:$ktorVersion")
-//    implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.36")
+    implementation("io.ktor:ktor-server-swagger:$ktorVersion")
+
+    implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.36")
 
     //Firebase admin
     implementation("com.google.firebase:firebase-admin:9.1.1")
@@ -47,4 +49,5 @@ dependencies {
     implementation("org.ktorm:ktorm-core:3.5.0")
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
     implementation("org.postgresql:postgresql:42.5.1")
+    testImplementation("io.ktor:ktor-server-test-host-jvm:2.2.2")
 }
