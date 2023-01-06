@@ -17,7 +17,7 @@ create table rooms
 
 create table room_members
 (
-    room_id   text references rooms (id) on delete cascade       not null,
-    user_id   text references users (user_id) on delete cascade not null,
-    recipient text references users (user_id) on delete cascade
+    room_id   text references rooms (id) on delete cascade not null,
+    user_id   text references users (user_id)              not null,
+    recipient text references users (user_id)
 );

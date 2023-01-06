@@ -1,4 +1,4 @@
-val ktorVersion = "2.1.3"
+val ktorVersion = "2.2.2"
 val kotlinVersion = "1.7.10"
 val logbackVersion = "1.4.4"
 
@@ -32,17 +32,19 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json-jvm:$ktorVersion")
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
-    implementation("org.testng:testng:7.6.1")
+    implementation("org.testng:testng:7.7.0")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 
+    implementation("io.ktor:ktor-server-openapi:$ktorVersion")
+//    implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.36")
 
     //Firebase admin
     implementation("com.google.firebase:firebase-admin:9.1.1")
-    implementation("org.slf4j:slf4j-simple:2.0.3")
+    implementation("org.slf4j:slf4j-simple:2.0.5")
 
     //Database
     implementation("org.ktorm:ktorm-core:3.5.0")
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
-    implementation("org.postgresql:postgresql:42.5.0")
+    implementation("org.postgresql:postgresql:42.5.1")
 }

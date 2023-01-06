@@ -4,9 +4,11 @@ import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
+import io.ktor.server.netty.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
 import io.ktor.server.plugins.cors.routing.*
+import io.ktor.server.plugins.openapi.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
@@ -18,7 +20,9 @@ import ru.kheynov.domain.entities.UserAuth
 import ru.kheynov.security.firebase.auth.FirebaseAdmin
 import ru.kheynov.security.firebase.auth.firebase
 
-fun main(args: Array<String>): Unit = io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>){
+    EngineMain.main(args)
+}
 
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
@@ -42,7 +46,6 @@ fun Application.configureRouting() {
     }
 }
 
-
 fun Application.configureHTTP() {
     install(CORS) {
         allowMethod(HttpMethod.Options)
@@ -51,6 +54,9 @@ fun Application.configureHTTP() {
         allowMethod(HttpMethod.Patch)
         allowHeader(HttpHeaders.Authorization)
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
+    }
+    routing {
+        openAPI(path = "openapi", swaggerFile = "openapi/documentation.yaml")
     }
 }
 

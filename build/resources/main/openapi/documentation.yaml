@@ -1,0 +1,8 @@
+openapi: "3.0.3"
+info:
+  title: "Secret Santa API"
+  description: "Secret Santa API"
+  version: "1.0.0"
+servers:
+- url: "https://santa.s.kheynov.ru"
+paths: {}
