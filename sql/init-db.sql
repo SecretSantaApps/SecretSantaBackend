@@ -1,7 +1,12 @@
 create table users
 (
-    user_id text primary key,
-    name    text
+    user_id                  text primary key,
+    name                     text,
+    email                    text not null,
+    password_hash            text,
+    refresh_token            text,
+    refresh_token_expires_at timestamp,
+    auth_provider            text not null default 'local'
 );
 
 create table rooms
