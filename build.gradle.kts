@@ -41,8 +41,12 @@ dependencies {
 
     implementation("io.swagger.codegen.v3:swagger-codegen-generators:1.0.36")
 
+    implementation("at.favre.lib:bcrypt:0.9.0")
+
+
+    implementation("io.insert-koin:koin-ktor:3.3.0")
+    implementation("io.insert-koin:koin-logger-slf4j:3.3.0")
     //Firebase admin
-    implementation("com.google.firebase:firebase-admin:9.1.1")
     implementation("org.slf4j:slf4j-simple:2.0.5")
 
     //Database

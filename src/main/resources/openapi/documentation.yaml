@@ -762,6 +762,3 @@ components:
         membersCount:
           type: "integer"
           format: "int32"
-    Map:
-      type: "object"
-      properties: { }
