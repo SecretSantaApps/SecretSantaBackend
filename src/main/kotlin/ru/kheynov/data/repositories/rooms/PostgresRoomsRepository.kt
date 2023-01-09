@@ -5,9 +5,9 @@ import org.ktorm.dsl.*
 import org.ktorm.entity.*
 import ru.kheynov.data.entities.RoomMembers
 import ru.kheynov.data.entities.Rooms
+import ru.kheynov.data.mappers.mapToRoom
 import ru.kheynov.domain.entities.RoomDTO.*
 import ru.kheynov.domain.repositories.RoomsRepository
-import ru.kheynov.utils.mapToRoom
 
 class PostgresRoomsRepository(
     private val database: Database,

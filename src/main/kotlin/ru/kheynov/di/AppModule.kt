@@ -43,7 +43,16 @@ val appModule = module {
 
     single<GiftDispenser> { SimpleCycleGiftDispenser() }
 
-    single { UseCases(get(), get(), get()) }
+    single {
+        UseCases(
+            get(),
+            get(),
+            get(),
+            get(),
+            get(),
+            get()
+        )
+    }
 
 
 }

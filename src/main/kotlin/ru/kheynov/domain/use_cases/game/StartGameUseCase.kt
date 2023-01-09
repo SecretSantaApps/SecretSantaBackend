@@ -1,13 +1,15 @@
 package ru.kheynov.domain.use_cases.game
 
-import ru.kheynov.di.ServiceLocator
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import ru.kheynov.di.appModule
 import ru.kheynov.utils.GameRepositories
 import ru.kheynov.utils.GiftDispenser
 
 class StartGameUseCase(
     gameRepositories: GameRepositories,
-    private val giftDispenser: GiftDispenser = ServiceLocator.giftDispenser,
-) {
+) : KoinComponent {
+    private val giftDispenser: GiftDispenser by inject()
     private val usersRepository = gameRepositories.first
     private val roomsRepository = gameRepositories.second
     private val gameRepository = gameRepositories.third

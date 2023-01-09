@@ -7,7 +7,7 @@ import ru.kheynov.domain.use_cases.UseCases
 fun Route.v1Routes() {
     route("/v1") {
         val useCases by inject<UseCases>()
-//        configureUserRoutes(useCases)
+        configureUserRoutes(useCases)
 //        configureRoomsRoutes(useCases)
 //        configureGameRoutes(useCases)
     }

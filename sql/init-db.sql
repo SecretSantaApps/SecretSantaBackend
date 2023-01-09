@@ -4,9 +4,15 @@ create table users
     name                     text,
     email                    text not null,
     password_hash            text,
-    refresh_token            text,
-    refresh_token_expires_at timestamp,
     auth_provider            text not null default 'local'
+);
+
+create table refresh_tokens
+(
+    id         serial primary key,
+    user_id    text   not null references users (user_id) on delete cascade,
+    token      text   not null unique,
+    expires_at bigint not null
 );
 
 create table rooms

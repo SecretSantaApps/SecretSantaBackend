@@ -1,11 +1,8 @@
-package ru.kheynov.domain.use_cases.users
+package ru.kheynov.domain.use_cases.users.auth
 
 import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.security.jwt.hashing.HashingService
-import ru.kheynov.security.jwt.token.TokenClaim
-import ru.kheynov.security.jwt.token.TokenConfig
-import ru.kheynov.security.jwt.token.TokenPair
-import ru.kheynov.security.jwt.token.TokenService
+import ru.kheynov.security.jwt.token.*
 
 class LoginViaEmailUseCase(
     private val usersRepository: UsersRepository,
@@ -24,13 +21,15 @@ class LoginViaEmailUseCase(
         val passwordVerificationResult = hashingService.verify(password, user.passwordHash ?: return Result.Failed)
         val tokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", user.userId))
 
-        val result = usersRepository.updateUserRefreshToken(
+        val createRefreshTokenResult = usersRepository.createRefreshToken(
             userId = user.userId,
-            refreshToken = tokenPair.refreshToken.token,
-            refreshTokenExpiration = tokenPair.refreshToken.expiresAt
+            refreshToken = RefreshToken(
+                token = tokenPair.refreshToken.token,
+                expiresAt = tokenPair.refreshToken.expiresAt,
+            )
         )
 
-        if (passwordVerificationResult.verified && result) {
+        if (passwordVerificationResult.verified && createRefreshTokenResult) {
             return Result.Success(tokenPair)
         }
         return Result.Failed

@@ -8,8 +8,6 @@ fun toDataUser(user: UserDTO.User): User = User {
     name = user.username
     email = user.email
     passwordHash = user.passwordHash
-    refreshToken = user.refreshToken
-    refreshTokenExpiration = user.refreshTokenExpiration
     authProvider = user.authProvider
 }
 
@@ -18,7 +16,5 @@ fun User.mapToUser(): UserDTO.User = UserDTO.User(
     username = this.name,
     email = this.email,
     passwordHash = this.passwordHash,
-    refreshToken = this.refreshToken,
-    refreshTokenExpiration = this.refreshTokenExpiration,
     authProvider = this.authProvider
 )

@@ -1,14 +1,11 @@
-package ru.kheynov.domain.use_cases.users
+package ru.kheynov.domain.use_cases.users.auth
 
 import ru.kheynov.domain.entities.UserDTO
 import ru.kheynov.domain.repositories.UsersRepository
+import ru.kheynov.security.jwt.hashing.HashingService
+import ru.kheynov.security.jwt.token.*
 import ru.kheynov.utils.getRandomUserID
 import ru.kheynov.utils.getRandomUsername
-import ru.kheynov.security.jwt.hashing.HashingService
-import ru.kheynov.security.jwt.token.TokenClaim
-import ru.kheynov.security.jwt.token.TokenConfig
-import ru.kheynov.security.jwt.token.TokenPair
-import ru.kheynov.security.jwt.token.TokenService
 
 class RegisterViaEmailUseCase(
     private val usersRepository: UsersRepository,
@@ -24,9 +21,7 @@ class RegisterViaEmailUseCase(
 
     suspend operator fun invoke(user: UserDTO.UserEmailRegister): Result {
         if (usersRepository.getUserByEmail(user.email) != null) return Result.UserAlreadyExists
-
         val userId = getRandomUserID()
-
         val tokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", userId))
 
         val resUser = UserDTO.User(
@@ -35,10 +30,15 @@ class RegisterViaEmailUseCase(
             email = user.email,
             passwordHash = hashingService.generateHash(user.password),
             authProvider = "local",
-            refreshToken = tokenPair.refreshToken.token,
-            refreshTokenExpiration = tokenPair.refreshToken.expiresAt
         )
-
-        return if (usersRepository.registerUser(resUser)) Result.Successful(tokenPair) else Result.Failed
+        val registerUserResult = usersRepository.registerUser(resUser)
+        val createUserRefreshTokenResult = usersRepository.createRefreshToken(
+            userId = userId,
+            refreshToken = RefreshToken(
+                token = tokenPair.refreshToken.token,
+                expiresAt = tokenPair.refreshToken.expiresAt
+            )
+        )
+        return if (registerUserResult && createUserRefreshTokenResult) Result.Successful(tokenPair) else Result.Failed
     }
 }

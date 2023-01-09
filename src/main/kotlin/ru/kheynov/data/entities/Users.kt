@@ -12,8 +12,6 @@ interface User : Entity<User> {
     var name: String
     var email: String
     var passwordHash: String?
-    var refreshToken: String
-    var refreshTokenExpiration: Long
     var authProvider: String
 }
 
@@ -22,7 +20,5 @@ object Users : Table<User>("users") {
     var name = text("name").bindTo(User::name)
     var email = text("email").bindTo(User::email)
     var passwordHash = text("password_hash").bindTo(User::passwordHash)
-    var refreshToken = text("refresh_token").bindTo(User::refreshToken)
-    var refreshTokenExpiration = long("refresh_token_expires_at").bindTo(User::refreshTokenExpiration)
     val authProvider = text("auth_provider").bindTo(User::authProvider)
 }

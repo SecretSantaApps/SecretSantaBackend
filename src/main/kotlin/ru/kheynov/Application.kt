@@ -5,7 +5,6 @@ import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.http.*
 import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
-import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.netty.*
@@ -22,7 +21,6 @@ import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
-import org.mozilla.javascript.Token
 import org.slf4j.event.Level
 import ru.kheynov.api.v1.routing.v1Routes
 import ru.kheynov.di.appModule
