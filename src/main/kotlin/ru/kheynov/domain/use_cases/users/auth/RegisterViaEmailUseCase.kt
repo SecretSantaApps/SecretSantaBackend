@@ -1,5 +1,7 @@
 package ru.kheynov.domain.use_cases.users.auth
 
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.kheynov.domain.entities.UserDTO
 import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.security.jwt.hashing.HashingService
@@ -7,12 +9,13 @@ import ru.kheynov.security.jwt.token.*
 import ru.kheynov.utils.getRandomUserID
 import ru.kheynov.utils.getRandomUsername
 
-class RegisterViaEmailUseCase(
-    private val usersRepository: UsersRepository,
-    private val tokenService: TokenService,
-    private val hashingService: HashingService,
-    private val tokenConfig: TokenConfig,
-) {
+class RegisterViaEmailUseCase : KoinComponent {
+
+    private val usersRepository: UsersRepository by inject()
+    private val tokenService: TokenService by inject()
+    private val hashingService: HashingService by inject()
+    private val tokenConfig: TokenConfig by inject()
+
     sealed interface Result {
         data class Successful(val tokenPair: TokenPair) : Result
         object Failed : Result

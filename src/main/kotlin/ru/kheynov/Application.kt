@@ -85,7 +85,6 @@ fun Application.configureSecurity() {
     install(Authentication)
     authentication {
         jwt {
-            realm = System.getenv("JWT_REALM")
             verifier(
                 JWT.require(Algorithm.HMAC256(config.secret)).withAudience(config.audience).withIssuer(config.issuer)
                     .build()

@@ -17,7 +17,6 @@ services:
       - JWT_ISSUER=$JWT_ISSUER
       - JWT_ACCESS_LIFETIME=$JWT_ACCESS_LIFETIME
       - JWT_REFRESH_LIFETIME=$JWT_REFRESH_LIFETIME
-      - JWT_REALM=$JWT_REALM
     depends_on:
       - db
     networks:

@@ -1,5 +1,7 @@
 package ru.kheynov.domain.use_cases.rooms
 
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.kheynov.domain.entities.RoomDTO
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
@@ -7,10 +9,10 @@ import ru.kheynov.utils.getRandomPassword
 import ru.kheynov.utils.getRandomRoomID
 import java.time.LocalDate
 
-class CreateRoomUseCase(
-    private val usersRepository: UsersRepository,
-    private val roomsRepository: RoomsRepository,
-) {
+class CreateRoomUseCase : KoinComponent {
+    private val roomsRepository: RoomsRepository by inject()
+    private val usersRepository: UsersRepository by inject()
+
     sealed interface Result {
         data class Successful(val room: RoomDTO.Room) : Result
         object UserNotExists : Result

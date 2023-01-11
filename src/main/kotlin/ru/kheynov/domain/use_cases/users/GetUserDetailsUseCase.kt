@@ -1,18 +1,19 @@
 package ru.kheynov.domain.use_cases.users
 
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.kheynov.domain.entities.UserDTO
-import ru.kheynov.utils.GameRepositories
+import ru.kheynov.domain.repositories.UsersRepository
 
-class GetUserDetailsUseCase(
-    gameRepositories: GameRepositories,
-) {
+class GetUserDetailsUseCase : KoinComponent {
+    private val usersRepository: UsersRepository by inject()
+
     sealed interface Result {
         data class Successful(val user: UserDTO.User) : Result
         object Failed : Result
         object UserNotFound : Result
     }
 
-    private val usersRepository = gameRepositories.first
     suspend operator fun invoke(
         userId: String,
     ): Result {

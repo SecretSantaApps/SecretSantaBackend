@@ -1,13 +1,15 @@
 package ru.kheynov.domain.use_cases.rooms
 
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.kheynov.domain.entities.RoomDTO
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 
-class GetRoomDetailsUseCase(
-    private val usersRepository: UsersRepository,
-    private val roomsRepository: RoomsRepository,
-) {
+class GetRoomDetailsUseCase : KoinComponent {
+    private val roomsRepository: RoomsRepository by inject()
+    private val usersRepository: UsersRepository by inject()
+
     sealed interface Result {
         data class Successful(val room: RoomDTO.Room) : Result
         object UserNotExists : Result

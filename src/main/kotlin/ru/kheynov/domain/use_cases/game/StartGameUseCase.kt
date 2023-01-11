@@ -2,17 +2,16 @@ package ru.kheynov.domain.use_cases.game
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.kheynov.di.appModule
-import ru.kheynov.utils.GameRepositories
+import ru.kheynov.domain.repositories.GameRepository
+import ru.kheynov.domain.repositories.RoomsRepository
+import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.utils.GiftDispenser
 
-class StartGameUseCase(
-    gameRepositories: GameRepositories,
-) : KoinComponent {
+class StartGameUseCase : KoinComponent {
     private val giftDispenser: GiftDispenser by inject()
-    private val usersRepository = gameRepositories.first
-    private val roomsRepository = gameRepositories.second
-    private val gameRepository = gameRepositories.third
+    private val usersRepository: UsersRepository by inject()
+    private val roomsRepository: RoomsRepository by inject()
+    private val gameRepository: GameRepository by inject()
 
     sealed interface Result {
         object Successful : Result

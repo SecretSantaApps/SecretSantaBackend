@@ -1,10 +1,16 @@
 package ru.kheynov.domain.use_cases.game
 
-import ru.kheynov.utils.GameRepositories
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
+import ru.kheynov.domain.repositories.GameRepository
+import ru.kheynov.domain.repositories.RoomsRepository
+import ru.kheynov.domain.repositories.UsersRepository
 
-class LeaveRoomUseCase(
-    gameRepositories: GameRepositories,
-) {
+class LeaveRoomUseCase : KoinComponent {
+    private val usersRepository: UsersRepository by inject()
+    private val roomsRepository: RoomsRepository by inject()
+    private val gameRepository: GameRepository by inject()
+
     sealed interface Result {
         object Successful : Result
         object Failed : Result
@@ -13,10 +19,6 @@ class LeaveRoomUseCase(
         object UserNotFound : Result
         object GameAlreadyStarted : Result
     }
-
-    private val usersRepository = gameRepositories.first
-    private val roomsRepository = gameRepositories.second
-    private val gameRepository = gameRepositories.third
 
     suspend operator fun invoke(
         userId: String,
