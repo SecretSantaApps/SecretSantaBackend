@@ -51,10 +51,21 @@ private fun Route.configureAuthRoutes(useCases: UseCases) {
             return@post
         }
 
-        when (useCases.registerViaEmailUseCase(registerRequest)) {
-            RegisterViaEmailUseCase.Result.Failed -> TODO()
-            is RegisterViaEmailUseCase.Result.Successful -> TODO()
-            RegisterViaEmailUseCase.Result.UserAlreadyExists -> TODO()
+        when (val res = useCases.registerViaEmailUseCase(registerRequest)) {
+            RegisterViaEmailUseCase.Result.Failed -> {
+                call.respond(HttpStatusCode.InternalServerError)
+                return@post
+            }
+
+            is RegisterViaEmailUseCase.Result.Successful -> {
+                call.respond(HttpStatusCode.OK, res.tokenPair)
+                return@post
+            }
+
+            RegisterViaEmailUseCase.Result.UserAlreadyExists -> {
+                call.respond(HttpStatusCode.Conflict, "User already exists")
+                return@post
+            }
         }
     }
 
