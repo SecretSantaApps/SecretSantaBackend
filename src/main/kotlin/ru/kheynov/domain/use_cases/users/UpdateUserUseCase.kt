@@ -1,10 +1,12 @@
 package ru.kheynov.domain.use_cases.users
 
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.kheynov.domain.repositories.UsersRepository
 
-class UpdateUserUseCase(
-    private val usersRepository: UsersRepository,
-) {
+class UpdateUserUseCase : KoinComponent {
+    private val usersRepository: UsersRepository by inject()
+
     sealed interface Result {
         object Successful : Result
         object Failed : Result

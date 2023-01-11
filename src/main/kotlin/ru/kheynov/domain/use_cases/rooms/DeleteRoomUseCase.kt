@@ -1,12 +1,14 @@
 package ru.kheynov.domain.use_cases.rooms
 
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 
-class DeleteRoomUseCase(
-    private val usersRepository: UsersRepository,
-    private val roomsRepository: RoomsRepository,
-) {
+class DeleteRoomUseCase : KoinComponent {
+    private val usersRepository: UsersRepository by inject()
+    private val roomsRepository: RoomsRepository by inject()
+
     sealed interface Result {
         object Successful : Result
         object UserNotExists : Result

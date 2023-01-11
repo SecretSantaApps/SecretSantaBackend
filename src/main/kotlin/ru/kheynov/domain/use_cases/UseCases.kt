@@ -1,40 +1,36 @@
 package ru.kheynov.domain.use_cases
 
-import ru.kheynov.domain.repositories.GameRepository
-import ru.kheynov.domain.repositories.RoomsRepository
-import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.domain.use_cases.game.*
 import ru.kheynov.domain.use_cases.rooms.*
 import ru.kheynov.domain.use_cases.users.DeleteUserUseCase
 import ru.kheynov.domain.use_cases.users.GetUserDetailsUseCase
-import ru.kheynov.domain.use_cases.users.RegisterUserUseCase
 import ru.kheynov.domain.use_cases.users.UpdateUserUseCase
+import ru.kheynov.domain.use_cases.users.auth.LoginViaEmailUseCase
+import ru.kheynov.domain.use_cases.users.auth.RefreshTokenUseCase
+import ru.kheynov.domain.use_cases.users.auth.RegisterViaEmailUseCase
 
-class UseCases(
-    roomsRepository: RoomsRepository,
-    usersRepository: UsersRepository,
-    gameRepository: GameRepository,
-) {
-    val createRoomUseCase = CreateRoomUseCase(usersRepository, roomsRepository)
-    val deleteRoomUseCase = DeleteRoomUseCase(usersRepository, roomsRepository)
-    val getRoomDetailsUseCase = GetRoomDetailsUseCase(usersRepository, roomsRepository)
-    val updateRoomUseCase = UpdateRoomUseCase(usersRepository, roomsRepository)
-    val getUserRoomsUseCase = GetUserRoomsUseCase(usersRepository, roomsRepository)
-
-
-    val registerUserUseCase = RegisterUserUseCase(usersRepository)
-    val deleteUserUseCase = DeleteUserUseCase(usersRepository)
-    val updateUserUseCase = UpdateUserUseCase(usersRepository)
+class UseCases {
+    val createRoomUseCase = CreateRoomUseCase()
+    val deleteRoomUseCase = DeleteRoomUseCase()
+    val getRoomDetailsUseCase = GetRoomDetailsUseCase()
+    val updateRoomUseCase = UpdateRoomUseCase()
+    val getUserRoomsUseCase = GetUserRoomsUseCase()
 
 
-    private val gameRepositories =
-        Triple(usersRepository, roomsRepository, gameRepository)
+    val registerViaEmailUseCase = RegisterViaEmailUseCase()
 
-    val getUserDetailsUseCase = GetUserDetailsUseCase(gameRepositories)
-    val joinRoomUseCase = JoinRoomUseCase(gameRepositories)
-    val leaveRoomUseCase = LeaveRoomUseCase(gameRepositories)
-    val kickUserUseCase = KickUserUseCase(gameRepositories)
-    val startGameUseCase = StartGameUseCase(gameRepositories)
-    val stopGameUseCase = StopGameUseCase(gameRepositories)
-    val getGameInfoUseCase = GetGameInfoUseCase(gameRepositories)
+    val loginViaEmailUseCase = LoginViaEmailUseCase()
+
+    val refreshTokenUseCase = RefreshTokenUseCase()
+
+    val deleteUserUseCase = DeleteUserUseCase()
+    val updateUserUseCase = UpdateUserUseCase()
+
+    val getUserDetailsUseCase = GetUserDetailsUseCase()
+    val joinRoomUseCase = JoinRoomUseCase()
+    val leaveRoomUseCase = LeaveRoomUseCase()
+    val kickUserUseCase = KickUserUseCase()
+    val startGameUseCase = StartGameUseCase()
+    val stopGameUseCase = StopGameUseCase()
+    val getGameInfoUseCase = GetGameInfoUseCase()
 }

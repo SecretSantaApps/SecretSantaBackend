@@ -1,15 +1,16 @@
 package ru.kheynov.domain.use_cases.game
 
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 import ru.kheynov.api.v1.responses.InfoDetails
-import ru.kheynov.domain.entities.UserDTO
-import ru.kheynov.utils.GameRepositories
+import ru.kheynov.domain.repositories.GameRepository
+import ru.kheynov.domain.repositories.RoomsRepository
+import ru.kheynov.domain.repositories.UsersRepository
 
-class GetGameInfoUseCase(
-    gameRepositories: GameRepositories,
-) {
-    private val usersRepository = gameRepositories.first
-    private val roomsRepository = gameRepositories.second
-    private val gameRepository = gameRepositories.third
+class GetGameInfoUseCase : KoinComponent {
+    private val usersRepository: UsersRepository by inject()
+    private val roomsRepository: RoomsRepository by inject()
+    private val gameRepository: GameRepository by inject()
 
     sealed interface Result {
         data class Successful(val info: InfoDetails) : Result
@@ -34,7 +35,7 @@ class GetGameInfoUseCase(
             password = if (userId == room.ownerId) room.password else null,
             date = room.date,
             maxPrice = room.maxPrice,
-            users = users.map { UserDTO.User(it.userId, it.username) },
+            users = users,
             recipient = gameRepository.getUsersRecipient(roomId, userId)
         )
         return Result.Successful(info)
