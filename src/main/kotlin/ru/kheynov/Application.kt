@@ -33,11 +33,11 @@ fun main(args: Array<String>) {
 @Suppress("unused") // application.conf references the main function. This annotation prevents the IDE from marking it as unused.
 fun Application.module() {
     configureDI()
+    configureSecurity()
     configureHTTP()
     configureMonitoring()
     configureSerialization()
     configureRouting()
-    configureSecurity()
 }
 
 fun Application.configureDI() {
@@ -67,10 +67,10 @@ fun Application.configureHTTP() {
         allowHeader(HttpHeaders.Authorization)
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
-    routing {
-        openAPI(path = "/openapi", swaggerFile = "openapi/documentation.yaml")
-        swaggerUI(path = "/swagger", swaggerFile = "openapi/documentation.yaml")
-    }
+//    routing {
+//        openAPI(path = "/openapi", swaggerFile = "openapi/documentation.yaml")
+//        swaggerUI(path = "/swagger", swaggerFile = "openapi/documentation.yaml")
+//    }
 }
 
 fun Application.configureMonitoring() {
@@ -82,20 +82,16 @@ fun Application.configureMonitoring() {
 
 fun Application.configureSecurity() {
     val config: TokenConfig by inject()
+    install(Authentication)
     authentication {
         jwt {
-            realm = System.getenv("jwt-realm")
+            realm = System.getenv("JWT_REALM")
             verifier(
-                JWT.require(Algorithm.HMAC256(config.secret))
-                    .withAudience(config.audience)
-                    .withIssuer(config.issuer)
+                JWT.require(Algorithm.HMAC256(config.secret)).withAudience(config.audience).withIssuer(config.issuer)
                     .build()
             )
             validate { token ->
-                if (
-                    token.payload.audience.contains(config.audience) &&
-                    token.payload.expiresAt.time > System.currentTimeMillis()
-                ) {
+                if (token.payload.audience.contains(config.audience) && token.payload.expiresAt.time > System.currentTimeMillis()) {
                     JWTPrincipal(token.payload)
                 } else null
             }

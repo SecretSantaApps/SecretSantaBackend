@@ -9,6 +9,8 @@ import ru.kheynov.domain.repositories.GameRepository
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.domain.use_cases.UseCases
+import ru.kheynov.security.jwt.hashing.BcryptHashingService
+import ru.kheynov.security.jwt.hashing.HashingService
 import ru.kheynov.security.jwt.token.JwtTokenService
 import ru.kheynov.security.jwt.token.TokenConfig
 import ru.kheynov.security.jwt.token.TokenService
@@ -31,15 +33,17 @@ val appModule = module {
 
     single {
         TokenConfig(
-            issuer = System.getenv("jwt-issuer"),
-            audience = System.getenv("jwt-issuer"),
-            accessLifetime = System.getenv("jwt-access-lifetime").toLong(),
-            refreshLifetime = System.getenv("jwt-refresh-lifetime").toLong(),
-            secret = System.getenv("jwt-secret")
+            issuer = System.getenv("JWT_ISSUER"),
+            audience = System.getenv("JWT_AUDIENCE"),
+            accessLifetime = System.getenv("JWT_ACCESS_LIFETIME").toLong(),
+            refreshLifetime = System.getenv("JWT_REFRESH_LIFETIME").toLong(),
+            secret = System.getenv("JWT_SECRET")
         )
     }
 
     single<TokenService> { JwtTokenService() }
+
+    single<HashingService> { BcryptHashingService() }
 
     single<GiftDispenser> { SimpleCycleGiftDispenser() }
 

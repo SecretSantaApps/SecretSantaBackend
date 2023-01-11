@@ -1,11 +1,16 @@
 package ru.kheynov.security.jwt.token
 
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class TokenPair(
-    val accessToken: String,
-    val refreshToken: RefreshToken,
+    @SerialName("access_token") val accessToken: String,
+    @SerialName("refresh_token") val refreshToken: RefreshToken,
 )
 
+@Serializable
 data class RefreshToken(
     val token: String,
-    val expiresAt: Long,
+    @SerialName("expiration") val expiresAt: Long,
 )
