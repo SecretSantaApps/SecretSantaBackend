@@ -18,20 +18,32 @@ class LoginViaEmailUseCase : KoinComponent {
         object Failed : Result
     }
 
-    suspend operator fun invoke(email: String, password: String): Result {
+    suspend operator fun invoke(email: String, password: String, clientId: String): Result {
         val user = usersRepository.getUserByEmail(email) ?: return Result.UserNotFound
         val passwordVerificationResult = hashingService.verify(password, user.passwordHash ?: return Result.Failed)
         val tokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", user.userId))
 
-        val createRefreshTokenResult = usersRepository.createRefreshToken(
-            userId = user.userId,
-            refreshToken = RefreshToken(
-                token = tokenPair.refreshToken.token,
-                expiresAt = tokenPair.refreshToken.expiresAt,
-            )
-        )
+        val isTokenExists = usersRepository.getRefreshToken(user.userId, clientId) != null
 
-        if (passwordVerificationResult.verified && createRefreshTokenResult) {
+        val tokenUpdateResult = when {
+            isTokenExists -> usersRepository.updateUserRefreshToken(
+                userId = user.userId,
+                clientId = clientId,
+                newRefreshToken = tokenPair.refreshToken.token,
+                refreshTokenExpiration = tokenPair.refreshToken.expiresAt
+            )
+
+            else -> usersRepository.createRefreshToken(
+                userId = user.userId,
+                clientId = clientId,
+                refreshToken = RefreshToken(
+                    token = tokenPair.refreshToken.token,
+                    expiresAt = tokenPair.refreshToken.expiresAt,
+                )
+            )
+        }
+
+        if (passwordVerificationResult.verified && tokenUpdateResult) {
             return Result.Success(tokenPair)
         }
         return Result.Failed

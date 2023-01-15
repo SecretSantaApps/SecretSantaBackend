@@ -15,7 +15,7 @@ class RefreshTokenUseCase : KoinComponent {
 
     sealed interface Result {
         data class Success(val tokenPair: TokenPair) : Result
-        object InvalidRefreshToken : Result
+        object NoRefreshTokenFound : Result
         object RefreshTokenExpired : Result
         object Forbidden : Result
         object Failed : Result
@@ -23,17 +23,19 @@ class RefreshTokenUseCase : KoinComponent {
 
     suspend operator fun invoke(
         userId: String,
-        oldRefreshToken: ru.kheynov.security.jwt.token.RefreshToken,
+        clientId: String,
+        oldRefreshToken: String,
     ): Result {
-        val refreshToken = usersRepository.getRefreshTokenByUserId(userId) ?: return Result.InvalidRefreshToken
-        if (refreshToken.token != oldRefreshToken.token) return Result.Forbidden
+        val refreshToken = usersRepository.getRefreshToken(userId, clientId) ?: return Result.NoRefreshTokenFound
+        if (refreshToken.token != oldRefreshToken) return Result.Forbidden
         if (refreshToken.expiresAt < System.currentTimeMillis()) return Result.RefreshTokenExpired
 
         val newTokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", userId))
         val updateRefreshTokenResult = usersRepository.updateUserRefreshToken(
-            oldRefreshToken = oldRefreshToken.token,
             newRefreshToken = newTokenPair.refreshToken.token,
             refreshTokenExpiration = newTokenPair.refreshToken.expiresAt,
+            userId = userId,
+            clientId = clientId,
         )
         return if (updateRefreshTokenResult) Result.Success(newTokenPair) else Result.Failed
     }

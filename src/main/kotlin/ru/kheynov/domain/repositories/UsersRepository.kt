@@ -1,7 +1,7 @@
 package ru.kheynov.domain.repositories
 
-import ru.kheynov.data.entities.RefreshToken
 import ru.kheynov.domain.entities.UserDTO
+import ru.kheynov.security.jwt.token.RefreshToken
 
 interface UsersRepository {
     suspend fun registerUser(user: UserDTO.User): Boolean
@@ -9,16 +9,19 @@ interface UsersRepository {
     suspend fun getUserByID(userId: String): UserDTO.User?
     suspend fun updateUserByID(userId: String, name: String): Boolean
     suspend fun getUserByEmail(email: String): UserDTO.User?
+
     suspend fun updateUserRefreshToken(
-        oldRefreshToken: String,
+        userId: String,
+        clientId: String,
         newRefreshToken: String,
         refreshTokenExpiration: Long,
     ): Boolean
 
-    suspend fun getRefreshTokenByUserId(userId: String): ru.kheynov.security.jwt.token.RefreshToken?
+    suspend fun getRefreshToken(userId: String, clientId: String): RefreshToken?
 
     suspend fun createRefreshToken(
         userId: String,
-        refreshToken: ru.kheynov.security.jwt.token.RefreshToken,
+        clientId: String,
+        refreshToken: RefreshToken,
     ): Boolean
 }

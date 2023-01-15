@@ -19,6 +19,7 @@ sealed interface UserDTO {
         val username: String,
         val password: String,
         val email: String,
+        @SerialName("client_id") val clientId: String,
     ) : UserDTO
 
     @Serializable

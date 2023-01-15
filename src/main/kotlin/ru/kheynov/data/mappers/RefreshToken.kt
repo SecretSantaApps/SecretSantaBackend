@@ -9,10 +9,14 @@ fun RefreshToken.toRefreshToken(): ru.kheynov.security.jwt.token.RefreshToken {
     )
 }
 
-fun ru.kheynov.security.jwt.token.RefreshToken.toDataRefreshToken(userId: String): ru.kheynov.data.entities.RefreshToken {
+fun ru.kheynov.security.jwt.token.RefreshToken.toDataRefreshToken(
+    userId: String,
+    clientId: String,
+): RefreshToken {
     val refreshToken = this
-    return ru.kheynov.data.entities.RefreshToken {
+    return RefreshToken {
         this.userId = userId
+        this.clientId = clientId
         this.refreshToken = refreshToken.token
         this.expiresAt = refreshToken.expiresAt
     }

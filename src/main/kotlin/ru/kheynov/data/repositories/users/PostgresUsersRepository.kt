@@ -1,6 +1,7 @@
 package ru.kheynov.data.repositories.users
 
 import org.ktorm.database.Database
+import org.ktorm.dsl.and
 import org.ktorm.dsl.eq
 import org.ktorm.entity.add
 import org.ktorm.entity.find
@@ -44,23 +45,26 @@ class PostgresUsersRepository(
     }
 
     override suspend fun updateUserRefreshToken(
-        oldRefreshToken: String,
+        userId: String,
+        clientId: String,
         newRefreshToken: String,
         refreshTokenExpiration: Long,
     ): Boolean {
-        val foundUser = database.sequenceOf(RefreshTokens).find { it.refreshToken eq oldRefreshToken } ?: return false
+        val foundUser = database.sequenceOf(RefreshTokens).find { (it.userId eq userId) and (it.clientId eq clientId) }
+            ?: return false
         foundUser.refreshToken = newRefreshToken
         foundUser.expiresAt = refreshTokenExpiration
         val affectedRows = foundUser.flushChanges()
         return affectedRows == 1
     }
 
-    override suspend fun getRefreshTokenByUserId(userId: String): RefreshToken? {
-        return database.sequenceOf(RefreshTokens).find { it.userId eq userId }?.toRefreshToken()
+    override suspend fun getRefreshToken(userId: String, clientId: String): RefreshToken? {
+        return database.sequenceOf(RefreshTokens).find { (it.userId eq userId) and (it.clientId eq clientId) }
+            ?.toRefreshToken()
     }
 
-    override suspend fun createRefreshToken(userId: String, refreshToken: RefreshToken): Boolean {
-        val affectedRows = database.sequenceOf(RefreshTokens).add(refreshToken.toDataRefreshToken(userId))
+    override suspend fun createRefreshToken(userId: String, clientId: String, refreshToken: RefreshToken): Boolean {
+        val affectedRows = database.sequenceOf(RefreshTokens).add(refreshToken.toDataRefreshToken(userId, clientId))
         return affectedRows == 1
     }
 }

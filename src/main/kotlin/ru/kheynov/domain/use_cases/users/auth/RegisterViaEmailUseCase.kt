@@ -37,6 +37,7 @@ class RegisterViaEmailUseCase : KoinComponent {
         val registerUserResult = usersRepository.registerUser(resUser)
         val createUserRefreshTokenResult = usersRepository.createRefreshToken(
             userId = userId,
+            clientId = user.clientId,
             refreshToken = RefreshToken(
                 token = tokenPair.refreshToken.token,
                 expiresAt = tokenPair.refreshToken.expiresAt
