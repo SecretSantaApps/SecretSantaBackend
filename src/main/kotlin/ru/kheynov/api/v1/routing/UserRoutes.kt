@@ -43,7 +43,7 @@ fun Route.configureUserRoutes(
 private fun Route.configureAuthRoutes(useCases: UseCases) {
     route("/auth") {
         post("/email/register") { //Register user
-            val clientId = call.request.headers["Client-Id"] ?: run {
+            val clientId = call.request.headers["client-id"] ?: run {
                 call.respond(HttpStatusCode.BadRequest, "No client id provided")
                 return@post
             }
@@ -77,7 +77,7 @@ private fun Route.configureAuthRoutes(useCases: UseCases) {
         }
 
         post("/email/login") {
-            val clientId = call.request.headers["Client-Id"] ?: run {
+            val clientId = call.request.headers["client-id"] ?: run {
                 call.respond(HttpStatusCode.BadRequest, "No client id provided")
                 return@post
             }
@@ -99,8 +99,8 @@ private fun Route.configureAuthRoutes(useCases: UseCases) {
                     return@post
                 }
 
-                LoginViaEmailUseCase.Result.UserNotFound -> {
-                    call.respond(HttpStatusCode.NotFound, "User not found")
+                LoginViaEmailUseCase.Result.Forbidden -> {
+                    call.respond(HttpStatusCode.Forbidden, "Wrong password or email")
                     return@post
                 }
             }
@@ -108,7 +108,7 @@ private fun Route.configureAuthRoutes(useCases: UseCases) {
 
         authenticate {
             post("/refresh") {
-                val clientId = call.request.headers["Client-Id"] ?: run {
+                val clientId = call.request.headers["client-id"] ?: run {
                     call.respond(HttpStatusCode.BadRequest, "No client id provided")
                     return@post
                 }

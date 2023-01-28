@@ -14,13 +14,13 @@ class LoginViaEmailUseCase : KoinComponent {
 
     sealed interface Result {
         data class Success(val tokenPair: TokenPair) : Result
-        object UserNotFound : Result
+        object Forbidden : Result
         object Failed : Result
     }
 
     suspend operator fun invoke(email: String, password: String, clientId: String): Result {
-        val user = usersRepository.getUserByEmail(email) ?: return Result.UserNotFound
-        val passwordVerificationResult = hashingService.verify(password, user.passwordHash ?: return Result.Failed)
+        val user = usersRepository.getUserByEmail(email) ?: return Result.Forbidden
+        val passwordVerificationResult = hashingService.verify(password, user.passwordHash ?: return Result.Forbidden)
         val tokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", user.userId))
 
         val isTokenExists = usersRepository.getRefreshToken(user.userId, clientId) != null
