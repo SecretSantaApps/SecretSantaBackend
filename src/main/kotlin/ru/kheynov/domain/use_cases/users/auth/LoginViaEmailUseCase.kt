@@ -21,6 +21,7 @@ class LoginViaEmailUseCase : KoinComponent {
     suspend operator fun invoke(email: String, password: String, clientId: String): Result {
         val user = usersRepository.getUserByEmail(email) ?: return Result.Forbidden
         val passwordVerificationResult = hashingService.verify(password, user.passwordHash ?: return Result.Forbidden)
+        if (!passwordVerificationResult.verified) return Result.Forbidden
         val tokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", user.userId))
 
         val isTokenExists = usersRepository.getRefreshToken(user.userId, clientId) != null
