@@ -25,13 +25,14 @@ class JoinRoomUseCase : KoinComponent {
         userId: String,
         roomId: String,
         password: String?,
+        wishlist: String?,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
         val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotFound
         if (gameRepository.checkUserInRoom(roomId, userId)) return Result.UserAlreadyInRoom
         if (room.gameStarted) return Result.GameAlreadyStarted
         return if (room.password == password) {
-            if (gameRepository.addToRoom(room.id, userId)) Result.Successful
+            if (gameRepository.addToRoom(room.id, userId, wishlist)) Result.Successful
             else Result.Failed
         } else Result.Forbidden
     }

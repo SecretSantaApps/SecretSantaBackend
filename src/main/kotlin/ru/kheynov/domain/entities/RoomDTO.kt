@@ -15,6 +15,7 @@ sealed interface RoomDTO {
         @SerialName("room_id") val id: String,
         @Serializable(with = LocalDateSerializer::class) val date: LocalDate?,
         @SerialName("owner_id") val ownerId: String,
+        @SerialName("playable_owner") val playableOwner: Boolean,
         @SerialName("max_price") val maxPrice: Int? = null,
         @SerialName("game_started") val gameStarted: Boolean = false,
         @SerialName("members_count") val membersCount: Int,

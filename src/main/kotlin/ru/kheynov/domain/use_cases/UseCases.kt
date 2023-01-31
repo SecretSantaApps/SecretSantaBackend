@@ -18,9 +18,7 @@ class UseCases {
 
 
     val registerViaEmailUseCase = RegisterViaEmailUseCase()
-
     val loginViaEmailUseCase = LoginViaEmailUseCase()
-
     val refreshTokenUseCase = RefreshTokenUseCase()
 
     val deleteUserUseCase = DeleteUserUseCase()

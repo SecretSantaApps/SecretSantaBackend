@@ -60,10 +60,7 @@ fun Application.configureRouting() {
 
 fun Application.configureHTTP() {
     install(CORS) {
-        allowMethod(HttpMethod.Options)
-        allowMethod(HttpMethod.Put)
-        allowMethod(HttpMethod.Delete)
-        allowMethod(HttpMethod.Patch)
+        HttpMethod.DefaultMethods.forEach(::allowMethod)
         allowHeader(HttpHeaders.Authorization)
         allowHeader("Client-Id")
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.

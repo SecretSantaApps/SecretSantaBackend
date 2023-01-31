@@ -33,16 +33,15 @@ class RegisterViaEmailUseCase : KoinComponent {
             email = user.email,
             passwordHash = hashingService.generateHash(user.password),
             authProvider = "local",
+            address = user.address,
         )
         val registerUserResult = usersRepository.registerUser(resUser)
         val createUserRefreshTokenResult = usersRepository.createRefreshToken(
-            userId = userId,
-            clientId = user.clientId,
-            refreshToken = RefreshToken(
-                token = tokenPair.refreshToken.token,
-                expiresAt = tokenPair.refreshToken.expiresAt
+            userId = userId, clientId = user.clientId, refreshToken = RefreshToken(
+                token = tokenPair.refreshToken.token, expiresAt = tokenPair.refreshToken.expiresAt
             )
         )
+
         return if (registerUserResult && createUserRefreshTokenResult) Result.Successful(tokenPair) else Result.Failed
     }
 }

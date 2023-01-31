@@ -32,7 +32,10 @@ class StartGameUseCase : KoinComponent {
         if (room.ownerId != userId) return Result.Forbidden
         if (room.gameStarted) return Result.GameAlreadyStarted
 
-        val users = gameRepository.getUsersInRoom(roomId)
+        val users = gameRepository.getUsersInRoom(roomId).toMutableList()
+        if (!room.playableOwner) {
+            users.removeIf { it.userId == room.ownerId }
+        }
 
         if (users.size < 3) return Result.NotEnoughPlayers
         println(users.toString())
