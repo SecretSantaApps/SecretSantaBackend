@@ -14,6 +14,6 @@ data class InfoDetails(
     val password: String?,
     val date: @Serializable(with = LocalDateSerializer::class) LocalDate?,
     @SerialName("max_price") val maxPrice: Int?,
-    val users: List<UserDTO.UserInfo>,
+    val users: List<UserDTO.UserRoomInfo>,
     val recipient: String? = null,
 )

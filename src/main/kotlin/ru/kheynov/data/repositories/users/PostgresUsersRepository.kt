@@ -8,10 +8,7 @@ import org.ktorm.entity.find
 import org.ktorm.entity.sequenceOf
 import ru.kheynov.data.entities.RefreshTokens
 import ru.kheynov.data.entities.Users
-import ru.kheynov.data.mappers.mapToUser
-import ru.kheynov.data.mappers.toDataRefreshToken
-import ru.kheynov.data.mappers.toDataUser
-import ru.kheynov.data.mappers.toRefreshToken
+import ru.kheynov.data.mappers.*
 import ru.kheynov.domain.entities.UserDTO
 import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.security.jwt.token.RefreshToken
@@ -24,17 +21,18 @@ class PostgresUsersRepository(
         return affectedRows == 1
     }
 
-    override suspend fun getUserByID(userId: String): UserDTO.User? =
-        database.sequenceOf(Users).find { user -> user.userId eq userId }?.mapToUser()
+    override suspend fun getUserByID(userId: String): UserDTO.UserInfo? =
+        database.sequenceOf(Users).find { user -> user.userId eq userId }?.mapToUserInfo()
 
     override suspend fun deleteUserByID(userId: String): Boolean {
         val affectedRows = database.sequenceOf(Users).find { user -> user.userId eq userId }?.delete()
         return affectedRows == 1
     }
 
-    override suspend fun updateUserByID(userId: String, name: String): Boolean {
+    override suspend fun updateUserByID(userId: String, name: String?, address: String?): Boolean {
         val foundUser = database.sequenceOf(Users).find { it.userId eq userId } ?: return false
-        foundUser.name = name
+        if (name != null) foundUser.name = name
+        foundUser.address = address
         val affectedRows = foundUser.flushChanges()
         return affectedRows == 1
     }
@@ -58,9 +56,14 @@ class PostgresUsersRepository(
         return affectedRows == 1
     }
 
-    override suspend fun getRefreshToken(userId: String, clientId: String): RefreshToken? {
-        return database.sequenceOf(RefreshTokens).find { (it.userId eq userId) and (it.clientId eq clientId) }
-            ?.toRefreshToken()
+    override suspend fun getRefreshToken(oldRefreshToken: String): UserDTO.RefreshTokenInfo? {
+        return database.sequenceOf(RefreshTokens).find { oldRefreshToken eq it.refreshToken }
+            ?.toRefreshTokenInfo()
+    }
+
+    override suspend fun getRefreshTokenByUserId(userId: String): UserDTO.RefreshTokenInfo? {
+        return database.sequenceOf(RefreshTokens).find { userId eq it.userId }
+            ?.toRefreshTokenInfo()
     }
 
     override suspend fun createRefreshToken(userId: String, clientId: String, refreshToken: RefreshToken): Boolean {

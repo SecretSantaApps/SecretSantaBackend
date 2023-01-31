@@ -1,9 +1,12 @@
 package ru.kheynov.data.mappers
 
 import ru.kheynov.data.entities.RefreshToken
+import ru.kheynov.domain.entities.UserDTO
 
-fun RefreshToken.toRefreshToken(): ru.kheynov.security.jwt.token.RefreshToken {
-    return ru.kheynov.security.jwt.token.RefreshToken(
+fun RefreshToken.toRefreshTokenInfo(): UserDTO.RefreshTokenInfo {
+    return UserDTO.RefreshTokenInfo(
+        userId = this.userId,
+        clientId = this.clientId,
         token = this.refreshToken,
         expiresAt = this.expiresAt,
     )

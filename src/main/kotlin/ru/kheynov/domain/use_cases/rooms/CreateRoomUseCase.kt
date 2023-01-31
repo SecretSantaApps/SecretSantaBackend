@@ -23,6 +23,7 @@ class CreateRoomUseCase : KoinComponent {
         userId: String,
         roomName: String,
         password: String?,
+        playableOwner: Boolean,
         date: LocalDate?,
         maxPrice: Int?,
     ): Result {
@@ -33,6 +34,7 @@ class CreateRoomUseCase : KoinComponent {
             id = getRandomRoomID(),
             date = date,
             ownerId = userId,
+            playableOwner = playableOwner,
             maxPrice = maxPrice,
             gameStarted = false,
             membersCount = 1

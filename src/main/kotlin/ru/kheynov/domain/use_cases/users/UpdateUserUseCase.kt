@@ -15,12 +15,14 @@ class UpdateUserUseCase : KoinComponent {
 
     suspend operator fun invoke(
         userId: String,
-        name: String,
+        name: String?,
+        address: String?,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
         return if (usersRepository.updateUserByID(
                 userId,
-                name = name
+                name = name,
+                address = address,
             )
         ) Result.Successful else Result.Failed
     }

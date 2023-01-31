@@ -11,6 +11,13 @@ fun toDataUser(user: UserDTO.User): User = User {
     authProvider = user.authProvider
 }
 
+fun User.mapToUserInfo(): UserDTO.UserInfo = UserDTO.UserInfo(
+    userId = this.userId,
+    username = this.name,
+    email = this.email,
+    address = this.address
+)
+
 fun User.mapToUser(): UserDTO.User = UserDTO.User(
     userId = this.userId,
     username = this.name,

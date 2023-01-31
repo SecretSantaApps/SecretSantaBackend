@@ -30,6 +30,20 @@ sealed interface UserDTO {
         val username: String,
         val email: String,
         val address: String?,
+    ) : UserDTO
+
+    @Serializable
+    data class UserRoomInfo(
+        @SerialName("user_id") val userId: String,
+        val username: String,
+        val address: String?,
         val wishlist: String?,
+    ) : UserDTO
+
+    data class RefreshTokenInfo(
+        val userId: String,
+        val clientId: String,
+        val token: String,
+        val expiresAt: Long,
     ) : UserDTO
 }

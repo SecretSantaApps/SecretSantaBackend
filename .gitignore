@@ -49,3 +49,7 @@ out/
 /secretsanta-firebase-adminsdk.json
 /db-data/
 /gen/
+/build/distributions/
+/build/scripts/
+/build/scriptsShadow/
+/build/snapshot/

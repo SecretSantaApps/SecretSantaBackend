@@ -9,7 +9,7 @@ class GetUserDetailsUseCase : KoinComponent {
     private val usersRepository: UsersRepository by inject()
 
     sealed interface Result {
-        data class Successful(val user: UserDTO.User) : Result
+        data class Successful(val user: UserDTO.UserInfo) : Result
         object Failed : Result
         object UserNotFound : Result
     }
@@ -18,6 +18,6 @@ class GetUserDetailsUseCase : KoinComponent {
         userId: String,
     ): Result {
         val user = usersRepository.getUserByID(userId) ?: return Result.UserNotFound
-        return Result.Successful(user = user)
+        return Result.Successful(user)
     }
 }

@@ -22,20 +22,19 @@ class RefreshTokenUseCase : KoinComponent {
     }
 
     suspend operator fun invoke(
-        userId: String,
-        clientId: String,
         oldRefreshToken: String,
     ): Result {
-        val refreshToken = usersRepository.getRefreshToken(userId, clientId) ?: return Result.NoRefreshTokenFound
-        if (refreshToken.token != oldRefreshToken) return Result.Forbidden
-        if (refreshToken.expiresAt < System.currentTimeMillis()) return Result.RefreshTokenExpired
+        val refreshTokenInfo =
+            usersRepository.getRefreshToken(oldRefreshToken) ?: return Result.NoRefreshTokenFound
+        if (refreshTokenInfo.token != oldRefreshToken) return Result.Forbidden
+        if (refreshTokenInfo.expiresAt < System.currentTimeMillis()) return Result.RefreshTokenExpired
 
-        val newTokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", userId))
+        val newTokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", refreshTokenInfo.userId))
         val updateRefreshTokenResult = usersRepository.updateUserRefreshToken(
             newRefreshToken = newTokenPair.refreshToken.token,
             refreshTokenExpiration = newTokenPair.refreshToken.expiresAt,
-            userId = userId,
-            clientId = clientId,
+            userId = refreshTokenInfo.userId,
+            clientId = refreshTokenInfo.clientId,
         )
         return if (updateRefreshTokenResult) Result.Success(newTokenPair) else Result.Failed
     }

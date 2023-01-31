@@ -48,15 +48,14 @@ class PostgresGameRepository(
         return affectedRows > 0
     }
 
-    override suspend fun getUsersInRoom(roomId: String): List<UserDTO.UserInfo> {
+    override suspend fun getUsersInRoom(roomId: String): List<UserDTO.UserRoomInfo> {
         return database.from(RoomMembers).innerJoin(Users, on = RoomMembers.userId eq Users.userId)
             .select(Users.userId, Users.name).where {
                 RoomMembers.roomId eq roomId
             }.map { row ->
-                UserDTO.UserInfo(
+                UserDTO.UserRoomInfo(
                     userId = row[Users.userId]!!,
                     username = row[Users.name]!!,
-                    email = row[Users.email]!!,
                     address = row[Users.address]!!,
                     wishlist = row[RoomMembers.wishlist]!!,
                 )
