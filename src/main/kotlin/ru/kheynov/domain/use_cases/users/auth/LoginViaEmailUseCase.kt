@@ -49,4 +49,5 @@ class LoginViaEmailUseCase : KoinComponent {
         }
         return Result.Failed
     }
+
 }

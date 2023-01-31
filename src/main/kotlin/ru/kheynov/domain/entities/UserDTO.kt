@@ -12,6 +12,7 @@ sealed interface UserDTO {
         val passwordHash: String?,
         @SerialName("auth_provider") val authProvider: String,
         val email: String,
+        val address: String?,
     ) : UserDTO
 
     @Serializable
@@ -20,6 +21,7 @@ sealed interface UserDTO {
         val password: String,
         val email: String,
         @SerialName("client_id") val clientId: String,
+        val address: String?,
     ) : UserDTO
 
     @Serializable
@@ -27,5 +29,7 @@ sealed interface UserDTO {
         @SerialName("user_id") val userId: String,
         val username: String,
         val email: String,
+        val address: String?,
+        val wishlist: String?,
     ) : UserDTO
 }

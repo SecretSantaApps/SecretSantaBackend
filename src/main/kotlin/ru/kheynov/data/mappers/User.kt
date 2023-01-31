@@ -16,5 +16,6 @@ fun User.mapToUser(): UserDTO.User = UserDTO.User(
     username = this.name,
     email = this.email,
     passwordHash = this.passwordHash,
-    authProvider = this.authProvider
+    authProvider = this.authProvider,
+    address = this.address
 )

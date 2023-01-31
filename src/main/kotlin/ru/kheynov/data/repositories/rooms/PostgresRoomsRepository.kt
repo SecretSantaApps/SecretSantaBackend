@@ -21,6 +21,7 @@ class PostgresRoomsRepository(
             date = room.date
             maxPrice = room.maxPrice
             ownerId = room.ownerId
+            playableOwner = room.playableOwner
             gameStarted = false
         }
         var affectedRows = database.sequenceOf(Rooms).add(newRoom)

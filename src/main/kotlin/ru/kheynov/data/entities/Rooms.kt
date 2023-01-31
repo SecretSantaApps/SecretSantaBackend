@@ -12,6 +12,7 @@ interface Room : Entity<Room> {
     var password: String
     var date: LocalDate?
     var ownerId: String
+    var playableOwner: Boolean
     var maxPrice: Int?
     var gameStarted: Boolean
 }
@@ -23,6 +24,7 @@ object Rooms : Table<Room>("rooms") {
     var password = text("password").bindTo(Room::password)
     var date = date("date").bindTo(Room::date)
     var ownerId = text("owner_id").bindTo(Room::ownerId)
+    var playableOwner = boolean("playable_owner").bindTo(Room::playableOwner)
     var maxPrice = int("max_price").bindTo(Room::maxPrice)
     var gameStarted = boolean("game_started").bindTo { it.gameStarted }
 }

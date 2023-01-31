@@ -15,10 +15,11 @@ import ru.kheynov.domain.repositories.GameRepository
 class PostgresGameRepository(
     private val database: Database,
 ) : GameRepository {
-    override suspend fun addToRoom(roomId: String, userId: String): Boolean {
+    override suspend fun addToRoom(roomId: String, userId: String, wishlist: String?): Boolean {
         val newMember = RoomMember {
             this.roomId = database.sequenceOf(Rooms).find { it.id eq roomId } ?: return false
             this.userId = database.sequenceOf(Users).find { it.userId eq userId } ?: return false
+            this.wishlist = wishlist
         }
         val affectedRows = database.sequenceOf(RoomMembers).add(newMember)
         return affectedRows == 1
@@ -56,6 +57,8 @@ class PostgresGameRepository(
                     userId = row[Users.userId]!!,
                     username = row[Users.name]!!,
                     email = row[Users.email]!!,
+                    address = row[Users.address]!!,
+                    wishlist = row[RoomMembers.wishlist]!!,
                 )
             }
     }
