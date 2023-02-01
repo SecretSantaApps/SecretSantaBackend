@@ -42,6 +42,7 @@ sealed interface UserDTO {
         val address: String?,
         val wishlist: String?,
         val avatar: String,
+        val accepted: Boolean? = false, //nullable because it could be null for non-admin requesters
     ) : UserDTO
 
     data class RefreshTokenInfo(

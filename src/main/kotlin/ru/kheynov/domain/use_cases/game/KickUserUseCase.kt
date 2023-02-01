@@ -19,7 +19,7 @@ class KickUserUseCase : KoinComponent {
         object RoomNotFound : Result
         object UserNotFound : Result
         object GameAlreadyStarted : Result
-        object NotAllowed : Result
+        object NotAllowed : Result //user can't kick himself, he should leave instead
     }
 
     suspend operator fun invoke(

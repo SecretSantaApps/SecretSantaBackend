@@ -9,7 +9,6 @@ interface Room : Entity<Room> {
 
     var id: String
     var name: String
-    var password: String
     var date: LocalDate?
     var ownerId: String
     var playableOwner: Boolean
@@ -21,7 +20,6 @@ interface Room : Entity<Room> {
 object Rooms : Table<Room>("rooms") {
     var id = text("id").primaryKey().bindTo(Room::id)
     var name = text("name").bindTo(Room::name)
-    var password = text("password").bindTo(Room::password)
     var date = date("date").bindTo(Room::date)
     var ownerId = text("owner_id").bindTo(Room::ownerId)
     var playableOwner = boolean("playable_owner").bindTo(Room::playableOwner)

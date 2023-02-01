@@ -43,5 +43,6 @@ create table room_members
     room_id   text references rooms (id) on delete cascade not null,
     user_id   text references users (user_id)              not null,
     recipient text references users (user_id),
-    wishlist  text
+    wishlist  text,
+    accepted  boolean default false
 );
