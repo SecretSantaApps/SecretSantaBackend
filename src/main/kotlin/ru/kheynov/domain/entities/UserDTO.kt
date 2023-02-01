@@ -13,6 +13,7 @@ sealed interface UserDTO {
         @SerialName("auth_provider") val authProvider: String,
         val email: String,
         val address: String?,
+        val avatar: String,
     ) : UserDTO
 
     @Serializable
@@ -22,6 +23,7 @@ sealed interface UserDTO {
         val email: String,
         @SerialName("client_id") val clientId: String,
         val address: String?,
+        val avatar: Int,
     ) : UserDTO
 
     @Serializable
@@ -30,6 +32,7 @@ sealed interface UserDTO {
         val username: String,
         val email: String,
         val address: String?,
+        val avatar: String,
     ) : UserDTO
 
     @Serializable
@@ -38,6 +41,7 @@ sealed interface UserDTO {
         val username: String,
         val address: String?,
         val wishlist: String?,
+        val avatar: String,
     ) : UserDTO
 
     data class RefreshTokenInfo(
@@ -45,5 +49,11 @@ sealed interface UserDTO {
         val clientId: String,
         val token: String,
         val expiresAt: Long,
+    ) : UserDTO
+
+    data class UpdateUser(
+        val username: String?,
+        val address: String?,
+        val avatar: Int?,
     ) : UserDTO
 }

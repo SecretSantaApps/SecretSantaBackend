@@ -8,6 +8,7 @@ import ru.kheynov.domain.use_cases.users.UpdateUserUseCase
 import ru.kheynov.domain.use_cases.users.auth.LoginViaEmailUseCase
 import ru.kheynov.domain.use_cases.users.auth.RefreshTokenUseCase
 import ru.kheynov.domain.use_cases.users.auth.RegisterViaEmailUseCase
+import ru.kheynov.domain.use_cases.utils.GetAvatarsList
 
 class UseCases {
     val createRoomUseCase = CreateRoomUseCase()
@@ -31,4 +32,6 @@ class UseCases {
     val startGameUseCase = StartGameUseCase()
     val stopGameUseCase = StopGameUseCase()
     val getGameInfoUseCase = GetGameInfoUseCase()
+
+    val getAvailableAvatarsUseCase = GetAvatarsList()
 }

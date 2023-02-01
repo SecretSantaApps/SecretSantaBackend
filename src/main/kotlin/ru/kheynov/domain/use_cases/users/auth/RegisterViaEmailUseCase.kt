@@ -20,12 +20,15 @@ class RegisterViaEmailUseCase : KoinComponent {
         data class Successful(val tokenPair: TokenPair) : Result
         object Failed : Result
         object UserAlreadyExists : Result
+        object AvatarNotFound : Result
     }
 
     suspend operator fun invoke(user: UserDTO.UserEmailRegister): Result {
         if (usersRepository.getUserByEmail(user.email) != null) return Result.UserAlreadyExists
         val userId = getRandomUserID()
         val tokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", userId))
+
+        val avatar = usersRepository.getAvatarById(user.avatar) ?: return Result.AvatarNotFound
 
         val resUser = UserDTO.User(
             userId = userId,
@@ -34,6 +37,7 @@ class RegisterViaEmailUseCase : KoinComponent {
             passwordHash = hashingService.generateHash(user.password),
             authProvider = "local",
             address = user.address,
+            avatar = avatar,
         )
         val registerUserResult = usersRepository.registerUser(resUser)
         val createUserRefreshTokenResult = usersRepository.createRefreshToken(

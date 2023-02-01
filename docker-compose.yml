@@ -6,6 +6,7 @@ services:
       - "${SERVER_PORT}:${SERVER_PORT}"
     volumes:
       - ./secretsanta-firebase-adminsdk.json:/secretsanta-key.json
+      - ./files:/files
     environment:
       - SERVER_PORT=$SERVER_PORT
       - DATABASE_CONNECTION_STRING=$DATABASE_CONNECTION_STRING

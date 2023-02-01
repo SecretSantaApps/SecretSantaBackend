@@ -7,6 +7,7 @@ import io.ktor.serialization.kotlinx.json.*
 import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
+import io.ktor.server.http.content.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -25,6 +26,7 @@ import org.slf4j.event.Level
 import ru.kheynov.api.v1.routing.v1Routes
 import ru.kheynov.di.appModule
 import ru.kheynov.security.jwt.token.TokenConfig
+import java.io.File
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -51,6 +53,11 @@ fun Application.configureRouting() {
     routing {
         get("/") {
             call.respond("Secret Santa Server")
+        }
+
+        static("/assets") {
+            staticRootFolder = File("files")
+            files(".")
         }
         route("/api") {
             v1Routes()

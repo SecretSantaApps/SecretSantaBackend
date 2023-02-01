@@ -1,3 +1,11 @@
+create table avatars
+(
+    id    serial primary key,
+    image text not null
+);
+insert into avatars (image)
+values ('images/avatar1.jpg');
+
 create table users
 (
     user_id       text primary key,
@@ -5,7 +13,8 @@ create table users
     email         text not null,
     password_hash text,
     auth_provider text not null default 'local',
-    address       text
+    address       text,
+    avatar        int references avatars (id)
 );
 
 create table refresh_tokens

@@ -25,6 +25,12 @@ fun Route.configureUserRoutes(
     useCases: UseCases,
 ) {
     configureAuthRoutes(useCases)
+
+    get("/avatars") {
+        val res = useCases.getAvailableAvatarsUseCase()
+        call.respond(HttpStatusCode.OK, res)
+    }
+
     route("/user") {
         authenticate {
             get("/rooms") {
@@ -104,17 +110,20 @@ fun Route.configureUserRoutes(
                     return@patch
                 }
 
-                val userUpdate = call.receiveNullable<UpdateUserRequest>()
-                    ?: run {
-                        call.respond(HttpStatusCode.BadRequest)
-                        return@patch
-                    }
-                if (userUpdate.username == null && userUpdate.address == null) {
+                val userUpdate = call.receiveNullable<UpdateUserRequest>()?.let {
+                    UserDTO.UpdateUser(
+                        username = it.username, address = it.address, avatar = it.avatar
+                    )
+                } ?: run {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@patch
+                }
+                if (userUpdate.username == null && userUpdate.address == null && userUpdate.avatar == null) {
                     call.respond(HttpStatusCode.BadRequest, "No data provided")
                     return@patch
                 }
 
-                when (useCases.updateUserUseCase(userId, userUpdate.username, userUpdate.address)) {
+                when (useCases.updateUserUseCase(userId, userUpdate)) {
                     UpdateUserUseCase.Result.Failed -> {
                         call.respond(HttpStatusCode.InternalServerError, "Something went wrong")
                         return@patch
@@ -127,6 +136,11 @@ fun Route.configureUserRoutes(
 
                     UpdateUserUseCase.Result.UserNotExists -> {
                         call.respond(HttpStatusCode.BadRequest, "User not found")
+                        return@patch
+                    }
+
+                    UpdateUserUseCase.Result.AvatarNotFound -> {
+                        call.respond(HttpStatusCode.BadRequest, "Avatar not found")
                         return@patch
                     }
                 }
@@ -150,6 +164,7 @@ private fun Route.configureAuthRoutes(useCases: UseCases) {
                     email = it.email,
                     clientId = clientId,
                     address = it.address,
+                    avatar = it.avatar
                 )
             } ?: run {
                 call.respond(HttpStatusCode.BadRequest)
@@ -170,6 +185,11 @@ private fun Route.configureAuthRoutes(useCases: UseCases) {
 
                 RegisterViaEmailUseCase.Result.UserAlreadyExists -> {
                     call.respond(HttpStatusCode.Conflict, "User already exists")
+                    return@post
+                }
+
+                RegisterViaEmailUseCase.Result.AvatarNotFound -> {
+                    call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
             }

@@ -3,19 +3,12 @@ package ru.kheynov.data.mappers
 import ru.kheynov.data.entities.User
 import ru.kheynov.domain.entities.UserDTO
 
-fun toDataUser(user: UserDTO.User): User = User {
-    userId = user.userId
-    name = user.username
-    email = user.email
-    passwordHash = user.passwordHash
-    authProvider = user.authProvider
-}
-
 fun User.mapToUserInfo(): UserDTO.UserInfo = UserDTO.UserInfo(
     userId = this.userId,
     username = this.name,
     email = this.email,
-    address = this.address
+    address = this.address,
+    avatar = this.avatar.image
 )
 
 fun User.mapToUser(): UserDTO.User = UserDTO.User(
@@ -24,5 +17,6 @@ fun User.mapToUser(): UserDTO.User = UserDTO.User(
     email = this.email,
     passwordHash = this.passwordHash,
     authProvider = this.authProvider,
-    address = this.address
+    address = this.address,
+    avatar = this.avatar.image
 )

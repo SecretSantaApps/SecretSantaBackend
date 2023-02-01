@@ -5,10 +5,7 @@ import org.ktorm.dsl.*
 import org.ktorm.entity.add
 import org.ktorm.entity.find
 import org.ktorm.entity.sequenceOf
-import ru.kheynov.data.entities.RoomMember
-import ru.kheynov.data.entities.RoomMembers
-import ru.kheynov.data.entities.Rooms
-import ru.kheynov.data.entities.Users
+import ru.kheynov.data.entities.*
 import ru.kheynov.domain.entities.UserDTO
 import ru.kheynov.domain.repositories.GameRepository
 
@@ -49,7 +46,9 @@ class PostgresGameRepository(
     }
 
     override suspend fun getUsersInRoom(roomId: String): List<UserDTO.UserRoomInfo> {
-        return database.from(RoomMembers).innerJoin(Users, on = RoomMembers.userId eq Users.userId)
+        return database.from(RoomMembers)
+            .innerJoin(Users, on = RoomMembers.userId eq Users.userId)
+            .innerJoin(Avatars, on = Users.avatar eq Avatars.id)
             .select(Users.userId, Users.name).where {
                 RoomMembers.roomId eq roomId
             }.map { row ->
@@ -58,6 +57,7 @@ class PostgresGameRepository(
                     username = row[Users.name]!!,
                     address = row[Users.address]!!,
                     wishlist = row[RoomMembers.wishlist]!!,
+                    avatar = row[Avatars.image]!!
                 )
             }
     }

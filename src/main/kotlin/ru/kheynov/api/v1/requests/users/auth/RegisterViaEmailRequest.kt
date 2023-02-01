@@ -8,4 +8,5 @@ data class RegisterViaEmailRequest(
     val email: String,
     val password: String,
     val address: String?,
+    val avatar: Int = 1,
 )
