@@ -57,17 +57,23 @@ class PostgresGameRepository(
     }
 
     override suspend fun getUsersInRoom(roomId: String): List<UserDTO.UserRoomInfo> {
-        return database.from(RoomMembers)
-            .innerJoin(Users, on = RoomMembers.userId eq Users.userId)
+        return database.from(RoomMembers).innerJoin(Users, on = RoomMembers.userId eq Users.userId)
             .innerJoin(Avatars, on = Users.avatar eq Avatars.id)
-            .select(Users.userId, Users.name).where {
+            .select(
+                Users.userId,
+                Users.name,
+                Users.address,
+                RoomMembers.wishlist,
+                Avatars.image,
+                RoomMembers.accepted,
+            ).where {
                 RoomMembers.roomId eq roomId
             }.map { row ->
                 UserDTO.UserRoomInfo(
                     userId = row[Users.userId]!!,
                     username = row[Users.name]!!,
-                    address = row[Users.address]!!,
-                    wishlist = row[RoomMembers.wishlist]!!,
+                    address = row[Users.address],
+                    wishlist = row[RoomMembers.wishlist],
                     avatar = row[Avatars.image]!!,
                     accepted = row[RoomMembers.accepted]!!,
                 )

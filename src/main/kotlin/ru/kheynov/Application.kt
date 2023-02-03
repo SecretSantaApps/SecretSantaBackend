@@ -107,7 +107,7 @@ fun Application.configureSecurity() {
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
         json(Json {
-            encodeDefaults = false
+            encodeDefaults = true
             explicitNulls = false
         })
     }

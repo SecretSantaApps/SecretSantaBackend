@@ -30,7 +30,6 @@ create table rooms
 (
     id             text primary key,
     name           text                                              not null,
-    password       text                                              not null,
     owner_id       text references users (user_id) on delete cascade not null,
     playable_owner boolean default false,
     date           date,
