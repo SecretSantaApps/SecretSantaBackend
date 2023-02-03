@@ -17,7 +17,6 @@ class PostgresRoomsRepository(
         var newRoom = ru.kheynov.data.entities.Room {
             id = room.id
             name = room.name
-            password = room.password
             date = room.date
             maxPrice = room.maxPrice
             ownerId = room.ownerId
@@ -25,11 +24,13 @@ class PostgresRoomsRepository(
             gameStarted = false
         }
         var affectedRows = database.sequenceOf(Rooms).add(newRoom)
+
         if (affectedRows != 1) { // if failed, try to change UUID
             newRoom = newRoom.copy()
             newRoom.id = room.id + 1
             affectedRows = database.sequenceOf(Rooms).add(newRoom)
         }
+
         return affectedRows == 1
     }
 
@@ -46,7 +47,6 @@ class PostgresRoomsRepository(
 
     override suspend fun updateRoomById(id: String, newRoomData: RoomUpdate): Boolean {
         val room = database.sequenceOf(Rooms).find { it.id eq id } ?: return false
-        room.password = newRoomData.password ?: room.password
         room.date = newRoomData.date ?: room.date
         room.maxPrice = newRoomData.maxPrice ?: room.maxPrice
         val affectedRows = room.flushChanges()
@@ -62,6 +62,8 @@ class PostgresRoomsRepository(
                 Rooms.ownerId,
                 Rooms.ownerId,
                 Rooms.gameStarted,
+                RoomMembers.accepted,
+                Rooms.playableOwner,
             ).where {
                 RoomMembers.userId eq userId
             }.map { room ->
@@ -75,6 +77,8 @@ class PostgresRoomsRepository(
                     maxPrice = room[Rooms.maxPrice],
                     gameStarted = room[Rooms.gameStarted] ?: false,
                     membersCount = membersCount ?: 0,
+                    accepted = room[RoomMembers.accepted]!!,
+                    playableOwner = room[Rooms.playableOwner]!!,
                 )
             }
 }

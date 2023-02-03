@@ -21,6 +21,7 @@ class StartGameUseCase : KoinComponent {
         object UserNotFound : Result
         object GameAlreadyStarted : Result
         object NotEnoughPlayers : Result
+        object ActiveRequests : Result // есть активные запросы на присоединение к комнате
     }
 
     suspend operator fun invoke(
@@ -33,6 +34,9 @@ class StartGameUseCase : KoinComponent {
         if (room.gameStarted) return Result.GameAlreadyStarted
 
         val users = gameRepository.getUsersInRoom(roomId).toMutableList()
+
+        if (users.find { it.accepted == false } != null) return Result.ActiveRequests
+
         if (!room.playableOwner) {
             users.removeIf { it.userId == room.ownerId }
         }

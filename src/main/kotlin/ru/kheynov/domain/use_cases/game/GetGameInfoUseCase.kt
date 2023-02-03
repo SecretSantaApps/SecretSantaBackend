@@ -25,18 +25,26 @@ class GetGameInfoUseCase : KoinComponent {
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
         val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotExists
-        val users = gameRepository.getUsersInRoom(roomId)
-        println("Users: $users")
+        var users = gameRepository.getUsersInRoom(roomId)
+
+        val isAdmin = userId == room.ownerId
+
         if (users.find { it.userId == userId } == null) return Result.Forbidden
+
+        if (!isAdmin) users = users.map {
+            if (it.userId != userId) {
+                it.copy(accepted = null)
+            } else it
+        }
+
         val info = InfoDetails(
             roomId = room.id,
             roomName = room.name,
             ownerId = room.ownerId,
-            password = if (userId == room.ownerId) room.password else null,
             date = room.date,
             maxPrice = room.maxPrice,
             users = users,
-            recipient = gameRepository.getUsersRecipient(roomId, userId)
+            recipient = gameRepository.getUsersRecipient(roomId, userId),
         )
         return Result.Successful(info)
     }

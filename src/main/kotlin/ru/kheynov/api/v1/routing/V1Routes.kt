@@ -8,7 +8,7 @@ fun Route.v1Routes() {
     route("/v1") {
         val useCases by inject<UseCases>()
         configureUserRoutes(useCases)
-//        configureRoomsRoutes(useCases)
-//        configureGameRoutes(useCases)
+        configureRoomsRoutes(useCases)
+        configureGameRoutes(useCases)
     }
 }

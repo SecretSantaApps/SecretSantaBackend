@@ -11,4 +11,6 @@ data class CreateRoomRequest(
     val password: String?,
     val date: @Serializable(with = LocalDateSerializer::class) LocalDate?,
     @SerialName("max_price") val maxPrice: Int?,
+    @SerialName("playable_owner") val playableOwner: Boolean,
+    @SerialName("wishlist") val wishList: String?,
 )

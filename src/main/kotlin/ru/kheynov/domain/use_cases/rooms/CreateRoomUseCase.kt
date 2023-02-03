@@ -5,7 +5,6 @@ import org.koin.core.component.inject
 import ru.kheynov.domain.entities.RoomDTO
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
-import ru.kheynov.utils.getRandomPassword
 import ru.kheynov.utils.getRandomRoomID
 import java.time.LocalDate
 
@@ -22,7 +21,6 @@ class CreateRoomUseCase : KoinComponent {
     suspend operator fun invoke(
         userId: String,
         roomName: String,
-        password: String?,
         playableOwner: Boolean,
         date: LocalDate?,
         maxPrice: Int?,
@@ -30,7 +28,6 @@ class CreateRoomUseCase : KoinComponent {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotExists
         val room = RoomDTO.Room(
             name = roomName,
-            password = if (password.isNullOrBlank()) getRandomPassword() else password,
             id = getRandomRoomID(),
             date = date,
             ownerId = userId,

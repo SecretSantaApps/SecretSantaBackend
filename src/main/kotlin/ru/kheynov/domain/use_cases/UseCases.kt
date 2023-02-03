@@ -32,6 +32,7 @@ class UseCases {
     val startGameUseCase = StartGameUseCase()
     val stopGameUseCase = StopGameUseCase()
     val getGameInfoUseCase = GetGameInfoUseCase()
+    val acceptUserUseCase = AcceptUserUseCase()
 
     val getAvailableAvatarsUseCase = GetAvatarsList()
 }

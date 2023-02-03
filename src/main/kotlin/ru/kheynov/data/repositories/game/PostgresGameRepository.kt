@@ -17,6 +17,7 @@ class PostgresGameRepository(
             this.roomId = database.sequenceOf(Rooms).find { it.id eq roomId } ?: return false
             this.userId = database.sequenceOf(Users).find { it.userId eq userId } ?: return false
             this.wishlist = wishlist
+            this.accepted = false
         }
         val affectedRows = database.sequenceOf(RoomMembers).add(newMember)
         return affectedRows == 1
@@ -45,22 +46,40 @@ class PostgresGameRepository(
         return affectedRows > 0
     }
 
+    override suspend fun acceptUser(roomId: String, userId: String): Boolean {
+        val affectedRows = database.update(RoomMembers) {
+            set(it.accepted, true)
+            where {
+                (it.userId eq userId) and (it.roomId eq roomId)
+            }
+        }
+        return affectedRows == 1
+    }
+
     override suspend fun getUsersInRoom(roomId: String): List<UserDTO.UserRoomInfo> {
-        return database.from(RoomMembers)
-            .innerJoin(Users, on = RoomMembers.userId eq Users.userId)
+        return database.from(RoomMembers).innerJoin(Users, on = RoomMembers.userId eq Users.userId)
             .innerJoin(Avatars, on = Users.avatar eq Avatars.id)
-            .select(Users.userId, Users.name).where {
+            .select(
+                Users.userId,
+                Users.name,
+                Users.address,
+                RoomMembers.wishlist,
+                Avatars.image,
+                RoomMembers.accepted,
+            ).where {
                 RoomMembers.roomId eq roomId
             }.map { row ->
                 UserDTO.UserRoomInfo(
                     userId = row[Users.userId]!!,
                     username = row[Users.name]!!,
-                    address = row[Users.address]!!,
-                    wishlist = row[RoomMembers.wishlist]!!,
-                    avatar = row[Avatars.image]!!
+                    address = row[Users.address],
+                    wishlist = row[RoomMembers.wishlist],
+                    avatar = row[Avatars.image]!!,
+                    accepted = row[RoomMembers.accepted]!!,
                 )
             }
     }
+
 
     override suspend fun getUsersRecipient(roomId: String, userId: String): String? {
         return database.sequenceOf(RoomMembers)
