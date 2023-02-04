@@ -12,14 +12,14 @@ import ru.kheynov.domain.entities.RoomDTO
 import ru.kheynov.domain.entities.RoomDTO.Room
 import ru.kheynov.domain.entities.RoomDTO.RoomInfo
 import ru.kheynov.domain.repositories.RoomsRepository
+import ru.kheynov.utils.UpdateModel
 
 class PostgresRoomsRepository(
     private val database: Database,
 ) : RoomsRepository {
 
-    private val _updates = MutableSharedFlow<RoomsRepository.RoomUpdate>(extraBufferCapacity = 1)
-
-    override val updates: Flow<RoomsRepository.RoomUpdate>
+    private val _updates = MutableSharedFlow<UpdateModel>()
+    override val updates: Flow<UpdateModel>
         get() = _updates
 
     override suspend fun createRoom(room: Room): Boolean {
@@ -62,7 +62,7 @@ class PostgresRoomsRepository(
         room.maxPrice = newRoomData.maxPrice ?: room.maxPrice
         val affectedRows = room.flushChanges()
         return if (affectedRows == 1) {
-            _updates.tryEmit(RoomsRepository.RoomUpdate(id, room.mapToRoom()))
+            _updates.emit(UpdateModel.RoomUpdate(id, newRoomData))
             true
         } else false
     }
