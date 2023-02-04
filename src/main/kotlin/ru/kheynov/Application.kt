@@ -85,10 +85,10 @@ fun Application.configureHTTP() {
         allowHeader("Client-Id")
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
-//    routing {
-//        openAPI(path = "/openapi", swaggerFile = "openapi/documentation.yaml")
-//        swaggerUI(path = "/swagger", swaggerFile = "openapi/documentation.yaml")
-//    }
+    routing {
+        openAPI(path = "/openapi", swaggerFile = "openapi/documentation.yaml")
+        swaggerUI(path = "/swagger", swaggerFile = "openapi/documentation.yaml")
+    }
 }
 
 fun Application.configureMonitoring() {
