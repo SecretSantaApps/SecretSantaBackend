@@ -22,6 +22,7 @@ sealed interface RoomDTO {
 
     @Serializable
     data class RoomUpdate(
+        @SerialName("room_name") val name: String? = null,
         @Serializable(with = LocalDateSerializer::class) val date: LocalDate? = null,
         @SerialName("max_price") val maxPrice: Int? = null,
     ) : RoomDTO

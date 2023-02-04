@@ -17,6 +17,8 @@ import io.ktor.server.plugins.swagger.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
+import io.ktor.websocket.*
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.koin.ktor.ext.inject
@@ -27,6 +29,7 @@ import ru.kheynov.api.v1.routing.v1Routes
 import ru.kheynov.di.appModule
 import ru.kheynov.security.jwt.token.TokenConfig
 import java.io.File
+import java.time.Duration
 
 fun main(args: Array<String>) {
     EngineMain.main(args)
@@ -39,7 +42,17 @@ fun Application.module() {
     configureHTTP()
     configureMonitoring()
     configureSerialization()
+    configureWebSockets()
     configureRouting()
+}
+
+fun Application.configureWebSockets() {
+    install(WebSockets) {
+        pingPeriod = Duration.ofSeconds(15)
+        timeout = Duration.ofSeconds(15)
+        maxFrameSize = Long.MAX_VALUE
+        masking = false
+    }
 }
 
 fun Application.configureDI() {

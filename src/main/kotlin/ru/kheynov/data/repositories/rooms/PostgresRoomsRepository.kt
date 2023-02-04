@@ -1,17 +1,26 @@
 package ru.kheynov.data.repositories.rooms
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
 import org.ktorm.entity.*
 import ru.kheynov.data.entities.RoomMembers
 import ru.kheynov.data.entities.Rooms
 import ru.kheynov.data.mappers.mapToRoom
-import ru.kheynov.domain.entities.RoomDTO.*
+import ru.kheynov.domain.entities.RoomDTO
+import ru.kheynov.domain.entities.RoomDTO.Room
+import ru.kheynov.domain.entities.RoomDTO.RoomInfo
 import ru.kheynov.domain.repositories.RoomsRepository
 
 class PostgresRoomsRepository(
     private val database: Database,
 ) : RoomsRepository {
+
+    private val _updates = MutableSharedFlow<RoomsRepository.RoomUpdate>(extraBufferCapacity = 1)
+
+    override val updates: Flow<RoomsRepository.RoomUpdate>
+        get() = _updates
 
     override suspend fun createRoom(room: Room): Boolean {
         var newRoom = ru.kheynov.data.entities.Room {
@@ -45,12 +54,17 @@ class PostgresRoomsRepository(
         return database.sequenceOf(Rooms).find { it.id eq id }?.mapToRoom()?.copy(membersCount = membersCount ?: 1)
     }
 
-    override suspend fun updateRoomById(id: String, newRoomData: RoomUpdate): Boolean {
+
+    override suspend fun updateRoomById(id: String, newRoomData: RoomDTO.RoomUpdate): Boolean {
         val room = database.sequenceOf(Rooms).find { it.id eq id } ?: return false
+        room.name = newRoomData.name ?: room.name
         room.date = newRoomData.date ?: room.date
         room.maxPrice = newRoomData.maxPrice ?: room.maxPrice
         val affectedRows = room.flushChanges()
-        return affectedRows == 1
+        return if (affectedRows == 1) {
+            _updates.tryEmit(RoomsRepository.RoomUpdate(id, room.mapToRoom()))
+            true
+        } else false
     }
 
     override suspend fun getUserRooms(userId: String): List<RoomInfo> =

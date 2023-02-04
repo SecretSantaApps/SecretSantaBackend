@@ -7,19 +7,26 @@ import io.ktor.server.auth.jwt.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
 import io.ktor.server.routing.*
+import io.ktor.server.websocket.*
+import io.ktor.websocket.*
+import kotlinx.coroutines.flow.combine
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 import ru.kheynov.api.v1.requests.rooms.CreateRoomRequest
 import ru.kheynov.api.v1.requests.rooms.UpdateRoomRequest
 import ru.kheynov.domain.entities.RoomDTO.RoomUpdate
+import ru.kheynov.domain.repositories.GameRepository
+import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.game.AcceptUserUseCase
 import ru.kheynov.domain.use_cases.game.JoinRoomUseCase
-import ru.kheynov.domain.use_cases.rooms.CreateRoomUseCase
-import ru.kheynov.domain.use_cases.rooms.DeleteRoomUseCase
-import ru.kheynov.domain.use_cases.rooms.GetRoomDetailsUseCase
-import ru.kheynov.domain.use_cases.rooms.UpdateRoomUseCase
+import ru.kheynov.domain.use_cases.rooms.*
+
+private val json = Json { encodeDefaults = true }
 
 fun Route.configureRoomsRoutes(
     useCases: UseCases,
+    roomsRepository: RoomsRepository,
 ) {
     route("/room") {
         authenticate {
@@ -156,15 +163,17 @@ fun Route.configureRoomsRoutes(
                     call.respond(HttpStatusCode.BadRequest, "Wrong room id")
                     return@patch
                 }
-                val roomUpdateRequest = call.receiveNullable<UpdateRoomRequest>() ?: run {
+                val roomUpdate = call.receiveNullable<UpdateRoomRequest>()?.let {
+                    RoomUpdate(
+                        name = it.name,
+                        date = it.date,
+                        maxPrice = it.maxPrice,
+                    )
+                } ?: run {
                     call.respond(HttpStatusCode.BadRequest)
                     return@patch
                 }
 
-                val roomUpdate = RoomUpdate(
-                    date = roomUpdateRequest.date,
-                    maxPrice = roomUpdateRequest.maxPrice,
-                )
                 when (useCases.updateRoomUseCase(
                     userId = userId,
                     roomId = roomId,
@@ -194,6 +203,38 @@ fun Route.configureRoomsRoutes(
                         call.respond(HttpStatusCode.BadRequest, "User not exists")
                         return@patch
                     }
+                }
+            }
+        }
+        authenticate {
+            webSocket {
+                val userId = call.principal<JWTPrincipal>()?.payload?.getClaim("userId")?.asString() ?: run {
+                    send(Frame.Text("No access token provided"))
+                    close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No access token provided"))
+                    return@webSocket
+                }
+                val roomId = call.request.queryParameters["id"] ?: run {
+                    send(Frame.Text("Wrong room id"))
+                    close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "Wrong room id"))
+                    return@webSocket
+                }
+                when (val rooms = useCases.getUserRoomsUseCase(userId)) {
+                    is GetUserRoomsUseCase.Result.Successful -> {
+                        rooms.rooms.find { it.id == roomId } ?: run {
+                            send(Frame.Text("User not in the room"))
+                            close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "User not in the room"))
+                            return@webSocket
+                        }
+                    }
+
+                    GetUserRoomsUseCase.Result.UserNotExists -> {
+                        send(Frame.Text("User not exists"))
+                        close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "User not exists"))
+                        return@webSocket
+                    }
+                }
+                roomsRepository.updates.collect {
+                    send(Frame.Text(json.encodeToString(it.update)))
                 }
             }
         }
