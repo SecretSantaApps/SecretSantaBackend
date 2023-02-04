@@ -34,7 +34,9 @@ dependencies {
     implementation("io.ktor:ktor-server-netty-jvm:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
     implementation("org.testng:testng:7.7.0")
+    implementation("io.ktor:ktor-server-websockets-jvm:2.2.2")
     testImplementation("io.ktor:ktor-server-tests-jvm:$ktorVersion")
+    testImplementation("io.ktor:ktor-server-websockets:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit:$kotlinVersion")
 
     implementation("io.ktor:ktor-server-openapi:$ktorVersion")
