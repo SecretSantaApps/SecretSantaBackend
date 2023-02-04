@@ -2,9 +2,9 @@ openapi: "3.0.3"
 info:
   title: "SecretSantaBackend API"
   description: "SecretSantaBackend API"
-  version: "1.0.0"
+  version: "2.0.0"
 servers:
-  - url: "https://SecretSantaBackend"
+  - url: "https://santa.s.kheynov.ru"
 paths:
   /api/v1/auth/email/login:
     post:
@@ -213,85 +213,685 @@ paths:
                 type: "object"
   /api/v1/game/info:
     get:
-      summary: "GET api/v1/game/info"
+      description: ""
       parameters:
         - name: "id"
           in: "query"
           required: false
+          schema:
+            type: "string"
       responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User not exists"
+                Example#2:
+                  value: "Room not exists"
+                Example#3:
+                  value: "Wrong room name"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "object"
         "200":
           description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/InfoDetails"
   /api/v1/game/join:
     post:
-      summary: "POST api/v1/game/join"
-      parameters:
-        - name: "id"
-          in: "query"
-          required: false
-        - name: "pass"
-          in: "query"
-          required: false
+      description: ""
       responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "User not exists"
+                Example#2:
+                  value: "Room not exists"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User already in room"
+                Example#2:
+                  value: "Game already started"
         "200":
           description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
   /api/v1/game/kick:
     post:
-      summary: "POST api/v1/game/kick"
+      description: ""
       responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "You should use /leave instead of /kick"
+                Example#2:
+                  value: "User not in the room"
+                Example#3:
+                  value: "User not exists"
+                Example#4:
+                  value: "Room not exists"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Game already started"
         "200":
           description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
   /api/v1/game/leave:
     post:
-      summary: "POST api/v1/game/leave"
+      description: ""
       parameters:
         - name: "id"
           in: "query"
           required: false
+          schema:
+            type: "string"
       responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User not exists"
+                Example#2:
+                  value: "Room not exists"
+                Example#3:
+                  value: "Wrong room id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Game already started"
         "200":
           description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User not in the room"
   /api/v1/game/start:
     post:
-      summary: "POST api/v1/game/start"
+      description: ""
       parameters:
         - name: "id"
           in: "query"
           required: false
+          schema:
+            type: "string"
       responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Not enough users to start playing"
+                Example#2:
+                  value: "User not exists"
+                Example#3:
+                  value: "Room not exists"
+                Example#4:
+                  value: "Wrong room id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Game already started"
         "200":
           description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "406":
+          description: "Not Acceptable"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "You have active requests"
   /api/v1/game/stop:
     post:
-      summary: "POST api/v1/game/stop"
+      description: ""
       parameters:
         - name: "id"
           in: "query"
           required: false
+          schema:
+            type: "string"
       responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User not exists"
+                Example#2:
+                  value: "Room not exists"
+                Example#3:
+                  value: "Wrong room id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "409":
+          description: "Conflict"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Game already stopped"
         "200":
           description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
   /api/v1/room:
-    delete:
-      summary: "DELETE api/v1/room"
+    get:
+      description: ""
       parameters:
         - name: "id"
           in: "query"
           required: false
+          schema:
+            type: "string"
       responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User not exists"
+                Example#2:
+                  value: "Room not exists"
+                Example#3:
+                  value: "Wrong room id"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "object"
         "200":
           description: "OK"
-  /api/v1/user:
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Room"
+    post:
+      description: ""
+      responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "User not exists"
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+                Example#2:
+                  value: "Something went wrong"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/Room"
+    patch:
+      description: ""
+      parameters:
+        - name: "id"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "User not exists"
+                Example#2:
+                  value: "Room not exists"
+                Example#3:
+                  value: "Wrong room id"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
     delete:
-      summary: "DELETE api/v1/user"
+      description: ""
+      parameters:
+        - name: "id"
+          in: "query"
+          required: false
+          schema:
+            type: "string"
       responses:
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User Not Exists"
+                Example#2:
+                  value: "Room not exists"
+                Example#3:
+                  value: "Wrong room id"
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "403":
+          description: "Forbidden"
+          content:
+            '*/*':
+              schema:
+                type: "object"
         "200":
           description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+  /api/v1/user:
+    get:
+      description: ""
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                $ref: "#/components/schemas/UserInfo"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User not found"
+    patch:
+      description: ""
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+              examples:
+                Example#1:
+                  value: "Avatar not found"
+                Example#2:
+                  value: "User not found"
+                Example#3:
+                  value: "No data provided"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+    delete:
+      description: ""
+      responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
+        "500":
+          description: "Internal Server Error"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "Something went wrong"
+        "200":
+          description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "object"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User not found"
   /api/v1/user/rooms:
     get:
-      summary: "GET api/v1/user/rooms"
+      description: ""
       responses:
+        "401":
+          description: "Unauthorized"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "No access token provided"
         "200":
           description: "OK"
+          content:
+            '*/*':
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/RoomInfo"
+        "400":
+          description: "Bad Request"
+          content:
+            '*/*':
+              schema:
+                type: "string"
+              examples:
+                Example#1:
+                  value: "User not found"
 components:
   schemas:
     RefreshToken:
