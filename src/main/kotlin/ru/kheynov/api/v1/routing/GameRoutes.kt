@@ -10,13 +10,21 @@ import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.game.AcceptUserRequest
 import ru.kheynov.api.v1.requests.game.JoinRoomRequest
 import ru.kheynov.api.v1.requests.game.KickUserRequest
+import ru.kheynov.domain.repositories.GameRepository
+import ru.kheynov.domain.repositories.RoomsRepository
+import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.game.*
 
 fun Route.configureGameRoutes(
     useCases: UseCases,
+    usersRepository: UsersRepository,
+    roomsRepository: RoomsRepository,
+    gameRepository: GameRepository,
 ) {
     route("/game") {
+        webSockets(usersRepository, roomsRepository, gameRepository)
+
         authenticate {
             post("/join") {
                 val userId = call.principal<JWTPrincipal>()?.payload?.getClaim("userId")?.asString() ?: run {

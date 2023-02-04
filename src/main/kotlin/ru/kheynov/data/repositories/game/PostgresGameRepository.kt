@@ -1,5 +1,7 @@
 package ru.kheynov.data.repositories.game
 
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableSharedFlow
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
 import org.ktorm.entity.add
@@ -8,10 +10,16 @@ import org.ktorm.entity.sequenceOf
 import ru.kheynov.data.entities.*
 import ru.kheynov.domain.entities.UserDTO
 import ru.kheynov.domain.repositories.GameRepository
+import ru.kheynov.utils.UpdateModel
 
 class PostgresGameRepository(
     private val database: Database,
 ) : GameRepository {
+
+    private val _updates = MutableSharedFlow<UpdateModel>()
+    override val updates: Flow<UpdateModel>
+        get() = _updates
+
     override suspend fun addToRoom(roomId: String, userId: String, wishlist: String?): Boolean {
         val newMember = RoomMember {
             this.roomId = database.sequenceOf(Rooms).find { it.id eq roomId } ?: return false
@@ -20,12 +28,19 @@ class PostgresGameRepository(
             this.accepted = false
         }
         val affectedRows = database.sequenceOf(RoomMembers).add(newMember)
-        return affectedRows == 1
+
+        return if (affectedRows == 1) {
+            _updates.emit(UpdateModel.UsersUpdate(roomId = roomId, usersUpdate = getUsersInRoom(roomId)))
+            true
+        } else false
     }
 
     override suspend fun deleteFromRoom(roomId: String, userId: String): Boolean {
         val affectedRows = database.delete(RoomMembers) { (it.userId eq userId) and (it.roomId eq roomId) }
-        return affectedRows == 1
+        return if (affectedRows == 1) {
+            _updates.emit(UpdateModel.UsersUpdate(roomId = roomId, usersUpdate = getUsersInRoom(roomId = roomId)))
+            true
+        } else false
     }
 
     override suspend fun setRecipient(roomId: String, userId: String, recipientId: String): Boolean {
@@ -53,7 +68,10 @@ class PostgresGameRepository(
                 (it.userId eq userId) and (it.roomId eq roomId)
             }
         }
-        return affectedRows == 1
+        return if (affectedRows == 1) {
+            _updates.emit(UpdateModel.UsersUpdate(roomId = roomId, usersUpdate = getUsersInRoom(roomId)))
+            true
+        } else false
     }
 
     override suspend fun getUsersInRoom(roomId: String): List<UserDTO.UserRoomInfo> {
@@ -93,7 +111,10 @@ class PostgresGameRepository(
                 it.id eq roomId
             }
         }
-        return affectedRows == 1
+        return if (affectedRows == 1) {
+            _updates.emit(UpdateModel.GameStateUpdate(roomId, state))
+            true
+        } else false
     }
 
     override suspend fun checkUserInRoom(roomId: String, userId: String): Boolean {
