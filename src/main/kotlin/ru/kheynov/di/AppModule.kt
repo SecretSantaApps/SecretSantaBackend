@@ -1,5 +1,7 @@
 package ru.kheynov.di
 
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import org.koin.dsl.module
 import org.ktorm.database.Database
 import ru.kheynov.data.repositories.game.PostgresGameRepository
@@ -49,5 +51,5 @@ val appModule = module {
 
     single { UseCases() }
 
-
+    single { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
 }

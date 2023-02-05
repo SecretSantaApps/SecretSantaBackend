@@ -8,6 +8,7 @@ import io.ktor.server.application.*
 import io.ktor.server.auth.*
 import io.ktor.server.auth.jwt.*
 import io.ktor.server.http.content.*
+import io.ktor.server.metrics.micrometer.*
 import io.ktor.server.netty.*
 import io.ktor.server.plugins.callloging.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -16,11 +17,24 @@ import io.ktor.server.plugins.openapi.*
 import io.ktor.server.plugins.swagger.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
+import io.ktor.server.response.*
+import io.ktor.server.response.*
+import io.ktor.server.routing.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
+import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics
+import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics
+import io.micrometer.core.instrument.binder.system.FileDescriptorMetrics
+import io.micrometer.core.instrument.binder.system.ProcessorMetrics
+import io.micrometer.core.instrument.binder.system.UptimeMetrics
+import io.micrometer.prometheus.*
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
+import org.koin.ktor.ext.get
 import org.koin.ktor.ext.inject
 import org.koin.ktor.plugin.Koin
 import org.koin.logger.slf4jLogger
@@ -44,6 +58,7 @@ fun Application.module() {
     configureSerialization()
     configureWebSockets()
     configureRouting()
+    configureMicrometrics()
 }
 
 fun Application.configureWebSockets() {
@@ -75,6 +90,22 @@ fun Application.configureRouting() {
         route("/api") {
             v1Routes()
         }
+        metrics()
+    }
+}
+
+fun Application.configureMicrometrics() {
+    install(MicrometerMetrics) {
+        registry = this@configureMicrometrics.get<PrometheusMeterRegistry>()
+        meterBinders = listOf(
+            ClassLoaderMetrics(),
+            JvmMemoryMetrics(),
+            JvmGcMetrics(),
+            ProcessorMetrics(),
+            JvmThreadMetrics(),
+            FileDescriptorMetrics(),
+            UptimeMetrics()
+        )
     }
 }
 
@@ -123,5 +154,16 @@ fun Application.configureSerialization() {
             encodeDefaults = true
             explicitNulls = false
         })
+    }
+}
+
+fun Routing.metrics() {
+
+    val registry = get<PrometheusMeterRegistry>()
+
+    get("/metrics") {
+        call.respondText {
+            registry.scrape()
+        }
     }
 }

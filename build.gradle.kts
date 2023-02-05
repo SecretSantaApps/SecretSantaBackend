@@ -57,4 +57,9 @@ dependencies {
     implementation("org.ktorm:ktorm-support-postgresql:3.5.0")
     implementation("org.postgresql:postgresql:42.5.1")
     testImplementation("io.ktor:ktor-server-test-host-jvm:2.2.2")
+
+    implementation("io.ktor:ktor-metrics:1.6.8")
+    implementation("io.ktor:ktor-metrics-micrometer:1.6.8")
+    implementation("io.ktor:ktor-server-metrics-micrometer-jvm:2.2.2")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.10.3")
 }
