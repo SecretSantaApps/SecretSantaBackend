@@ -58,7 +58,7 @@ fun Application.module() {
     configureSerialization()
     configureWebSockets()
     configureRouting()
-    configureMicrometrics()
+//    configureMicrometrics()
 }
 
 fun Application.configureWebSockets() {
@@ -90,7 +90,7 @@ fun Application.configureRouting() {
         route("/api") {
             v1Routes()
         }
-        metrics()
+//        metrics()
     }
 }
 
