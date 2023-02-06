@@ -13,6 +13,7 @@ fun Route.v1Routes() {
         val roomsRepository by inject<RoomsRepository>()
         val gameRepository by inject<GameRepository>()
         val usersRepository by inject<UsersRepository>()
+
         configureUserRoutes(useCases)
         configureRoomsRoutes(useCases)
         configureGameRoutes(

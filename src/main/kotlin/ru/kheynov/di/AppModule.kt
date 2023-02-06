@@ -1,15 +1,21 @@
 package ru.kheynov.di
 
-import io.micrometer.prometheus.PrometheusConfig
-import io.micrometer.prometheus.PrometheusMeterRegistry
+import io.ktor.client.*
+import io.ktor.client.engine.cio.*
+import io.ktor.client.plugins.contentnegotiation.*
+import io.ktor.serialization.kotlinx.json.*
+import kotlinx.serialization.ExperimentalSerializationApi
+import kotlinx.serialization.json.Json
 import org.koin.dsl.module
 import org.ktorm.database.Database
 import ru.kheynov.data.repositories.game.PostgresGameRepository
 import ru.kheynov.data.repositories.rooms.PostgresRoomsRepository
 import ru.kheynov.data.repositories.users.PostgresUsersRepository
+import ru.kheynov.data.services.OneSignalServiceImpl
 import ru.kheynov.domain.repositories.GameRepository
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
+import ru.kheynov.domain.services.OneSignalService
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.security.jwt.hashing.BcryptHashingService
 import ru.kheynov.security.jwt.hashing.HashingService
@@ -19,6 +25,7 @@ import ru.kheynov.security.jwt.token.TokenService
 import ru.kheynov.utils.GiftDispenser
 import ru.kheynov.utils.SimpleCycleGiftDispenser
 
+@OptIn(ExperimentalSerializationApi::class)
 val appModule = module {
     single {
         Database.connect(
@@ -28,6 +35,20 @@ val appModule = module {
             password = System.getenv("POSTGRES_PASSWORD")
         )
     }
+
+    single {
+        HttpClient(CIO) {
+            install(ContentNegotiation) {
+                json(Json {
+                    ignoreUnknownKeys = true
+                    encodeDefaults = false
+                    explicitNulls = false
+                })
+            }
+        }
+    }
+
+    single<OneSignalService> { OneSignalServiceImpl(get()) }
 
     single<UsersRepository> { PostgresUsersRepository(get()) }
     single<RoomsRepository> { PostgresRoomsRepository(get()) }
@@ -51,5 +72,5 @@ val appModule = module {
 
     single { UseCases() }
 
-    single { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
+//    single { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
 }

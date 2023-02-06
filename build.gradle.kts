@@ -58,8 +58,16 @@ dependencies {
     implementation("org.postgresql:postgresql:42.5.1")
     testImplementation("io.ktor:ktor-server-test-host-jvm:2.2.2")
 
+    //metrics
     implementation("io.ktor:ktor-metrics:1.6.8")
     implementation("io.ktor:ktor-metrics-micrometer:1.6.8")
     implementation("io.ktor:ktor-server-metrics-micrometer-jvm:2.2.2")
     implementation("io.micrometer:micrometer-registry-prometheus:1.10.3")
+
+    //HTTP client
+    implementation("io.ktor:ktor-client-core:$ktorVersion")
+    implementation("io.ktor:ktor-client-cio:$ktorVersion")
+    implementation("io.ktor:ktor-client-serialization:$ktorVersion")
+    implementation("io.ktor:ktor-client-content-negotiation:$ktorVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
 }

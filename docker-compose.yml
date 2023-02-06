@@ -18,11 +18,12 @@ services:
       - JWT_ISSUER=$JWT_ISSUER
       - JWT_ACCESS_LIFETIME=$JWT_ACCESS_LIFETIME
       - JWT_REFRESH_LIFETIME=$JWT_REFRESH_LIFETIME
+      - ONESIGNAL_API_KEY=$ONESIGNAL_API_KEY
     depends_on:
       - db
     networks:
       - db_network
-#      - prometheus_network
+    #      - prometheus_network
     restart: always
 
   db:
