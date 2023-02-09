@@ -70,4 +70,39 @@ fun Route.webSockets(
             awaitAll(roomUpdateHandler, gameUpdateHandler)
         }
     }
+
+    authenticate {
+        webSocket("/all") { //subscribe on all user's rooms updates
+            val userId = call.principal<JWTPrincipal>()?.payload?.getClaim("userId")?.asString() ?: run {
+                send(Frame.Text("No access token provided"))
+                close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "No access token provided"))
+                return@webSocket
+            }
+            if (usersRepository.getUserByID(userId) == null) {
+                send(Frame.Text("User not exists"))
+                close(CloseReason(CloseReason.Codes.VIOLATED_POLICY, "User not exists"))
+                return@webSocket
+            }
+            val userRooms = roomsRepository.getUserRooms(userId)
+
+            val roomUpdateHandler = async {
+                roomsRepository.updates
+                    .collect { update ->
+                        if (update !is UpdateModel.RoomUpdate) return@collect
+                        if (userRooms.find { it.id == update.roomId } == null) return@collect
+                        send(Frame.Text(json.encodeToString(update)))
+                    }
+            }
+
+            val gameUpdateHandler = async {
+                gameRepository.updates
+                    .collect { update ->
+                        if (update is UpdateModel.GameStateUpdate && userRooms.find { it.id == update.roomId } == null) return@collect
+                        if (update is UpdateModel.UsersUpdate && userRooms.find { it.id == update.roomId } == null) return@collect
+                        send(Frame.Text(json.encodeToString(update)))
+                    }
+            }
+            awaitAll(roomUpdateHandler, gameUpdateHandler)
+        }
+    }
 }

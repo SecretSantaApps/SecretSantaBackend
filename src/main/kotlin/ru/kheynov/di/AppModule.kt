@@ -11,7 +11,7 @@ import org.ktorm.database.Database
 import ru.kheynov.data.repositories.game.PostgresGameRepository
 import ru.kheynov.data.repositories.rooms.PostgresRoomsRepository
 import ru.kheynov.data.repositories.users.PostgresUsersRepository
-import ru.kheynov.data.services.OneSignalServiceImpl
+import ru.kheynov.services.OneSignalServiceImpl
 import ru.kheynov.domain.repositories.GameRepository
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository

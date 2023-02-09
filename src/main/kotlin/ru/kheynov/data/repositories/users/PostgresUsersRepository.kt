@@ -1,7 +1,5 @@
 package ru.kheynov.data.repositories.users
 
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.filter
 import org.ktorm.database.Database
 import org.ktorm.dsl.*
 import org.ktorm.entity.add
@@ -36,18 +34,33 @@ class PostgresUsersRepository(
         return affectedRows == 1
     }
 
-    override suspend fun getUserByID(userId: String): UserDTO.UserInfo? =
-        database.from(Users).innerJoin(Avatars, on = Users.avatar eq Avatars.id)
-            .select(Users.userId, Users.name, Users.email, Users.address, Users.authProvider, Avatars.image)
+    override suspend fun getUserByID(userId: String): UserDTO.UserInfo? {
+        val clientIds = database.from(RefreshTokens)
+            .selectDistinct(RefreshTokens.clientId)
+            .where { RefreshTokens.userId eq userId }
+            .map { row -> row[RefreshTokens.clientId]!! }
+
+        return database.from(Users)
+            .innerJoin(Avatars, on = Users.avatar eq Avatars.id)
+            .select(
+                Users.userId,
+                Users.name,
+                Users.email,
+                Users.address,
+                Users.authProvider,
+                Avatars.image,
+            )
             .where(Users.userId eq userId).limit(1).map { row ->
                 UserDTO.UserInfo(
                     userId = row[Users.userId]!!,
                     username = row[Users.name]!!,
                     email = row[Users.email]!!,
                     address = row[Users.address],
-                    avatar = row[Avatars.image]!!
+                    avatar = row[Avatars.image]!!,
+                    clientIds = clientIds,
                 )
             }.firstOrNull()
+    }
 
 
     override suspend fun deleteUserByID(userId: String): Boolean {

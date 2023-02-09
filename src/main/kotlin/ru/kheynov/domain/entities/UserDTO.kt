@@ -29,6 +29,7 @@ sealed interface UserDTO {
     @Serializable
     data class UserInfo(
         @SerialName("user_id") val userId: String,
+        @SerialName("client_ids") val clientIds: List<String>? = null,
         val username: String,
         val email: String,
         val address: String?,

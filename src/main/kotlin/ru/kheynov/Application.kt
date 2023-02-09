@@ -17,9 +17,6 @@ import io.ktor.server.plugins.openapi.*
 import io.ktor.server.plugins.swagger.*
 import io.ktor.server.request.*
 import io.ktor.server.response.*
-import io.ktor.server.response.*
-import io.ktor.server.response.*
-import io.ktor.server.routing.*
 import io.ktor.server.routing.*
 import io.ktor.server.websocket.*
 import io.ktor.websocket.*
@@ -42,6 +39,7 @@ import org.slf4j.event.Level
 import ru.kheynov.api.v1.routing.v1Routes
 import ru.kheynov.di.appModule
 import ru.kheynov.security.jwt.token.TokenConfig
+import ru.kheynov.services.NotificationService
 import java.io.File
 import java.time.Duration
 
@@ -59,9 +57,14 @@ fun Application.module() {
     configureWebSockets()
     configureRouting()
 //    configureMicrometrics()
+    configureNotificationService()
 }
 
-fun Application.configureWebSockets() {
+private fun configureNotificationService() {
+    NotificationService()
+}
+
+private fun Application.configureWebSockets() {
     install(WebSockets) {
         pingPeriod = Duration.ofSeconds(15)
         timeout = Duration.ofSeconds(15)
@@ -70,14 +73,14 @@ fun Application.configureWebSockets() {
     }
 }
 
-fun Application.configureDI() {
+private fun Application.configureDI() {
     install(Koin) {
         slf4jLogger()
         modules(appModule)
     }
 }
 
-fun Application.configureRouting() {
+private fun Application.configureRouting() {
     routing {
         get("/") {
             call.respond("Secret Santa Server")
@@ -94,7 +97,7 @@ fun Application.configureRouting() {
     }
 }
 
-fun Application.configureMicrometrics() {
+private fun Application.configureMicrometrics() {
     install(MicrometerMetrics) {
         registry = this@configureMicrometrics.get<PrometheusMeterRegistry>()
         meterBinders = listOf(
@@ -109,7 +112,7 @@ fun Application.configureMicrometrics() {
     }
 }
 
-fun Application.configureHTTP() {
+private fun Application.configureHTTP() {
     install(CORS) {
         HttpMethod.DefaultMethods.forEach(::allowMethod)
         allowHeader(HttpHeaders.Authorization)
@@ -122,14 +125,14 @@ fun Application.configureHTTP() {
     }
 }
 
-fun Application.configureMonitoring() {
+private fun Application.configureMonitoring() {
     install(CallLogging) {
         level = Level.INFO
         filter { call -> call.request.path().startsWith("/") }
     }
 }
 
-fun Application.configureSecurity() {
+private fun Application.configureSecurity() {
     val config: TokenConfig by inject()
     install(Authentication)
     authentication {
@@ -148,7 +151,7 @@ fun Application.configureSecurity() {
 }
 
 @OptIn(ExperimentalSerializationApi::class)
-fun Application.configureSerialization() {
+private fun Application.configureSerialization() {
     install(ContentNegotiation) {
         json(Json {
             encodeDefaults = true
@@ -157,10 +160,8 @@ fun Application.configureSerialization() {
     }
 }
 
-fun Routing.metrics() {
-
+private fun Routing.metrics() {
     val registry = get<PrometheusMeterRegistry>()
-
     get("/metrics") {
         call.respondText {
             registry.scrape()
