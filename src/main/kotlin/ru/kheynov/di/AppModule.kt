@@ -4,6 +4,8 @@ import io.ktor.client.*
 import io.ktor.client.engine.cio.*
 import io.ktor.client.plugins.contentnegotiation.*
 import io.ktor.serialization.kotlinx.json.*
+import io.micrometer.prometheus.PrometheusConfig
+import io.micrometer.prometheus.PrometheusMeterRegistry
 import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.json.Json
 import org.koin.dsl.module
@@ -72,5 +74,5 @@ val appModule = module {
 
     single { UseCases() }
 
-//    single { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
+    single { PrometheusMeterRegistry(PrometheusConfig.DEFAULT) }
 }
