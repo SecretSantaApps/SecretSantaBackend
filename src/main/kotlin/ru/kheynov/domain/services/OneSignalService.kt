@@ -1,14 +1,15 @@
 package ru.kheynov.domain.services
 
 import ru.kheynov.domain.entities.Notification
+import java.lang.System.getenv
 
 
 interface OneSignalService {
     suspend fun sendNotification(notification: Notification): Boolean
 
     companion object {
-        const val APP_ID = "e281e33f-9662-49c7-ad62-71bad853fc3a"
+        val APP_ID: String = getenv("ONESIGNAL_APP_ID")
         const val BASE_URL = "https://onesignal.com/api/v1/notifications"
-        val API_KEY: String = System.getenv("ONESIGNAL_API_KEY")
+        val API_KEY: String = getenv("ONESIGNAL_API_KEY")
     }
 }
