@@ -17,7 +17,7 @@ sealed interface UserDTO {
     ) : UserDTO
 
     @Serializable
-    data class UserEmailRegister(
+    data class UserEmailSignUp(
         val username: String,
         val password: String,
         val email: String,

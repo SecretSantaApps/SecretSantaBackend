@@ -10,7 +10,7 @@ import io.ktor.server.routing.*
 import ru.kheynov.api.v1.requests.users.UpdateUserRequest
 import ru.kheynov.api.v1.requests.users.auth.LoginViaEmailRequest
 import ru.kheynov.api.v1.requests.users.auth.RefreshTokenRequest
-import ru.kheynov.api.v1.requests.users.auth.RegisterViaEmailRequest
+import ru.kheynov.api.v1.requests.users.auth.SignUpViaEmailRequest
 import ru.kheynov.domain.entities.UserDTO
 import ru.kheynov.domain.use_cases.UseCases
 import ru.kheynov.domain.use_cases.rooms.GetUserRoomsUseCase
@@ -19,7 +19,7 @@ import ru.kheynov.domain.use_cases.users.GetUserDetailsUseCase
 import ru.kheynov.domain.use_cases.users.UpdateUserUseCase
 import ru.kheynov.domain.use_cases.users.auth.LoginViaEmailUseCase
 import ru.kheynov.domain.use_cases.users.auth.RefreshTokenUseCase
-import ru.kheynov.domain.use_cases.users.auth.RegisterViaEmailUseCase
+import ru.kheynov.domain.use_cases.users.auth.SignUpViaEmailUseCase
 
 fun Route.configureUserRoutes(
     useCases: UseCases,
@@ -27,7 +27,7 @@ fun Route.configureUserRoutes(
     configureAuthRoutes(useCases)
 
     get("/avatars") {
-        val res = useCases.getAvailableAvatarsUseCase()
+        val res = useCases.getAvailableAvatarsUseCase ()
         call.respond(HttpStatusCode.OK, res)
     }
 
@@ -157,8 +157,8 @@ private fun Route.configureAuthRoutes(useCases: UseCases) {
                 return@post
             }
 
-            val registerRequest = call.receiveNullable<RegisterViaEmailRequest>()?.let {
-                UserDTO.UserEmailRegister(
+            val registerRequest = call.receiveNullable<SignUpViaEmailRequest>()?.let {
+                UserDTO.UserEmailSignUp(
                     username = it.username,
                     password = it.password,
                     email = it.email,
@@ -172,23 +172,23 @@ private fun Route.configureAuthRoutes(useCases: UseCases) {
             }
 
 
-            when (val res = useCases.registerViaEmailUseCase(registerRequest)) {
-                RegisterViaEmailUseCase.Result.Failed -> {
+            when (val res = useCases.signUpViaEmailUseCase(registerRequest)) {
+                SignUpViaEmailUseCase.Result.Failed -> {
                     call.respond(HttpStatusCode.InternalServerError)
                     return@post
                 }
 
-                is RegisterViaEmailUseCase.Result.Successful -> {
+                is SignUpViaEmailUseCase.Result.Successful -> {
                     call.respond(HttpStatusCode.OK, res.tokenPair)
                     return@post
                 }
 
-                RegisterViaEmailUseCase.Result.UserAlreadyExists -> {
+                SignUpViaEmailUseCase.Result.UserAlreadyExists -> {
                     call.respond(HttpStatusCode.Conflict, "User already exists")
                     return@post
                 }
 
-                RegisterViaEmailUseCase.Result.AvatarNotFound -> {
+                SignUpViaEmailUseCase.Result.AvatarNotFound -> {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }

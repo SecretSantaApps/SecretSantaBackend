@@ -9,7 +9,7 @@ import ru.kheynov.security.jwt.token.*
 import ru.kheynov.utils.getRandomUserID
 import ru.kheynov.utils.getRandomUsername
 
-class RegisterViaEmailUseCase : KoinComponent {
+class SignUpViaEmailUseCase : KoinComponent {
 
     private val usersRepository: UsersRepository by inject()
     private val tokenService: TokenService by inject()
@@ -23,7 +23,7 @@ class RegisterViaEmailUseCase : KoinComponent {
         object AvatarNotFound : Result
     }
 
-    suspend operator fun invoke(user: UserDTO.UserEmailRegister): Result {
+    suspend operator fun invoke(user: UserDTO.UserEmailSignUp): Result {
         if (usersRepository.getUserByEmail(user.email) != null) return Result.UserAlreadyExists
         val userId = getRandomUserID()
         val tokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", userId))
