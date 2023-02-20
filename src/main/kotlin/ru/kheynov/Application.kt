@@ -116,7 +116,8 @@ private fun Application.configureHTTP() {
     install(CORS) {
         HttpMethod.DefaultMethods.forEach(::allowMethod)
         allowHeader(HttpHeaders.Authorization)
-        allowHeader("Client-Id")
+        allowHeader(HttpHeaders.ContentType)
+        allowHeader("client-id")
         anyHost() // @TODO: Don't do this in production if possible. Try to limit it.
     }
     routing {
