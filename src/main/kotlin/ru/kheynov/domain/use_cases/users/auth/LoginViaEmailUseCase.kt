@@ -24,7 +24,7 @@ class LoginViaEmailUseCase : KoinComponent {
         if (!passwordVerificationResult.verified) return Result.Forbidden
         val tokenPair = tokenService.generateTokenPair(tokenConfig, TokenClaim("userId", user.userId))
 
-        val isTokenExists = usersRepository.getRefreshTokenByUserId(user.userId) != null
+        val isTokenExists = usersRepository.getRefreshToken(user.userId, clientId) != null
 
         val tokenUpdateResult = when {
             isTokenExists -> usersRepository.updateUserRefreshToken(
@@ -42,7 +42,7 @@ class LoginViaEmailUseCase : KoinComponent {
             )
         }
 
-        if (passwordVerificationResult.verified && tokenUpdateResult) {
+        if (tokenUpdateResult) {
             return Result.Success(tokenPair)
         }
         return Result.Failed

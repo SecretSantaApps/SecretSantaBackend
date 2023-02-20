@@ -20,7 +20,7 @@ interface UsersRepository {
 
     suspend fun getRefreshToken(oldRefreshToken: String): UserDTO.RefreshTokenInfo?
 
-    suspend fun getRefreshTokenByUserId(userId: String): UserDTO.RefreshTokenInfo?
+    suspend fun getRefreshToken(userId: String, clientId: String): UserDTO.RefreshTokenInfo?
 
     suspend fun createRefreshToken(
         userId: String,

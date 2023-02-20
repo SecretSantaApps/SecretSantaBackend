@@ -107,8 +107,9 @@ class PostgresUsersRepository(
         return database.sequenceOf(RefreshTokens).find { oldRefreshToken eq it.refreshToken }?.toRefreshTokenInfo()
     }
 
-    override suspend fun getRefreshTokenByUserId(userId: String): UserDTO.RefreshTokenInfo? {
-        return database.sequenceOf(RefreshTokens).find { userId eq it.userId }?.toRefreshTokenInfo()
+    override suspend fun getRefreshToken(userId: String, clientId: String): UserDTO.RefreshTokenInfo? {
+        return database.sequenceOf(RefreshTokens).find { (userId eq it.userId) and (clientId eq it.clientId) }
+            ?.toRefreshTokenInfo()
     }
 
     override suspend fun createRefreshToken(userId: String, clientId: String, refreshToken: RefreshToken): Boolean {
