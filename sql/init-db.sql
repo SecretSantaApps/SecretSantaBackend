@@ -6,11 +6,8 @@ create table avatars
 insert into avatars (image)
 values ('images/avatar1.jpg');
 
-<<<<<<< Updated upstream
-=======
 create type game_state as enum ('game_started','waiting_for_players', 'waiting_for_acceptance');
 
->>>>>>> Stashed changes
 create table users
 (
     user_id       text primary key,
