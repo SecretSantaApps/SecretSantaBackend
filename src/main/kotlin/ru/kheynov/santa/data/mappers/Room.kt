@@ -10,6 +10,6 @@ fun Room.mapToRoom(): RoomDTO.Room = RoomDTO.Room(
     ownerId = this.ownerId,
     playableOwner = this.playableOwner,
     maxPrice = this.maxPrice,
-    gameStarted = this.gameStarted,
+    gameState = this.gameState,
     membersCount = 1
 )

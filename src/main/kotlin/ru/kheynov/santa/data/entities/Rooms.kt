@@ -2,6 +2,9 @@ package ru.kheynov.data.entities
 
 import org.ktorm.entity.Entity
 import org.ktorm.schema.*
+import java.sql.PreparedStatement
+import java.sql.ResultSet
+import java.sql.Types
 import java.time.LocalDate
 
 interface Room : Entity<Room> {
@@ -13,9 +16,8 @@ interface Room : Entity<Room> {
     var ownerId: String
     var playableOwner: Boolean
     var maxPrice: Int?
-    var gameStarted: Boolean
+    var gameState: String
 }
-
 
 object Rooms : Table<Room>("rooms") {
     var id = text("id").primaryKey().bindTo(Room::id)
@@ -24,5 +26,5 @@ object Rooms : Table<Room>("rooms") {
     var ownerId = text("owner_id").bindTo(Room::ownerId)
     var playableOwner = boolean("playable_owner").bindTo(Room::playableOwner)
     var maxPrice = int("max_price").bindTo(Room::maxPrice)
-    var gameStarted = boolean("game_started").bindTo { it.gameStarted }
+    var gameState = text("game_started").bindTo { it.gameState }
 }

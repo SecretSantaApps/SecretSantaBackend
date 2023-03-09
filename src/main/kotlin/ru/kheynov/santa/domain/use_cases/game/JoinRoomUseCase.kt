@@ -2,11 +2,12 @@ package ru.kheynov.domain.use_cases.game
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import ru.kheynov.domain.entities.GameState
 import ru.kheynov.domain.repositories.GameRepository
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 
-class LeaveRoomUseCase : KoinComponent {
+class JoinRoomUseCase : KoinComponent {
     private val usersRepository: UsersRepository by inject()
     private val roomsRepository: RoomsRepository by inject()
     private val gameRepository: GameRepository by inject()
@@ -14,30 +15,23 @@ class LeaveRoomUseCase : KoinComponent {
     sealed interface Result {
         object Successful : Result
         object Failed : Result
-        object UserNotInRoom : Result
         object RoomNotFound : Result
         object UserNotFound : Result
         object GameAlreadyStarted : Result
+        object UserAlreadyInRoom : Result
     }
 
     suspend operator fun invoke(
         userId: String,
         roomId: String,
+        wishlist: String?,
     ): Result {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
         val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotFound
-        if (gameRepository.getUsersInRoom(roomId).find { it.userId == userId } == null) return Result.UserNotInRoom
-        if (room.gameStarted) return Result.GameAlreadyStarted
+        if (gameRepository.checkUserInRoom(roomId, userId)) return Result.UserAlreadyInRoom
+        if (room.gameState == GameState.GAME_STARTED) return Result.GameAlreadyStarted
 
-        var res = gameRepository.deleteFromRoom(
-            roomId = roomId,
-            userId = userId,
-        )
-
-        if (room.ownerId == userId) {
-            res = res && roomsRepository.deleteRoomById(roomId)
-        }
-
-        return if (res) Result.Successful else Result.Failed
+        return if (gameRepository.addToRoom(room.id, userId, wishlist)) Result.Successful
+        else Result.Failed
     }
 }

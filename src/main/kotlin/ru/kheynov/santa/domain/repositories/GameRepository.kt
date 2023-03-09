@@ -15,6 +15,6 @@ interface GameRepository {
     suspend fun acceptUser(roomId: String, userId: String): Boolean
     suspend fun getUsersInRoom(roomId: String): List<UserDTO.UserRoomInfo>
     suspend fun getUsersRecipient(roomId: String, userId: String): String?
-    suspend fun setGameState(roomId: String, state: Boolean): Boolean
+    suspend fun setGameState(roomId: String, state: String): Boolean
     suspend fun checkUserInRoom(roomId: String, userId: String): Boolean
 }

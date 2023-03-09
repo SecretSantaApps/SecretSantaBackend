@@ -6,6 +6,8 @@ create table avatars
 insert into avatars (image)
 values ('images/avatar1.jpg');
 
+create type game_state as enum ( 'game_started','waiting_for_players', 'waiting_for_acceptance');
+
 create table users
 (
     user_id       text primary key,
@@ -31,10 +33,10 @@ create table rooms
     id             text primary key,
     name           text                                              not null,
     owner_id       text references users (user_id) on delete cascade not null,
-    playable_owner boolean default false,
+    playable_owner boolean    default false,
     date           date,
     max_price      integer check ( max_price > 0 ),
-    game_started   boolean default false
+    game_started   game_state default 'waiting_for_players'
 );
 
 create table room_members

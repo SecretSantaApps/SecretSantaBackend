@@ -31,7 +31,7 @@ fun Route.configureUserRoutes(
         call.respond(HttpStatusCode.OK, res)
     }
 
-    route("/user") {
+        route("/user") {
         authenticate {
             get("/rooms") {
                 val userId = call.principal<JWTPrincipal>()?.payload?.getClaim("userId")?.asString() ?: run {
