@@ -2,7 +2,6 @@ package ru.kheynov.domain.use_cases.game
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.kheynov.domain.entities.GameState
 import ru.kheynov.domain.repositories.GameRepository
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
@@ -32,7 +31,7 @@ class StartGameUseCase : KoinComponent {
         if (usersRepository.getUserByID(userId) == null) return Result.UserNotFound
         val room = roomsRepository.getRoomById(roomId) ?: return Result.RoomNotFound
         if (room.ownerId != userId) return Result.Forbidden
-        if (room.gameState == GameState.GAME_STARTED) return Result.GameAlreadyStarted
+        if (room.gameStarted) return Result.GameAlreadyStarted
 
         val users = gameRepository.getUsersInRoom(roomId).toMutableList()
 
@@ -49,7 +48,7 @@ class StartGameUseCase : KoinComponent {
         resultRelations.forEach {
             if (!gameRepository.setRecipient(roomId, it.first, it.second)) return Result.Failed
         }
-        gameRepository.setGameState(roomId, GameState.GAME_STARTED)
+        gameRepository.setGameState(roomId, true)
         return Result.Successful
     }
 }

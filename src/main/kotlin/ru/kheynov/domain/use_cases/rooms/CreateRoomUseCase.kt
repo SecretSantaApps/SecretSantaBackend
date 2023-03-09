@@ -2,9 +2,7 @@ package ru.kheynov.domain.use_cases.rooms
 
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
-import ru.kheynov.domain.entities.GameState
 import ru.kheynov.domain.entities.RoomDTO
-import ru.kheynov.domain.repositories.GameRepository
 import ru.kheynov.domain.repositories.RoomsRepository
 import ru.kheynov.domain.repositories.UsersRepository
 import ru.kheynov.utils.getRandomRoomID
@@ -35,7 +33,7 @@ class CreateRoomUseCase : KoinComponent {
             ownerId = userId,
             playableOwner = playableOwner,
             maxPrice = maxPrice,
-            gameState = GameState.WAITING_FOR_PLAYERS,
+            gameStarted = false,
             membersCount = 1
         )
         return if (roomsRepository.createRoom(room)) Result.Successful(room) else Result.Failed

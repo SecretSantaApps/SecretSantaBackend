@@ -8,7 +8,6 @@ import org.ktorm.entity.*
 import ru.kheynov.data.entities.RoomMembers
 import ru.kheynov.data.entities.Rooms
 import ru.kheynov.data.mappers.mapToRoom
-import ru.kheynov.domain.entities.GameState
 import ru.kheynov.domain.entities.RoomDTO
 import ru.kheynov.domain.entities.RoomDTO.Room
 import ru.kheynov.domain.entities.RoomDTO.RoomInfo
@@ -31,7 +30,7 @@ class PostgresRoomsRepository(
             maxPrice = room.maxPrice
             ownerId = room.ownerId
             playableOwner = room.playableOwner
-            gameState = GameState.WAITING_FOR_PLAYERS
+            gameStarted = false
         }
         var affectedRows = database.sequenceOf(Rooms).add(newRoom)
 
@@ -76,7 +75,7 @@ class PostgresRoomsRepository(
                 Rooms.date,
                 Rooms.ownerId,
                 Rooms.ownerId,
-                Rooms.gameState,
+                Rooms.gameStarted,
                 RoomMembers.accepted,
                 Rooms.playableOwner,
             ).where {
@@ -90,7 +89,7 @@ class PostgresRoomsRepository(
                     date = room[Rooms.date],
                     ownerId = room[Rooms.ownerId] ?: "",
                     maxPrice = room[Rooms.maxPrice],
-                    gameStarted = room[Rooms.gameState] ?: GameState.WAITING_FOR_PLAYERS,
+                    gameStarted = room[Rooms.gameStarted] ?: false,
                     membersCount = membersCount ?: 0,
                     accepted = room[RoomMembers.accepted]!!,
                     playableOwner = room[Rooms.playableOwner]!!,

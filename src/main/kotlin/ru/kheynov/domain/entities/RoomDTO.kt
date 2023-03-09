@@ -16,7 +16,7 @@ sealed interface RoomDTO {
         @SerialName("owner_id") val ownerId: String,
         @SerialName("playable_owner") val playableOwner: Boolean,
         @SerialName("max_price") val maxPrice: Int? = null,
-        @SerialName("game_state") val gameState: String = "waiting_for_players",
+        @SerialName("game_started") val gameStarted: Boolean = false,
         @SerialName("members_count") val membersCount: Int,
     ) : RoomDTO
 
@@ -35,7 +35,7 @@ sealed interface RoomDTO {
         @SerialName("owner_id") val ownerId: String,
         @SerialName("playable_owner") val playableOwner: Boolean,
         @SerialName("max_price") val maxPrice: Int? = null,
-        @SerialName("game_state") val gameStarted: String = "",
+        @SerialName("game_started") val gameStarted: Boolean = false,
         @SerialName("members_count") val membersCount: Int,
         val accepted: Boolean = false,
     ) : RoomDTO

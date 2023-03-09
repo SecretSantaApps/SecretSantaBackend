@@ -21,7 +21,7 @@ sealed class UpdateModel {
     @SerialName("GAME_STATE_UPDATE")
     data class GameStateUpdate(
         @SerialName("room_id") override val roomId: String,
-        @SerialName("state_update") val stateUpdate: String,
+        @SerialName("state_update") val stateUpdate: Boolean,
     ) : UpdateModel()
 
     @Serializable
