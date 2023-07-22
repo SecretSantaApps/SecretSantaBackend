@@ -3,7 +3,7 @@ services:
   server:
     build: .
     ports:
-      - "${SERVER_PORT}:${SERVER_PORT}"
+      - "127.0.0.1:${SERVER_PORT}:${SERVER_PORT}"
     volumes:
       - ./secretsanta-firebase-adminsdk.json:/secretsanta-key.json
       - ./files:/files
@@ -30,7 +30,7 @@ services:
   db:
     image: ${POSTGRES_IMAGE}
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
       POSTGRES_DB: "santa"
       POSTGRES_USER: "postgres"
@@ -47,7 +47,7 @@ services:
     image: prom/prometheus
     restart: always
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     volumes:
       - ./monitoring:/etc/prometheus/
     networks:
@@ -57,13 +57,12 @@ services:
   grafana:
     image: grafana/grafana:5.1.0
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     volumes:
       - ./monitoring/grafana:/var/lib/grafana
     networks:
       - prometheus_network
     user: "0"
-
 
 networks:
   db_network:
